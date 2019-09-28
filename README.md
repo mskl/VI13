@@ -1,5 +1,7 @@
-# VI13
+# VI13 - Information Visualization
+
 Data visualization class at Instituto Superior de Técnico Lisbon.
+
 ## Dataset
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
 
@@ -9,13 +11,11 @@ The 2013/2014 dataset consists of 272 497 records and contains the following col
 Action, CallYear, ProjectNumber, MobiilityID, SendingCountry, ReceivingCountry, MobilityType, SpecialNeeds, SubjectAreaCode, SubjectAreaName, CombinedMobilityYesNo, StartDate, EndDate, DurationInMonths, DurationInDays, SubsistenceTravel, LevelOfStudy, ParticipantID, ParticipantGender, ParticipantType, Language, SendingPartnerErasmusID, SendingPartnerName, HostingPartnerErasmusID, HostingPartnerName, HostingPartnerCountry, HostingPartnerCity
 ```
 
-Whole description of dataset and each attribute can be obtained from [European Open Data Portal](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14/resource/ebf302e3-0300-48c4-a713-c795325e7034).
+Whole description of dataset and each attribute can be obtained from [European Open Data Portal](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14/resource/ebf302e3-0300-48c4-a713-c795325e7034). The dataset contains an entry for each student participating in the Erasmus+ programme. Length of the stay can be calculated from *StartDate* and *EndDate* as well as *DurationInMonths* and *DurationInDays* columns. 
 
-The dataset contains an entry for each student participating in the Erasmus+ programme. Length of the stay can be calculated from *StartDate* and *EndDate* as well as *DurationInMonths* and *DurationInDays* columns. 
+The dataset contains information about the sending and receiving institution (*SendingPartnerErasmusID, SendingPartnerName, HostingPartnerErasmusID, HostingPartnerName, HostingPartnerCountry, HostingPartnerCity*), the area of studies (*SubjectAreaCode, SubjectAreaName*), sending and receiving country code (*SendingCountry, ReceivingCountry*), information about the degree (*LevelOfStudy*) as well as participant's gender (*ParticipantGender*), language (*Language*) and identification whether the participant requires any special needs (*SpecialNeeds*). City of the sending institution is not available however should be obtainable from other dataset which maps the code to the institution.
 
-The dataset contains information about the sending and receiving institution (*SendingPartnerErasmusID, SendingPartnerName, HostingPartnerErasmusID, HostingPartnerName, HostingPartnerCountry, HostingPartnerCity*), the area of studies (*SubjectAreaCode, SubjectAreaName*), sending and receiving country code (*SendingCountry, ReceivingCountry*), information about the degree (*LevelOfStudy*) as well as participant's gender (*ParticipantGender*), language (*Language*) and identification whether the participant requires any special needs (*SpecialNeeds*). City of the sending institution is not available however should be obtainable from other dataset which maps the code to the institution (available online)
-.
-A sample of the dataset if shown in the table below.
+### Dataset Sample
 
 <!---
  Make sure that the index is not called Action. 
@@ -36,18 +36,10 @@ A sample of the dataset if shown in the table below.
 
 ## Data exploration
 
-#### Call year
-Useless variable since the whole dataset is from the same year. This value is hence all the same (2013).
-
-
 #### DurationInMonths and DurationInDays
 Length of the stay during the mobility. First graph shows the length of stay in months and the second one length of stay in days.
 
 ![months](img/lengthOfStrayInMonths.png)
 
 ![days](img/lengthOfStrayInDays.png)
-
-#### Level of study
-Contains info about whether the student is a bachelor or masters degree student. 
-
 
