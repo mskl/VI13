@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2019.1.16)  30 SEP 2019 21:48
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2019.1.16)  30 SEP 2019 22:16
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -490,8 +490,8 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 713.
 LaTeX Info: Redefining \[ on input line 2817.
 LaTeX Info: Redefining \] on input line 2818.
 )
-(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/tabularx.sty
-Package: tabularx 2016/02/03 v2.11b `tabularx' package (DPC)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/siunitx/siunitx.sty
+Package: siunitx 2018-03-20 v2.7m A comprehensive (SI) units package
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/tools/array.sty
 Package: array 2018/04/07 v2.4g Tabular extension package (FMi)
@@ -503,54 +503,43 @@ Package: array 2018/04/07 v2.4g Tabular extension package (FMi)
 \backup@length=\skip53
 \ar@cellbox=\box44
 )
-\TX@col@width=\dimen148
-\TX@old@table=\dimen149
-\TX@old@col=\dimen150
-\TX@target=\dimen151
-\TX@delta=\dimen152
-\TX@cols=\count192
-\TX@ftn=\toks20
-)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/siunitx/siunitx.sty
-Package: siunitx 2018-03-20 v2.7m A comprehensive (SI) units package
-
 (/usr/local/texlive/2018/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
 Package: l3keys2e 2018/02/21 LaTeX2e option processing using LaTeX3 keys
 )
 \l__siunitx_tmp_box=\box45
-\l__siunitx_tmp_dim=\dimen153
-\l__siunitx_tmp_int=\count193
-\l__siunitx_number_mantissa_length_int=\count194
-\l__siunitx_number_uncert_length_int=\count195
-\l__siunitx_round_int=\count196
-\l__siunitx_process_decimal_int=\count197
-\l__siunitx_process_uncertainty_int=\count198
-\l__siunitx_process_fixed_int=\count199
-\l__siunitx_process_integer_min_int=\count266
-\l__siunitx_process_precision_int=\count267
-\l__siunitx_group_min_int=\count268
+\l__siunitx_tmp_dim=\dimen148
+\l__siunitx_tmp_int=\count192
+\l__siunitx_number_mantissa_length_int=\count193
+\l__siunitx_number_uncert_length_int=\count194
+\l__siunitx_round_int=\count195
+\l__siunitx_process_decimal_int=\count196
+\l__siunitx_process_uncertainty_int=\count197
+\l__siunitx_process_fixed_int=\count198
+\l__siunitx_process_integer_min_int=\count199
+\l__siunitx_process_precision_int=\count266
+\l__siunitx_group_min_int=\count267
 \l__siunitx_angle_marker_box=\box46
 \l__siunitx_angle_unit_box=\box47
-\l__siunitx_angle_marker_dim=\dimen154
-\l__siunitx_angle_unit_dim=\dimen155
-\l__siunitx_unit_int=\count269
-\l__siunitx_unit_denominator_int=\count270
-\l__siunitx_unit_numerator_int=\count271
-\l__siunitx_unit_prefix_int=\count272
-\l__siunitx_unit_prefix_base_int=\count273
-\l__siunitx_unit_prefix_gram_int=\count274
-\l__siunitx_number_product_int=\count275
+\l__siunitx_angle_marker_dim=\dimen149
+\l__siunitx_angle_unit_dim=\dimen150
+\l__siunitx_unit_int=\count268
+\l__siunitx_unit_denominator_int=\count269
+\l__siunitx_unit_numerator_int=\count270
+\l__siunitx_unit_prefix_int=\count271
+\l__siunitx_unit_prefix_base_int=\count272
+\l__siunitx_unit_prefix_gram_int=\count273
+\l__siunitx_number_product_int=\count274
 \c__siunitx_one_fill_skip=\skip54
 \l__siunitx_table_unit_align_skip=\skip55
-\l__siunitx_table_exponent_dim=\dimen156
-\l__siunitx_table_integer_dim=\dimen157
-\l__siunitx_table_mantissa_dim=\dimen158
-\l__siunitx_table_marker_dim=\dimen159
-\l__siunitx_table_result_dim=\dimen160
-\l__siunitx_table_uncert_dim=\dimen161
-\l__siunitx_table_fill_pre_dim=\dimen162
-\l__siunitx_table_fill_post_dim=\dimen163
-\l__siunitx_table_fill_mid_dim=\dimen164
+\l__siunitx_table_exponent_dim=\dimen151
+\l__siunitx_table_integer_dim=\dimen152
+\l__siunitx_table_mantissa_dim=\dimen153
+\l__siunitx_table_marker_dim=\dimen154
+\l__siunitx_table_result_dim=\dimen155
+\l__siunitx_table_uncert_dim=\dimen156
+\l__siunitx_table_fill_pre_dim=\dimen157
+\l__siunitx_table_fill_post_dim=\dimen158
+\l__siunitx_table_fill_mid_dim=\dimen159
 \l__siunitx_table_pre_box=\box48
 \l__siunitx_table_post_box=\box49
 \l__siunitx_table_mantissa_box=\box50
@@ -677,8 +666,18 @@ Package: translator 2018/01/04 v1.12 Easy translation of strings in LaTeX
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
-\KV@toks@=\toks21
+\KV@toks@=\toks20
 )))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2016/02/03 v2.11b `tabularx' package (DPC)
+\TX@col@width=\dimen160
+\TX@old@table=\dimen161
+\TX@old@col=\dimen162
+\TX@target=\dimen163
+\TX@delta=\dimen164
+\TX@cols=\count275
+\TX@ftn=\toks21
+)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/ms/ragged2e.sty
 Package: ragged2e 2009/05/21 v2.1 ragged2e Package (MS)
 
@@ -856,6 +855,6 @@ Here is how much of TeX's memory you used:
  19192 multiletter control sequences out of 15000+600000
  530814 words of font info for 35 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 39i,9n,38p,10418b,233s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 39i,9n,38p,10408b,233s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on table.pdf (2 pages).
