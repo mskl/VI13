@@ -2,6 +2,11 @@
 
 Data visualization class at Instituto Superior de Técnico Lisbon.
 
+## TODO - checkpoint 1
+[ ] Add other datasets (with links, and size)
+[ ] Change the current dataset to RAW version
+[ ] Print the new word doc again
+
 ## Dataset
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
 
