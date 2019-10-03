@@ -8,14 +8,14 @@ Data visualization class at Instituto Superior de Técnico Lisbon.
 - [ ] Print the new word doc again
 
 ## Dataset
-- mapping of university code to city name
+- mapping of university code to city name - DONE
 - distance between cities
 - language family
 - cost of living
 - university rank
 - state general information (size, number of people)
 
-## Dataset
+## Dataset Student_mobility (2009 - 2014)
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
 
 The 2013/2014 dataset consists of 272 497 records and contains the following columns:
@@ -46,6 +46,23 @@ The dataset contains information about the sending and receiving institution (*S
 | 170547 | ERA02 | 2013 | 2013-1-HU1-ERA02-10358 | 13/003-E-1013/SMS/212 | HU | IS | Mob-SMS | 0.0 | 312 | Sociology and cultural studies | NO | 03-JAN-2014 00.00.00 | 10-MAY-2014 00.00.00 | 4 | 0 | 1664.0 | Second Cycle | HU BUDAPES01 SM 193 | F | Students | EN | HU BUDAPES01 | EÃ¶tvÃ¶s LorÃ¡nd TudomÃ¡nyegyetem | IS REYKJAV01 | HASKOLI ISLANDS | IS | Reykjavik |
 | 57082 | ERA02 | 2013 | 2013-1-DE1-ERA02-02527 | 02527-MOB-00009 | DE | GB | Mob-SMS | 0.0 | 214 | Design | NO | 16-SEP-2013 00.00.00 | 24-JAN-2014 00.00.00 | 4 | 0 | 1182.0 | First Cycle |  | F | Students | EN | D  MANNHEI03 | Hochschule Mannheim | UK LEEDS01 | UNIVERSITY OF LEEDS | GB | Leeds |
 | 151116 | ERA02 | 2013 | 2013-1-GB1-ERA02-25231 | 25231-MOB-00018 | GB | FR | Mob-SMS | 0.0 | 380 | Law | NO | 28-AUG-2013 00.00.00 | 14-DEC-2013 00.00.00 | 3 | 0 | 1406.25 | First Cycle | UK1111682321277 | F | Students | FR | UK GLASGOW01 | University of Glasgow | F  MARSEIL84 | UNIVERSITE D'AIX-MARSEILLE | FR | AIX-EN-PROVENCE CEDEX 1 |
+
+## Dataset EUC_for_academic (2007 - 2014)
+This datasets consist of all universities participating in ERASMUS program for the specific academic year. Years 2007 - 2013 are in a dataset called EUC_Consolidated_Table_2007_2013, year 2013-2014 is in the dataset EUC_for_academic_year_2013_2014.
+
+The 2007 - 2013 dataset consists of 4918 records and contains the following columns:
+
+``` text
+Country, Charter type code, Organisation Name, Erasmus code, Street, Postcode, City
+```
+
+The 2013/2014 dataset consists of 4919 records and contains the following columns:
+
+``` text
+Institutional code, Application Reference Number, Name of Organisation, Country, City, Code
+```
+
+The datasets can be used for mapping of university code to city name.
 
 ## Data exploration
 
