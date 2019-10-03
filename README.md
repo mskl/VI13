@@ -64,7 +64,7 @@ Institutional code, Application Reference Number, Name of Organisation, Country,
 
 The datasets can be used for mapping of university code to city name.
 
-##Dataset Comparative_food_price
+## Dataset Comparative_food_price
 Whole dataset can be obtained from [Eurostat](
 https://ec.europa.eu/eurostat/databrowser/view/tec00120/default/table?lang=en). Check the link to see barchart and map graphics.
 
@@ -72,7 +72,7 @@ This dataset contains comparative price levels if final consumption by private h
 
 The ratio is shown in relation to the EU average which is 100. If the index of the country is higher/lower than 100, the country concerned is relatively expensive/cheap as compared to EU average.
 
-##Dataset Food_price_monitoring_tool (2011-2018)
+## Dataset Food_price_monitoring_tool (2011-2018)
 Want to use the beer column. The value used if Harmonised index of consumer prices. Have to find out if that is going to be correct.
 
 
