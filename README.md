@@ -8,6 +8,14 @@ Data visualization class at Instituto Superior de Técnico Lisbon.
 - [ ] Print the new word doc again
 
 ## Dataset
+- mapping of university code to city name
+- distance between cities
+- language family
+- cost of living
+- university rank
+- state general information (size, number of people)
+
+## Dataset
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
 
 The 2013/2014 dataset consists of 272 497 records and contains the following columns:
