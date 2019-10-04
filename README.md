@@ -72,10 +72,13 @@ This dataset contains comparative price levels if final consumption by private h
 
 The ratio is shown in relation to the EU average which is 100. If the index of the country is higher/lower than 100, the country concerned is relatively expensive/cheap as compared to EU average.
 
-## Dataset Food_price_monitoring_tool (2011-2018)
-Want to use the beer column. The value used if Harmonised index of consumer prices. Have to find out if that is going to be correct.
+## Dataset Food_price_monitoring_tool with only beer price indice(2011-2018)
+This dataset uses Harmonised index of consumer prices. Average in Europe is therefore 100. There is value by every month in the different european contries from January 2013 (2013M1) until December 2015 (2015M12).
 
+## Dataset cost-of-living-2016
+Found on [Kaggle] (https://www.kaggle.com/andytran11996/cost-of-living/version/3). 
 
+This dataset shows cost-of-living in different cities around the world. Hope it includes all the european countries.
 
 ## Data exploration
 
