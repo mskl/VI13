@@ -7,13 +7,16 @@ Data visualization class at Instituto Superior de Técnico Lisbon.
 - [ ] Change the current dataset to RAW version
 - [ ] Print the new word doc again
 
-## Dataset
+
+# Dataset
 - mapping of university code to city name - DONE
 - distance between cities
 - language family
 - cost of living
 - university rank
 - state general information (size, number of people)
+
+---
 
 ## Dataset Student_mobility (2009 - 2014)
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
@@ -27,8 +30,6 @@ Action, CallYear, ProjectNumber, MobiilityID, SendingCountry, ReceivingCountry, 
 Whole description of dataset and each attribute can be obtained from [European Open Data Portal](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14/resource/ebf302e3-0300-48c4-a713-c795325e7034). The dataset contains an entry for each student participating in the Erasmus+ programme. Length of the stay can be calculated from *StartDate* and *EndDate* as well as *DurationInMonths* and *DurationInDays* columns. 
 
 The dataset contains information about the sending and receiving institution (*SendingPartnerErasmusID, SendingPartnerName, HostingPartnerErasmusID, HostingPartnerName, HostingPartnerCountry, HostingPartnerCity*), the area of studies (*SubjectAreaCode, SubjectAreaName*), sending and receiving country code (*SendingCountry, ReceivingCountry*), information about the degree (*LevelOfStudy*) as well as participant's gender (*ParticipantGender*), language (*Language*) and identification whether the participant requires any special needs (*SpecialNeeds*). City of the sending institution is not available however should be obtainable from other dataset which maps the code to the institution.
-
-### Dataset Sample
 
 <!---
  Make sure that the index is not called Action. 
@@ -47,8 +48,13 @@ The dataset contains information about the sending and receiving institution (*S
 | 57082 | ERA02 | 2013 | 2013-1-DE1-ERA02-02527 | 02527-MOB-00009 | DE | GB | Mob-SMS | 0.0 | 214 | Design | NO | 16-SEP-2013 00.00.00 | 24-JAN-2014 00.00.00 | 4 | 0 | 1182.0 | First Cycle |  | F | Students | EN | D  MANNHEI03 | Hochschule Mannheim | UK LEEDS01 | UNIVERSITY OF LEEDS | GB | Leeds |
 | 151116 | ERA02 | 2013 | 2013-1-GB1-ERA02-25231 | 25231-MOB-00018 | GB | FR | Mob-SMS | 0.0 | 380 | Law | NO | 28-AUG-2013 00.00.00 | 14-DEC-2013 00.00.00 | 3 | 0 | 1406.25 | First Cycle | UK1111682321277 | F | Students | FR | UK GLASGOW01 | University of Glasgow | F  MARSEIL84 | UNIVERSITE D'AIX-MARSEILLE | FR | AIX-EN-PROVENCE CEDEX 1 |
 
+---
 ## Dataset EUC_for_academic (2007 - 2014)
 This datasets consist of all universities participating in ERASMUS program for the specific academic year. Years 2007 - 2013 are in a dataset called EUC_Consolidated_Table_2007_2013, year 2013-2014 is in the dataset EUC_for_academic_year_2013_2014.
+
+
+**Join on the Erasmus code?**
+> This is useful for mapping the erasmus code to the city name?
 
 The 2007 - 2013 dataset consists of 4918 records and contains the following columns:
 
@@ -64,9 +70,14 @@ Institutional code, Application Reference Number, Name of Organisation, Country,
 
 The datasets can be used for mapping of university code to city name.
 
+---
 ## Dataset Comparative_food_price
 Whole dataset can be obtained from [Eurostat](
 https://ec.europa.eu/eurostat/databrowser/view/tec00120/default/table?lang=en). Check the link to see barchart and map graphics.
+
+**Join on country name. Whole time period.**
+
+> Nice that it contains the whole time we need. It is also normalized which will save us some work.
 
 This dataset contains comparative price levels if final consumption by private households. Comparative price levels are the ratio between Purchasing power partities (PPPs) and market exchange rate for each country. PPPs are currency conversion rates that convert economic indicators expressed in national currencies to a common currency, called Purchasing Power Standard (PPS). Because of this is allows meaningful comparison.
 
@@ -90,8 +101,13 @@ Sample:
 | Ireland                                          | 121,1 |   | 126,5 |   | 124,3 |   | 118   |   | 118,9 |   | 117,9 |   | 120,6 |   | 122,9 |   | 120,6 |   | 124,4 |   |
 | Greece                                           | 88,6  |   | 90,6  |   | 94,1  |   | 95,8  |   | 95,7  |   | 93,1  |   | 89,8  |   | 85,2  |   | 82,9  |   | 84,3  |   |
 
-## Dataset Food_price_monitoring_tool with only beer price indice(2011-2018)
+---
+## Dataset Food_price_monitoring_tool with only beer price indice (2011-2018)
 This dataset uses Harmonised index of consumer prices. Average in Europe is therefore 100. There is value by every month in the different european contries from January 2013 (2013M1) until December 2015 (2015M12).
+
+**Join based on the name of the country**
+
+> Pretty good, however does not include the whole time period. If used, we would need to only use the year 2014 (it would IMHO make no sense to create the visualization along the time if we would only include 2 years). Otherwise we would only pick one priceline and neglect the change between the years.
 
 | GEO/TIME                                         | 2013M01 | 2013M02 | 2013M03 | 2013M04 | 2013M05 | 2013M06 | 2013M07 | 2013M08 | 2013M09 | 2013M10 | 2013M11 |
 |--------------------------------------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
@@ -107,10 +123,12 @@ This dataset uses Harmonised index of consumer prices. Average in Europe is ther
 | France                                           | 96,85   | 99,89   | 100,98  | 101,12  | 101,13  | 101,26  | 101,28  | 101,19  | 101,54  | 101,37  | 101,72  |
 | Croatia                                          | 91,54   | 93,34   | 93,86   | 94,20   | 94,01   | 94,12   | 94,50   | 94,71   | 95,29   | 95,94   | 96,13   |
 
-## Dataset cost-of-living-2016
+### Dataset cost-of-living-2016
 Found on [Kaggle](https://www.kaggle.com/andytran11996/cost-of-living/version/3). 
 
 This dataset shows cost-of-living in different cities around the world. Hope it includes all the european countries.
+
+> Contains city and country. Are all of the cities found in the main dataset covered?
 
 | City                    | Country                | Cost.of.Living.Index | Rent.Index | Cost.of.Living.Plus.Rent.Index | Groceries.Index | Restaurant.Price.Index | Local.Purchasing.Power.Index | Milk(regular)(1 liter) | Monthly.Pass | Apartment(1.bedroom).in.City.Centre | Internet(10 Mbps, Unlimited Data, Cable/ADSL) | Cappuccino(regular) | Water(0.33 liter bottle) | Eggs(12) | Water(1.5 liter bottle) | Domestic Beer (0.5 liter bottle) | One-way Ticket (Local Transport) | Basic (Electricity, Heating, Water, Garbage) for 85m2 Apartment | Cinema, International Release, 1 Seat | Apples (1kg) |
 |-------------------------|------------------------|----------------------|------------|--------------------------------|-----------------|------------------------|------------------------------|------------------------|--------------|-------------------------------------|-----------------------------------------------|---------------------|--------------------------|----------|-------------------------|----------------------------------|----------------------------------|-----------------------------------------------------------------|---------------------------------------|--------------|
@@ -131,12 +149,58 @@ This dataset shows cost-of-living in different cities around the world. Hope it 
 | Algiers                 | Algeria                | 33.92                | 10.12      | 22.71                          | 34.02           | 26.54                  | 41.82                        | 0.25                   | 10.97        | 262.01                              | 35.64                                         | 1.14                | 0.21                     | 1.13     | 0.27                    | 1.48                             | 0.27                             | 32.3                                                            | 4.57                                  | 1.59         |
 | Alicante                | Spain                  | 57.09                | 15.7       | 37.6                           | 43.99           | 49.6                   | 85.68                        | 0.9                    | 36.16        | 502.18                              | 38.92                                         | 1.69                | 1.33                     | 1.56     | 0.48                    | 0.69                             | 1.62                             | 113.23                                                          | 8.93                                  | 1.17         |
 
-## Data exploration
+## Datasets from Geonames
+All datasets can be accessed at [https://download.geonames.org/export/dump/](https://download.geonames.org/export/dump/).
+### countryInfo.txt
+[https://download.geonames.org/export/dump/countryInfo.txt](https://download.geonames.org/export/dump/countryInfo.txt)
 
-#### DurationInMonths and DurationInDays
-Length of the stay during the mobility. First graph shows the length of stay in months and the second one length of stay in days.
+Contains mapping between ISO (CZ) / ISO3 (CZE) and the country name, area, population, currency etc. Is only available for 2019. We could also use information about the neighbour countries, and the currency. 
 
-![months](img/lengthOfStrayInMonths.png)
+| ISO | ISO3 | ISO-Numeric | fips | Country | Capital | Area(in sq km) | Population | Continent | tld | CurrencyCode | CurrencyName | Phone | Postal Code Format | Postal Code Regex | Languages | geonameid | neighbours | EquivalentFipsCode |  |
+|-----|------|-------------|------|---------|------------------------|----------------|------------|-----------|-----|--------------|--------------|----------|--------------------|-------------------|-------------------|---------------------------------------|------------|-------------------------|---|
+| 124 | KY | CYM | 136 | CJ | Cayman Islands | George Town | 262.0 | 44270 |  | .ky | KYD | Dollar | +1-345 |  |  | en-KY | 3580718 |  |  |
+| 248 | ZM | ZMB | 894 | ZA | Zambia | Lusaka | 752614.0 | 13460305 | AF | .zm | ZMW | Kwacha | 260 | ##### | ^(\d{5})$ | en-ZM,bem,loz,lun,lue,ny,toi | 895949 | ZW,TZ,MZ,CD,NA,MW,AO |  |
+| 83 | GL | GRL | 304 | GL | Greenland | Nuuk | 2166086.0 | 56375 |  | .gl | DKK | Krone | 299 | #### | ^(\d{4})$ | kl,da-GL,en | 3425505 |  |  |
+| 186 | PY | PRY | 600 | PA | Paraguay | Asuncion | 406750.0 | 6375830 | SA | .py | PYG | Guarani | 595 | #### | ^(\d{4})$ | es-PY,gn | 3437598 | BO,BR,AR |  |
+| 202 | SJ | SJM | 744 | SV | Svalbard and Jan Mayen | Longyearbyen | 62049.0 | 2550 | EU | .sj | NOK | Krone | 47 | #### | ^(\d{4})$ | no,ru | 607072 |  |  |
+| 72 | FM | FSM | 583 | FM | Micronesia | Palikir | 702.0 | 107708 | OC | .fm | USD | Dollar | 691 | ##### | ^(\d{5})$ | en-FM,chk,pon,yap,kos,uli,woe,nkr,kpg | 2081918 |  |  |
+| 225 | TR | TUR | 792 | TU | Turkey | Ankara | 780580.0 | 77804122 | AS | .tr | TRY | Lira | 90 | ##### | ^(\d{5})$ | tr-TR,ku,diq,az,av | 298795 | SY,GE,IQ,IR,GR,AM,AZ,BG |  |
 
-![days](img/lengthOfStrayInDays.png)
+### Cities15000.txt
+[https://download.geonames.org/export/dump/cities15000.zip](https://download.geonames.org/export/dump/cities15000.zip)
 
+```
+erasmus dataset -> erasmus code (get city name) -> this dataset
+```
+
+~Contains information about the cities - most importantly **coordinates** as well as the country where the country belongs and also the **localized names** of the cities: e.g. localized names for the Prague are *PRG, Praag, Prag, Praga, Pragae, Prago, Prague, Praha* and so on. We could calculate the distances between the cities from the coordinates easily. I don't think that we will find a dataset of precalculated distances between cities as that would be 15000^2 = 225mil records.~~
+
+EDIT: The same information is inside the allCountries dataset which is bigger and therefore contains more cities.
+
+|       |       0 | 1                  | 2                  | 3           |        4 |         5 | 6   | 7     | 8   |   9 | 10   | 11   | 12      |   13 |     14 |   15 |   16 | 17                   | 18         |
+|------:|--------:|:-------------------|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------:|----------:|:----|:------|:----|----:|:-----|:-----|:--------|-----:|-------:|-----:|-----:|:---------------------|:-----------|
+|  3924 | 2037712 | Dehui              | Dehui              | Chang-chia-wan,Dehui,Te-hui,Te-hui-chen,Tszhantszyavan',Tszhantszyavan’,Yao-men                                                                    |  44.5333 | 125.7     | P   | PPL   | CN  | nan | 05   | nan  | nan     |  nan | 108818 |  nan |  180 | Asia/Shanghai        | 2012-01-18 |
+| 19390 | 1610505 | Kaeng Khro         | Kaeng Khro         | Amphoe Kaeng Khlo,Amphoe Kaeng Khro,Kaeng Khlo,Kaeng Khro,แก้งคร้อ               |  16.1086 | 102.258   | P   | PPLA2 | TH  | nan | 26   | nan  | nan     |  nan |  29056 |  nan |  205 | Asia/Bangkok         | 2012-01-16 |
+|  7603 | 2635785 | Tipton             | Tipton             | typtwn,تیپتون                                                                    |  52.5296 |  -2.06773 | P   | PPL   | GB  | nan | ENG  | L7   | 41UF    |  nan |  47000 |  nan |  144 | Europe/London        | 2012-03-29 |
+| 10873 | 1270291 | Harpālpur          | Harpalpur          | Harpalpur,Harpālpur                                                                 |  25.2877 |  79.3328  | P   | PPL   | IN  | nan | 35   | 425  | nan     |  nan |  17731 |  nan |  214 | Asia/Kolkata         | 2014-10-14 |
+| 19068 | 3583158 | Sensuntepeque      | Sensuntepeque      | Sensuntepeque,Sensuntepque,Sensutepeke,Сенсутепеке                                             |  13.8667 | -88.6333  | P   | PPLA  | SV  | nan | 02   | nan  | nan     |  nan |  20386 |  nan |  734 | America/El_Salvador  | 2012-01-14 |
+| 20071 |  154097 | Mgandu             | Mgandu             | Mgandu          |  -5.95   |  34.1333  | P   | PPL   | TZ  | nan | 16   | 1303 | 1303171 |  nan |  23718 |  nan | 1486 | Africa/Dar_es_Salaam | 2016-07-26 |
+| 21819 | 4890507 | East Garfield Park | East Garfield Park | nan                                                                                  |  41.8809 | -87.7028  | P   | PPLX  | US  | nan | IL   | 031  | 14000   |  nan |  20656 |  182 |  183 | America/Chicago      | 2017-12-13 |
+
+### allCountries.txt
+[https://download.geonames.org/export/dump/allCountries.zip](https://download.geonames.org/export/dump/allCountries.zip)
+
+1.6GB daraser containing 12M rows. I extracted only the rows conatining the countries from Europe (which is pretty wide term tho, it's not only EU). The size is reduced to 300MB. 
+
+|         |   geonameid | name                | asciiname           | alternatenames                                  |   latitude |   longitude | feature class   | feature code   | country code   | cc2   |   admin1 code |   admin2 code |   admin3 code |     admin4 code |   population |   elevation |   dem | timezone        | modification date   |
+|--------:|------------:|:--------------------|:--------------------|:------------------------------------------------|-----------:|------------:|:----------------|:---------------|:---------------|:------|--------------:|--------------:|--------------:|----------------:|-------------:|------------:|------:|:----------------|:--------------------|
+| 2363976 |      320711 | Gökyar Burnu        | Gokyar Burnu        | Boz Burun,Gokyar Burnu,Gökyar Burnu,Skizo Point |    36.8123 |    28.4613  | T               | PT             | TR             | nan   |            48 |           nan |           nan |   nan           |            0 |         nan | -9999 | Europe/Istanbul | 2019-01-14          |
+| 2101867 |      569859 | Chashchinskiy       | Chashchinskiy       | nan                                             |    58.9139 |    49.4267  | P               | PPL            | RU             | nan   |            33 |           nan |           nan |   nan           |            0 |         nan |   177 | Europe/Kirov    | 2007-05-30          |
+|  410672 |     2907743 | Heidkaten           | Heidkaten           | nan                                             |    53.9667 |    10.2333  | S               | FRM            | DE             | nan   |            10 |             0 |          1060 |     1.06009e+06 |            0 |         nan |    38 | Europe/Berlin   | 2015-09-04          |
+| 1857455 |    11844412 | Rødvet Sykehjem     | Rodvet Sykehjem     | Rodvet Sykehjem,Rødvet Sykehjem                 |    59.9546 |    10.8658  | P               | PPL            | NO             | nan   |            12 |           301 |           nan |   nan           |            0 |         nan |   172 | Europe/Oslo     | 2018-05-11          |
+|   26454 |     2766166 | Schalzbachvorsäß    | Schalzbachvorsass   | Schalzbach,Schalzbachvorsass,Schalzbachvorsäß   |    47.2936 |    10.0375  | P               | PPL            | AT             | AT    |             9 |           nan |           nan |   nan           |            0 |         nan |  1077 | Europe/Vienna   | 2012-01-18          |
+| 1297058 |     3213954 | Sletta              | Sletta              | nan                                             |    69.5667 |    19.15    | S               | FRM            | NO             | nan   |            18 |          1902 |           nan |   nan           |            0 |         nan |     2 | Europe/Oslo     | 2010-10-15          |
+|  741645 |     3008811 | La Haie de Ligné    | La Haie de Ligne    | La Haie,La Haie de Ligne,La Haie de Ligné       |    47.3984 |    -1.40476 | P               | PPL            | FR             | nan   |            52 |            44 |           445 | 44082           |            0 |         nan |    38 | Europe/Paris    | 2019-03-26          |
+|  485922 |     8394446 | Heilig-Geist-Spital | Heilig-Geist-Spital | nan                                             |    48.3603 |    10.9033  | S               | BLDG           | DE             | nan   |             2 |            97 |          9761 |     9.761e+06   |            0 |         nan |   491 | Europe/Berlin   | 2013-02-19          |
+| 1708312 |     9646370 | Flyi                | Flyi                | Flyi                                            |    61.5598 |     9.17281 | T               | HLL            | NO             | nan   |            11 |           515 |           nan |   nan           |            0 |         nan |  1056 | Europe/Oslo     | 2014-10-08          |
+| 1932534 |     2734671 | Santa Marta         | Santa Marta         | nan                                             |    41.6075 |    -8.41815 | P               | PPL            | PT             | nan   |             4 |           301 |         30113 |   nan           |            0 |         nan |    62 | Europe/Lisbon   | 2011-08-28          |
