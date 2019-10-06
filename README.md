@@ -10,6 +10,7 @@ Data visualization class at Instituto Superior de Técnico Lisbon.
 ## TODO - others
 - [ ] Restructure the questions that they are sorted from most important one to a least important one.
 - [ ] Come up with new questions based on the data that we have.
+- [ ] Create a graph to check if we have all the pieces of the chain where we will join the datasets on.
 
 ## Questions
 1)	Which countries are popular for being an Erasmus destination? Is there any difference between bachelor and master’s degrees?
