@@ -2,21 +2,18 @@
 
 Data visualization class at Instituto Superior de Técnico Lisbon.
 
-## TODO - checkpoint 1
+## TODO - checkpoint 1 FIX
 - [ ] Add other datasets (with links, and size)
 - [ ] Change the current dataset to RAW version
 - [ ] Print the new word doc again
 
-
 # Dataset
-- mapping of university code to city name - DONE
-- distance between cities
-- language family
-- cost of living
-- university rank
-- state general information (size, number of people)
-
----
+- [x] mapping of university code to city name - DONE
+- [x] distance between cities -> will be calculated from coordinates
+- [ ] language family - TODO
+- [x] cost of living
+- [ ] university rank 
+- [ ] state general information (size, number of people) - DONE
 
 ## Dataset Student_mobility (2009 - 2014)
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
@@ -173,12 +170,11 @@ Contains mapping between ISO (CZ) / ISO3 (CZE) and the country name, area, popul
 erasmus dataset -> erasmus code (get city name) -> this dataset
 ```
 
-~Contains information about the cities - most importantly **coordinates** as well as the country where the country belongs and also the **localized names** of the cities: e.g. localized names for the Prague are *PRG, Praag, Prag, Praga, Pragae, Prago, Prague, Praha* and so on. We could calculate the distances between the cities from the coordinates easily. I don't think that we will find a dataset of precalculated distances between cities as that would be 15000^2 = 225mil records.~~
+~~Contains information about the cities - most importantly **coordinates** as well as the country where the country belongs and also the **localized names** of the cities: e.g. localized names for the Prague are *PRG, Praag, Prag, Praga, Pragae, Prago, Prague, Praha* and so on. We could calculate the distances between the cities from the coordinates easily. I don't think that we will find a dataset of precalculated distances between cities as that would be 15000^2 = 225mil records.~~
 
 EDIT: The same information is inside the allCountries dataset which is bigger and therefore contains more cities.
-
-|       |       0 | 1                  | 2                  | 3           |        4 |         5 | 6   | 7     | 8   |   9 | 10   | 11   | 12      |   13 |     14 |   15 |   16 | 17                   | 18         |
-|------:|--------:|:-------------------|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------:|----------:|:----|:------|:----|----:|:-----|:-----|:--------|-----:|-------:|-----:|-----:|:---------------------|:-----------|
+| | | | | | | | | | | | | | | | | | | | |
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
 |  3924 | 2037712 | Dehui              | Dehui              | Chang-chia-wan,Dehui,Te-hui,Te-hui-chen,Tszhantszyavan',Tszhantszyavan’,Yao-men                                                                    |  44.5333 | 125.7     | P   | PPL   | CN  | nan | 05   | nan  | nan     |  nan | 108818 |  nan |  180 | Asia/Shanghai        | 2012-01-18 |
 | 19390 | 1610505 | Kaeng Khro         | Kaeng Khro         | Amphoe Kaeng Khlo,Amphoe Kaeng Khro,Kaeng Khlo,Kaeng Khro,แก้งคร้อ               |  16.1086 | 102.258   | P   | PPLA2 | TH  | nan | 26   | nan  | nan     |  nan |  29056 |  nan |  205 | Asia/Bangkok         | 2012-01-16 |
 |  7603 | 2635785 | Tipton             | Tipton             | typtwn,تیپتون                                                                    |  52.5296 |  -2.06773 | P   | PPL   | GB  | nan | ENG  | L7   | 41UF    |  nan |  47000 |  nan |  144 | Europe/London        | 2012-03-29 |
