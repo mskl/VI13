@@ -7,13 +7,32 @@ Data visualization class at Instituto Superior de Técnico Lisbon.
 - [ ] Change the current dataset to RAW version
 - [ ] Print the new word doc again
 
+## TODO - others
+- [ ] Restructure the questions that they are sorted from most important one to a least important one.
+- [ ] Come up with new questions based on the data that we have.
+
+## Questions
+1)	Which countries are popular for being an Erasmus destination? Is there any difference between bachelor and master’s degrees?
+    - [x] Original dataset
+2)	What is the flow of students doing Erasmus between countries?
+    - [x] Original dataset
+3)	Does distance from the home country to the Erasmus country matter?
+    - [x] Can be calculated from the coordinates
+4)	How does difference in cost of living in home and target country effect the selection?
+    - [x] food_price_monitoring, also the price index
+5)	Do students prefer countries with a language from the same language family as the language from their home country?
+    - [ ] Do we have a dataset?
+6)	Does gender effects the choice?
+    - [x] Original dataset
+
+
 # Dataset
 - [x] mapping of university code to city name - DONE
 - [x] distance between cities -> will be calculated from coordinates
 - [ ] language family - TODO
 - [x] cost of living
-- [ ] university rank 
-- [ ] state general information (size, number of people) - DONE
+- [ ] university rank - TODO
+- [x] state general information (size, number of people) - DONE
 
 ## Dataset Student_mobility (2009 - 2014)
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
