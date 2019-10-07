@@ -13,18 +13,21 @@ Data visualization class at Instituto Superior de Técnico Lisbon.
 - [ ] Create a graph to check if we have all the pieces of the chain where we will join the datasets on.
 
 ## Questions
-1)	Which countries are popular for being an Erasmus destination? Is there any difference between bachelor and master’s degrees?
+0)	What is the flow of students doing Erasmus between countries?
     - [x] Original dataset
-2)	What is the flow of students doing Erasmus between countries?
+1)	Which countries are popular for being an Erasmus destination? 
+    - [x] Original dataset
+0) Is there any difference between bachelor and master’s degrees?
+    - [x] Original dataset
+5)	Does gender effects the choice?
     - [x] Original dataset
 3)	Does distance from the home country to the Erasmus country matter?
     - [x] Can be calculated from the coordinates
+0) Does the city size of target and home university matter?
+    - [x] Geocity dataset 
 4)	How does difference in cost of living in home and target country effect the selection?
     - [x] food_price_monitoring, also the price index
-5)	Do students prefer countries with a language from the same language family as the language from their home country?
-    - [ ] Do we have a dataset?
-6)	Does gender effects the choice?
-    - [x] Original dataset
+
 
 
 # Dataset
