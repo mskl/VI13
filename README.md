@@ -12,6 +12,10 @@ CountrySending       | geocodedMobility.csv
 CountryReceiving     | geocodedMobility.csv 
 StudentIncomingCount | 
 StudentOutgoingCount | 
+StudentBachelorIncomingCount|
+StudentMasterIncomingCount|
+StudentPhDIncomingCount|
+StudentIncomingGender|
 CoordinatesSending   | geocodedMobility.csv 
 CoordinatesHosting   | geocodedMobility.csv 
 InstitutionSending   |  
