@@ -8,7 +8,7 @@ The Medium post: [Making a map with EU data on R: Erasmus exchanges by country
 ## Common columns in final datasets
 column name          | found in 
 -|-
-CountryHosting       | geocodedMobility.csv 
+CountrySending       | geocodedMobility.csv 
 CountryReceiving     | geocodedMobility.csv 
 StudentIncomingCount | 
 StudentOutgoingCount | 
