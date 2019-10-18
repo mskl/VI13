@@ -14,6 +14,8 @@ StudentIncomingCount |
 StudentOutgoingCount | 
 CoordinatesSending   | geocodedMobility.csv 
 CoordinatesHosting   | geocodedMobility.csv 
+InstitutionSending   |  
+InstitutionReceiving | 
 km                   | geocodedMobility.csv 
 
 
