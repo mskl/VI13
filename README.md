@@ -1,16 +1,21 @@
 # VI13 - Information Visualization
+> Data visualization class at Instituto Superior de Técnico Lisbon.
 
-Data visualization class at Instituto Superior de Técnico Lisbon.
+The Medium post: [Making a map with EU data on R: Erasmus exchanges by country
+](https://medium.com/@jules.beley/making-a-map-with-eu-data-on-r-erasmus-exchanges-by-country-3f5734dcd4ff)
 
-## TODO - checkpoint 1 FIX
-- [ ] Add other datasets (with links, and size)
-- [ ] Change the current dataset to RAW version
-- [ ] Print the new word doc again
 
-## TODO - others
-- [ ] Restructure the questions that they are sorted from most important one to a least important one.
-- [ ] Come up with new questions based on the data that we have.
-- [ ] Create a graph to check if we have all the pieces of the chain where we will join the datasets on.
+## Common columns in final datasets
+column name          | found in 
+-|-
+CountryHosting       | geocodedMobility.csv 
+CountryReceiving     | geocodedMobility.csv 
+StudentIncomingCount | 
+StudentOutgoingCount | 
+CoordinatesSending   | geocodedMobility.csv 
+CoordinatesHosting   | geocodedMobility.csv 
+km                   | geocodedMobility.csv 
+
 
 ## Questions
 0)	What is the flow of students doing Erasmus between countries?
@@ -28,16 +33,7 @@ Data visualization class at Instituto Superior de Técnico Lisbon.
 4)	How does difference in cost of living in home and target country effect the selection?
     - [x] food_price_monitoring, also the price index
 
-
-
-# Dataset
-- [x] mapping of university code to city name - DONE
-- [x] distance between cities -> will be calculated from coordinates
-- [ ] language family - TODO
-- [x] cost of living
-- [ ] university rank - TODO
-- [x] state general information (size, number of people) - DONE
-
+# Datasets
 ## Dataset Student_mobility (2009 - 2014)
 RAW datasets are available at [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset?q=Raw+data+of+Erasmus+student+mobility&ext_boolean=all&sort=). However only for the years 2009 - 2014. The latest 2013-14 dataset is available [here](https://data.europa.eu/euodp/en/data/dataset/erasmus-mobility-statistics-2013-14).
 
