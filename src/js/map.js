@@ -1498,7 +1498,8 @@ var countryFromCode = function(code) {
     return codes.find(function(id) {return id.numeric == code});
 }
 
-var mapdata = d3.map();
+var mapData = d3.map();
+
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
@@ -1510,8 +1511,8 @@ var promises = [
     // The outline of world states
     d3.json("data/map/countries-10m.json"),
     // The data to be used in the map
-    d3.tsv("data/map/map.tsv", function(d) {
-        mapdata.set(d.name, +d.value);
+    d3.csv("data/map/chloroplet-ratio.csv", function(d) {
+        mapData.set(d.country, parseFloat(d.sending) / parseFloat(d.receiving));
     }),
 ];
 
@@ -1525,9 +1526,7 @@ function ready([wr], reject) {
         .data(topojson.feature(wr, wr.objects.countries).features)
         .enter().append("path")
         .attr("fill", function (d) {
-            console.log(countryFromCode(d.id));
-            console.log("d.id", d.id);
-            console.log("d.properties.name", d.properties.name);
+            // console.log(countryFromCode(d.id));
             return '#'+Math.random().toString(16).substr(-6);
         })
         .attr("d", path);
