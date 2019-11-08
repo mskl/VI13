@@ -4,24 +4,8 @@
 The Medium post: [Making a map with EU data on R: Erasmus exchanges by country
 ](https://medium.com/@jules.beley/making-a-map-with-eu-data-on-r-erasmus-exchanges-by-country-3f5734dcd4ff)
 
-
-## Common columns in final datasets
-column name          | found in 
--|-
-CountrySending       | geocodedMobility.csv 
-CountryReceiving     | geocodedMobility.csv 
-StudentIncomingCount | 
-StudentOutgoingCount | 
-StudentBachelorIncomingCount|
-StudentMasterIncomingCount|
-StudentPhDIncomingCount|
-StudentIncomingGender|
-CoordinatesSending   | geocodedMobility.csv 
-CoordinatesHosting   | geocodedMobility.csv 
-InstitutionSending   |  
-InstitutionReceiving | 
-km                   | geocodedMobility.csv 
-
+## References - other works
+https://github.com/carboned4/V_I_2015_1
 
 ## Questions
 0)	What is the flow of students doing Erasmus between countries?
