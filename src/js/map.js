@@ -6,7 +6,7 @@ var svg = d3.select("svg"),
     height = +svg.attr("height");
 
 // Setup the mercator projection into the middle of the Europe
-var path = d3.geoPath().projection(d3.geoTransverseMercator().center([15,52]).scale(750).rotate([-10,0,0]));
+var path = d3.geoPath().projection(d3.geoTransverseMercator().center([17,52]).scale(750).rotate([-10,0,0]));
 
 var promises = [
     // The outline of world states
@@ -19,43 +19,41 @@ var promises = [
 ];
 
 // The color scheme
-var color = d3.scaleThreshold()
-    .domain(d3.range(0, 10))
-    .range(d3.schemeBlues[9]);
+var color = d3.scaleSequential().domain([0, 4])
+     .interpolator(d3.interpolateReds);
 
-/*
-var x = d3.scaleLinear().domain([0, 10]).rangeRound([600, 860]);
-var g = svg.append("g").attr("class", "key").attr("transform", "translate(0,40)");
-g.selectAll("rect")
-    .data(color.range().map(function(d) {
-        d = color.invertExtent(d);
-        if (d[0] == null)
-            d[0] = x.domain()[0];
-        if (d[1] == null)
-            d[1] = x.domain()[1];
-        return d;
-    }))
-    .enter().append("rect")
-    .attr("height", 8)
-    .attr("x", function(d) { return x(d[0]); })
-    .attr("width", function(d) { return x(d[1]) - x(d[0]); })
-    .attr("fill", function(d) { return color(d[0]); });
-g.append("text")
-    .attr("class", "caption")
-    .attr("x", x.range()[0])
+let legendWidth = 300;
+let legendHeight = 8;
+let legendTicks = 20;
+let legendMin = 0;
+let legendMax = 4;
+let legendStep = 0.25;
+let legendPosX = 400;
+let legendPosY = 20;
+let tickWidth = legendWidth / legendTicks;
+
+// Create the legend
+let legend = svg.append("g")
+    .attr("class", "legend")
+    .attr("transform", "translate(" + legendPosX + ", " + legendPosY + ")");
+
+legend.selectAll("rect")
+    .data(d3.range(legendMin, legendMax, legendStep)).enter()
+    .append("rect")
+    .attr("height", legendHeight)
+    .attr("x", function (d, i) {
+        return i*tickWidth;
+    })
+    .attr("width", tickWidth)
+    .attr("fill", function(d) {
+        return color(d);
+    });
+
+legend.append("text")
+    .attr("font-size", 11)
     .attr("y", -6)
-    .attr("fill", "#000")
-    .attr("text-anchor", "start")
-    .attr("font-weight", "bold")
-    .text("Unemployment rate");
-
-g.call(d3.axisBottom(x)
-    .tickSize(13)
-    .tickFormat(function(x, i) { return i ? x : x + "%"; })
-    .tickValues(color.domain()))
-    .select(".domain")
-    .remove();
- */
+    .attr("x", tickWidth/2)
+    .text("number of students incoming per one outgoing");
 
 // Load all of the promises and then call the ready funtion
 Promise.all(promises).then(ready);
@@ -71,16 +69,14 @@ function ready([outline], reject) {
                 let ratio = mapData.get(d.id);
                 return color(ratio);
             } catch (error) {
-                console.log(error);
+                // console.log(d.id, error);
             }
         }).attr("d", path)
-        .append("title")
-        .text(function(d) {
+        .append("title").text(function(d) {
             try {
                 return countryNames.get(d.id) + ": " + mapData.get(d.id).toFixed(2);
             } catch (error) {
-                console.log(error);
+                // console.log(d.id, error);
             }
         });
-
 }
