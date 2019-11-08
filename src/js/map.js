@@ -1512,22 +1512,32 @@ var promises = [
     d3.json("data/map/countries-10m.json"),
     // The data to be used in the map
     d3.csv("data/map/chloroplet-ratio.csv", function(d) {
-        mapData.set(d.country, parseFloat(d.sending) / parseFloat(d.receiving));
+        mapData.set(d.country, parseFloat(d.receiving) / parseFloat(d.sending));
     }),
 ];
+
+// The color scheme
+var color = d3.scaleThreshold()
+    .domain(d3.range(0, 10))
+    .range(d3.schemeBlues[9]);
 
 // Load all of the promises and then call the ready funtion
 Promise.all(promises).then(ready);
 
-function ready([wr], reject) {
+function ready([outline], reject) {
     svg.append("g")
         .attr("class", "counties")
         .selectAll("path")
-        .data(topojson.feature(wr, wr.objects.countries).features)
+        .data(topojson.feature(outline, outline.objects.countries).features)
         .enter().append("path")
         .attr("fill", function (d) {
-            // console.log(countryFromCode(d.id));
-            return '#'+Math.random().toString(16).substr(-6);
+            try {
+                let isoCode = countryFromCode(d.id).alpha2;
+                let ratio = mapData.get(isoCode);
+                return color(ratio);
+            } catch (error) {
+                return 'rgba(0, 0, 0, 0)';
+            }
         })
         .attr("d", path);
 }
