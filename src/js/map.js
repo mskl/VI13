@@ -5,8 +5,15 @@ var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
+// Square around the whole SVG
+svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "transparent")
+    .attr("stroke", "black");
+
 // Setup the mercator projection into the middle of the Europe
-var path = d3.geoPath().projection(d3.geoTransverseMercator().center([17,52]).scale(750).rotate([-10,0,0]));
+var path = d3.geoPath().projection(d3.geoTransverseMercator().center([18,54]).scale(750).rotate([-10,0,0]));
 
 var promises = [
     // The outline of world states
@@ -22,15 +29,14 @@ var promises = [
 var color = d3.scaleSequential().domain([0, 4])
      .interpolator(d3.interpolateReds);
 
-let legendWidth = 300;
-let legendHeight = 8;
-let legendTicks = 20;
+let legendWidth = 220;
+let legendTicks = 10;
 let legendMin = 0;
 let legendMax = 4;
-let legendStep = 0.25;
-let legendPosX = 400;
+let legendPosX = width - legendWidth - 20;
 let legendPosY = 20;
 let tickWidth = legendWidth / legendTicks;
+let legendHeight = tickWidth / 2;
 
 // Create the legend
 let legend = svg.append("g")
@@ -38,7 +44,8 @@ let legend = svg.append("g")
     .attr("transform", "translate(" + legendPosX + ", " + legendPosY + ")");
 
 legend.selectAll("rect")
-    .data(d3.range(legendMin, legendMax, legendStep)).enter()
+    .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
+    .enter()
     .append("rect")
     .attr("height", legendHeight)
     .attr("x", function (d, i) {
@@ -49,10 +56,27 @@ legend.selectAll("rect")
         return color(d);
     });
 
+legend.selectAll("text")
+    .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
+    .enter()
+    .append("text")
+    .attr("font-size", 8)
+    .attr("y", legendHeight - 3)
+    .attr("x", function (d, i) {
+        return i*tickWidth + 3;
+    })
+    .text(function (d, i) {
+        if (i % 3 == 0) {
+            return d.toFixed(1);
+        } else {
+            return "";
+        }
+    });
+
 legend.append("text")
     .attr("font-size", 11)
-    .attr("y", -6)
-    .attr("x", tickWidth/2)
+    .attr("y", -3)
+    .attr("x", 3)
     .text("number of students incoming per one outgoing");
 
 // Load all of the promises and then call the ready funtion
