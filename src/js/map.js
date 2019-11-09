@@ -17,7 +17,7 @@ var path = d3.geoPath().projection(d3.geoTransverseMercator().center([18,54]).sc
 
 var promises = [
     // The outline of world states
-    d3.json("data/map/countries-10m.json"),
+    d3.json("data/map/world-50m.v1.json"),
     // The data to be used in the map
     d3.csv("data/map/chloroplet-ratio.csv", function(d) {
         mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
@@ -29,12 +29,15 @@ var promises = [
 var color = d3.scaleSequential().domain([0, 4])
      .interpolator(d3.interpolateReds);
 
+// Editable options
 let legendWidth = 220;
 let legendTicks = 10;
 let legendMin = 0;
 let legendMax = 4;
-let legendPosX = width - legendWidth - 20;
 let legendPosY = 20;
+
+// Calculated stuff
+let legendPosX = width - legendWidth - 20;
 let tickWidth = legendWidth / legendTicks;
 let legendHeight = tickWidth / 2;
 
