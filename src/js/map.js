@@ -1,5 +1,6 @@
 let mapData = d3.map();
 let countryNames = d3.map();
+let coordinates = [];
 
 let mapSVG = d3.select("#map > svg"),
     width = +mapSVG.style("width").replace("px", ""),
@@ -12,8 +13,10 @@ mapSVG.append("rect")
     .attr("fill", "transparent")
     .attr("stroke", "black");
 
-// Setup the mercator projection into the middle of the Europe
-let path = d3.geoPath().projection(d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]));
+let selectedCountry = null;
+
+let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
+let path = d3.geoPath().projection(projection);
 
 let promises = [
     // The outline of world states
@@ -23,7 +26,14 @@ let promises = [
         mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
         countryNames.set(d.numeric, d.name);
     }),
+    // The coordinates
+    d3.csv("data/arrowmap/coordinates.csv", function(d) {
+        coordinates.push(d);
+    })
 ];
+
+let send = [14.3304032, 46.6103274];
+let receive = [4.4485103, 50.8498949];
 
 // The color scheme
 let color = d3.scaleSequential().domain([0, 4])
@@ -92,20 +102,56 @@ function ready([outline], reject) {
         .attr("class", "counties")
         .selectAll("path")
         .data(topojson.feature(outline, outline.objects.countries).features)
-        .enter().append("path")
+        .enter()
+        .append("path")
         .attr("fill", function (d) {
             try {
-                let ratio = mapData.get(d.id);
-                return color(ratio);
-            } catch (error) {
-                // console.log(d.id, error);
+                return color(mapData.get(d.id));
+            } catch (error) { /* console.log(d.id, error) */ }
+        })
+        .on('click', function (d) {
+            if (selectedCountry == d.id) {
+                selectedCountry = null;
+            } else {
+                selectedCountry = d.id;
+                drawLines(selectedCountry);
             }
-        }).attr("d", path)
+        })
+        .attr("d", path)
         .append("title").text(function(d) {
             try {
                 return countryNames.get(d.id) + ": " + mapData.get(d.id).toFixed(2);
-            } catch (error) {
-                // console.log(d.id, error);
-            }
+            } catch (error) { /* console.log(d.id, error); */ }
+        });
+}
+
+function drawLines(countryCode) {
+    try {
+        document.querySelector("#map > svg > g.lines").remove();
+    } catch (error) { }
+
+    mapSVG.append("g")
+        .attr("class", "lines")
+        .selectAll("line")
+        .data(coordinates.filter(function(d){
+            return d.sendingNumeric == countryCode || d.receivingNumeric == countryCode;
+        }))
+        .enter()
+        .append("line")
+        .attr("x1", function (d) {
+            return projection([d.sendLon, d.sendLat])[0]
+        })
+        .attr("y1", function (d) {
+            return projection([d.sendLon, d.sendLat])[1]
+        })
+        .attr("x2", function (d) {
+            return projection([d.receiveLon, d.receiveLat])[0]
+        })
+        .attr("y2", function (d) {
+            return projection([d.receiveLon, d.receiveLat])[1]
+        })
+        .attr("stroke", "rgba(0, 0, 0, 0.02)")
+        .attr("stroke-width", function () {
+            return 1;
         });
 }
