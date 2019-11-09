@@ -8,6 +8,9 @@
     stroke-linejoin: round;
 }
 
-rect {
-
+path:hover {
+    stroke: black;
+    stroke-width: 1;
+    stroke-opacity: 0.4;
+    cursor: pointer;
 }
