@@ -1,11 +1,9 @@
-/* Put our styles here */
-
 .chart {
+
 }
 
 h1{
     margin: 10px 0 10px 0;
-    font-size: ;
 }
 body{
     width: 1280px;
@@ -40,8 +38,6 @@ body{
 #parallel_set{
     background-color: #005cbf;
     width: 40%;
-
-
  }
 
 #barchart{
