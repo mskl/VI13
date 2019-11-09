@@ -32,9 +32,6 @@ let promises = [
     })
 ];
 
-let send = [14.3304032, 46.6103274];
-let receive = [4.4485103, 50.8498949];
-
 // The color scheme
 let color = d3.scaleSequential().domain([0, 4])
      .interpolator(d3.interpolateReds);
@@ -52,52 +49,16 @@ let tickWidth = legendWidth / legendTicks;
 let legendHeight = tickWidth / 2;
 
 // Create the legend
-let legend = mapSVG.append("g")
-    .attr("class", "legend")
-    .attr("transform", "translate(" + legendPosX + ", " + legendPosY + ")");
-
-legend.selectAll("rect")
-    .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
-    .enter()
-    .append("rect")
-    .attr("height", legendHeight)
-    .attr("x", function (d, i) {
-        return i*tickWidth;
-    })
-    .attr("width", tickWidth)
-    .attr("fill", function(d) {
-        return color(d);
-    });
-
-legend.selectAll("text")
-    .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
-    .enter()
-    .append("text")
-    .attr("font-size", 8)
-    .attr("fill", "black")
-    .attr("y", legendHeight - 3)
-    .attr("x", function (d, i) {
-        return i*tickWidth + 3;
-    })
-    .text(function (d, i) {
-        if (i % 3 === 0) {
-            return d.toFixed(1);
-        } else {
-            return "";
-        }
-    });
-
-legend.append("text")
-    .attr("fill", "black")
-    .attr("font-size", 11)
-    .attr("y", -3)
-    .attr("x", 3)
-    .text("number of students incoming per one outgoing");
+drawLegend();
 
 // Load all of the promises and then call the ready funtion
 Promise.all(promises).then(ready);
 
 function ready([outline], reject) {
+    drawOutline(outline);
+}
+
+function drawOutline(outline) {
     mapSVG.append("g")
         .attr("class", "counties")
         .selectAll("path")
@@ -110,9 +71,9 @@ function ready([outline], reject) {
             } catch (error) { /* console.log(d.id, error) */ }
         })
         .on('click', function (d) {
-            if (selectedCountry == d.id) {
-                clearLines();
+            if (selectedCountry === d.id) {
                 selectedCountry = null;
+                clearLines();
             } else {
                 selectedCountry = d.id;
                 drawLines(selectedCountry);
@@ -120,10 +81,10 @@ function ready([outline], reject) {
         })
         .attr("d", path)
         .append("title").text(function(d) {
-            try {
-                return countryNames.get(d.id) + ": " + mapData.get(d.id).toFixed(2);
-            } catch (error) { /* console.log(d.id, error); */ }
-        });
+        try {
+            return countryNames.get(d.id) + ": " + mapData.get(d.id).toFixed(2);
+        } catch (error) { /* console.log(d.id, error); */ }
+    });
 }
 
 function clearLines() {
@@ -158,5 +119,50 @@ function drawLines(countryCode) {
         .attr("stroke", "rgba(0, 0, 0, 0.02)")
         .attr("stroke-width", function () {
             return 1;
+        })
+        .attr("pointer-events", "none");
+}
+
+function drawLegend() {
+    let legend = mapSVG.append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(" + legendPosX + ", " + legendPosY + ")");
+
+    legend.selectAll("rect")
+        .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
+        .enter()
+        .append("rect")
+        .attr("height", legendHeight)
+        .attr("x", function (d, i) {
+            return i*tickWidth;
+        })
+        .attr("width", tickWidth)
+        .attr("fill", function(d) {
+            return color(d);
         });
+
+    legend.selectAll("text")
+        .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
+        .enter()
+        .append("text")
+        .attr("font-size", 8)
+        .attr("fill", "black")
+        .attr("y", legendHeight - 3)
+        .attr("x", function (d, i) {
+            return i*tickWidth + 3;
+        })
+        .text(function (d, i) {
+            if (i % 3 === 0) {
+                return d.toFixed(1);
+            } else {
+                return "";
+            }
+        });
+
+    legend.append("text")
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("y", -3)
+        .attr("x", 3)
+        .text("number of students incoming per one outgoing");
 }
