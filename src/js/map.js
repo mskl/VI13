@@ -111,6 +111,7 @@ function ready([outline], reject) {
         })
         .on('click', function (d) {
             if (selectedCountry == d.id) {
+                clearLines();
                 selectedCountry = null;
             } else {
                 selectedCountry = d.id;
@@ -125,10 +126,14 @@ function ready([outline], reject) {
         });
 }
 
-function drawLines(countryCode) {
+function clearLines() {
     try {
         document.querySelector("#map > svg > g.lines").remove();
     } catch (error) { }
+}
+
+function drawLines(countryCode) {
+    clearLines();
 
     mapSVG.append("g")
         .attr("class", "lines")
