@@ -1,32 +1,32 @@
-var mapData = d3.map();
-var countryNames = d3.map();
+let mapData = d3.map();
+let countryNames = d3.map();
 
-var svg = d3.select("#map"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
+let mapSVG = d3.select("#map > svg"),
+    width = +mapSVG.style("width").replace("px", ""),
+    height = +mapSVG.style("height").replace("px", "");
 
 // Square around the whole SVG
-svg.append("rect")
+mapSVG.append("rect")
     .attr("width", width)
     .attr("height", height)
     .attr("fill", "transparent")
     .attr("stroke", "black");
 
 // Setup the mercator projection into the middle of the Europe
-var path = d3.geoPath().projection(d3.geoTransverseMercator().center([18,54]).scale(750).rotate([-10,0,0]));
+let path = d3.geoPath().projection(d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]));
 
-var promises = [
+let promises = [
     // The outline of world states
     d3.json("data/map/world-50m.v1.json"),
     // The data to be used in the map
-    d3.csv("data/map/chloroplet-ratio.csv", function(d) {
+    d3.csv("data/map/chloroplet-ratio.csv", function (d) {
         mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
         countryNames.set(d.numeric, d.name);
     }),
 ];
 
 // The color scheme
-var color = d3.scaleSequential().domain([0, 4])
+let color = d3.scaleSequential().domain([0, 4])
      .interpolator(d3.interpolateReds);
 
 // Editable options
@@ -42,7 +42,7 @@ let tickWidth = legendWidth / legendTicks;
 let legendHeight = tickWidth / 2;
 
 // Create the legend
-let legend = svg.append("g")
+let legend = mapSVG.append("g")
     .attr("class", "legend")
     .attr("transform", "translate(" + legendPosX + ", " + legendPosY + ")");
 
@@ -64,12 +64,13 @@ legend.selectAll("text")
     .enter()
     .append("text")
     .attr("font-size", 8)
+    .attr("fill", "black")
     .attr("y", legendHeight - 3)
     .attr("x", function (d, i) {
         return i*tickWidth + 3;
     })
     .text(function (d, i) {
-        if (i % 3 == 0) {
+        if (i % 3 === 0) {
             return d.toFixed(1);
         } else {
             return "";
@@ -77,6 +78,7 @@ legend.selectAll("text")
     });
 
 legend.append("text")
+    .attr("fill", "black")
     .attr("font-size", 11)
     .attr("y", -3)
     .attr("x", 3)
@@ -86,7 +88,7 @@ legend.append("text")
 Promise.all(promises).then(ready);
 
 function ready([outline], reject) {
-    svg.append("g")
+    mapSVG.append("g")
         .attr("class", "counties")
         .selectAll("path")
         .data(topojson.feature(outline, outline.objects.countries).features)
