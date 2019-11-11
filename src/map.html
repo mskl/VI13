@@ -16,6 +16,33 @@
 </head>
 
 <body>
+    <script>
+        const studentDirectionEnum = Object.freeze({"incoming":1, "outgoing": 2});
+        var studentDirection = studentDirectionEnum.incoming;
+
+        // Toggle the student variable
+        function toggleStudentDirection() {
+            if (studentDirection === studentDirectionEnum.incoming) {
+                studentDirection = studentDirectionEnum.outgoing;
+                document.querySelector("#directionText").textContent = "Outgoing students."
+            } else {
+                studentDirection = studentDirectionEnum.incoming;
+                document.querySelector("#directionText").textContent = "Incoming students."
+            }
+            drawLines(selectedCountry);
+        }
+    </script>
+
+    <label class="switch">
+        <input type="checkbox", onclick="toggleStudentDirection();">
+        <span class="slider"></span>
+    </label>
+
+    <div id="directionText">
+        Foo.
+    </div>
+
+
     <div id="map" style="max-width: 60%; height: 400px">
        <svg width="100%" height="100%">
            <!-- the map -->

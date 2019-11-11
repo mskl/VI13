@@ -14,7 +14,6 @@ mapSVG.append("rect")
     .attr("stroke", "black");
 
 let selectedCountry = null;
-
 let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let path = d3.geoPath().projection(projection);
 
@@ -100,7 +99,12 @@ function drawLines(countryCode) {
         .attr("class", "lines")
         .selectAll("line")
         .data(coordinates.filter(function(d){
-            return d.sendingNumeric == countryCode || d.receivingNumeric == countryCode;
+            if (studentDirection === studentDirectionEnum.incoming) {
+                return d.receivingNumeric === countryCode;
+            } else {
+                return d.sendingNumeric === countryCode;
+            }
+
         }))
         .enter()
         .append("line")
