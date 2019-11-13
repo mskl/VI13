@@ -1,25 +1,26 @@
-var setsSVG = d3.select("#parallel_set > svg"),
-    setsWidth = +setsSVG.style("width").replace("px", ""),
-    setsHeight = +setsSVG.style("height").replace("px", "");
+var selectedNode;
+var previousNodeColor;
+var linksToSelectedNode;
+var selectedLink;
+
+
+var svg = d3.select("#parallel_set > svg"),
+    setsWidth = +svg.style("width").replace("px", ""),
+    setsHeight = +svg.style("height").replace("px", "");
 
 // Square around the whole SVG
-setsSVG.append("rect")
+svg.append("rect")
     .attr("width", setsWidth)
     .attr("height", setsHeight)
     .attr("fill", "transparent")
     .attr("stroke", "black");
 
-
-const width = 500;
-const height = 600;
-
-var formatNumber = d3.format(",.0f"),
+let formatNumber = d3.format(",.0f"),
     format = function(d) { return formatNumber(d) + " students"; },
-    color = d3.scaleOrdinal(d3.schemeCategory10);
+    parallelsets_color = d3.scaleOrdinal(d3.schemeCategory10);
 
-
-d3.json("degree_allnodes.json").then(function (data) {
-    degree_data = data
+d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
+    degree_data = data;
     gen_vis();
 });
 
@@ -51,6 +52,7 @@ function gen_vis() {
         .attr("d", d3.sankeyLinkHorizontal())
         .attr("stroke-width", function(d) { return Math.max(1, d.width); });
 
+
     // link hover values
     link.append("title")
         .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + format(d.value); });
@@ -65,8 +67,12 @@ function gen_vis() {
         .attr("y", function(d) { return d.y0; })
         .attr("height", function(d) { return d.y1 - d.y0; })
         .attr("width", function(d) { return d.x1 - d.x0; })
-        .attr("fill", function(d) { return color(d.name.replace(/ .*/, "")); })
-        .attr("stroke", "#000");
+        .attr("fill", function(d) { return parallelsets_color(d.name.replace(/ .*/, "")); })
+        .attr("title", function (d) {return d.name + d.index})
+        .attr("stroke", "#000")
+        .on("mouseover", function(d){
+        dispatch.call("hoverNode", d, d)
+    });
 
     node.append("text")
         .attr("x", function(d) { return d.x0 - 6; })
@@ -90,3 +96,23 @@ function gen_vis() {
         link.attr("d", path);
     }
 }
+
+var dispatch = d3.dispatch("hoverNode");
+
+dispatch.on("hoverNode", function(node){
+    if (selectedNode != null){
+        selectedNode.attr("fill", parallelsets_color(node.name.replace(/ .*/, "")));
+    }
+    selectedNode = d3.select("rect[title=\'" + node.name + node.index + "\']");
+    //previousColor = selectedNode.style.background;
+    selectedNode.attr("fill","black");
+    linksToSelectedNode = node.sourceLinks.concat(node.targetLinks)
+    for (link in linksToSelectedNode){
+
+        console.log(link.source);
+        var htmlLink = d3.select("path[title=\'" + link.source.name + " → " + link.target.name + "\n" + format(d.value) + "\']")
+        htmlLink.attr("stroke-opacity", 0.6);
+
+    }
+    
+});

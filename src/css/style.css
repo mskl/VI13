@@ -33,7 +33,7 @@ body {
 }
 
 #map {
-    width: 60%;
+    width: 50%;
     fill: transparent;
 }
 
@@ -51,8 +51,7 @@ body {
 }
 
 #parallel_set {
-    background-color: #005cbf;
-    width: 40%;
+    width: 50%;
  }
 
 #barchart {
