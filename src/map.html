@@ -19,29 +19,52 @@
     <script>
         const studentDirectionEnum = Object.freeze({"incoming":1, "outgoing": 2});
         var studentDirection = studentDirectionEnum.incoming;
+        var dispatch = d3.dispatch("stateHoverEvent", "stateSelectedEvent", "studentDirectionEvent");
 
-        // Toggle the student variable
-        function toggleStudentDirection() {
-            if (studentDirection === studentDirectionEnum.incoming) {
-                studentDirection = studentDirectionEnum.outgoing;
-                document.querySelector("#directionText").textContent = "Outgoing students."
-            } else {
-                studentDirection = studentDirectionEnum.incoming;
-                document.querySelector("#directionText").textContent = "Incoming students."
-            }
-            drawLines(selectedCountry);
-        }
+        dispatch.on("stateHoverEvent", function(state){
+            alert(state);
+        });
+
+        dispatch.on("stateSelectedEvent", function(state){
+            alert(state);
+        });
+
+        dispatch.on("studentDirectionEvent", function(direction) {
+            alert(direction);
+        });
     </script>
 
-    <label class="switch">
-        <input type="checkbox", onclick="toggleStudentDirection();">
-        <span class="slider"></span>
-    </label>
+    student direction:
+    <script>
+        // Direction changed
+        function changedDropdownDirection() {
+            let dropdown = document.getElementById("dropdown_direction");
+            let dropdownValue = dropdown.value;
 
-    <div id="directionText">
-        Foo.
-    </div>
+            dispatch.call('studentDirectionEvent', dropdownValue, dropdownValue);
+        }
+    </script>
+    <select id="dropdown_direction" onchange="changedDropdownDirection()">
+        <option value="incoming">Incoming</option>
+        <option value="outgoing">Outgoing</option>
+    </select>
 
+    selected country:
+    <script>
+        function changedDropdownCountry() {
+            let dropdown = document.getElementById("dropdown_country");
+            let dropdownValue = dropdown.value;
+
+            dispatch.call('studentDirectionEvent', dropdownValue, dropdownValue);
+        }
+    </script>
+    <select id="dropdown_country" onchange="changedDropdownCountry()">
+        <option value="cz">Czechia</option>
+        <option value="sk">Slovakia</option>
+        <option value="en">England</option>
+        <option value="sw">Sweden</option>
+        <option value="fi">Finland</option>
+    </select>
 
     <div id="map" style="max-width: 60%; height: 400px">
        <svg width="100%" height="100%">
