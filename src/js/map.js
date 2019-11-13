@@ -67,7 +67,9 @@ function drawOutline(outline) {
         .attr("fill", function (d) {
             try {
                 return color(mapData.get(d.id));
-            } catch (error) { /* console.log(d.id, error) */ }
+            } catch (error) {
+                /* console.log(d.id, error) */
+            }
         })
         .on('click', function (d) {
             if (selectedCountry === d.id) {
