@@ -1,5 +1,7 @@
+// numeric -> ratio
 let mapData = d3.map();
-let countryNames = d3.map();
+let countryData = d3.map();
+let codeToNumeric = d3.map();
 let coordinates = [];
 
 let mapSVG = d3.select("#map > svg"),
@@ -13,7 +15,6 @@ mapSVG.append("rect")
     .attr("fill", "transparent")
     .attr("stroke", "black");
 
-let selectedCountry = null;
 let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let path = d3.geoPath().projection(projection);
 
@@ -23,7 +24,8 @@ let promises = [
     // The data to be used in the map
     d3.csv("data/map/chloroplet-ratio.csv", function (d) {
         mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
-        countryNames.set(d.numeric, d.name);
+        countryData.set(d.numeric, d);
+        codeToNumeric.set(d.country, d.numeric);
     }),
     // The coordinates
     d3.csv("data/arrowmap/coordinates.csv", function(d) {
@@ -54,7 +56,23 @@ drawLegend();
 Promise.all(promises).then(ready);
 
 function ready([outline], reject) {
+    // Add the states to a country dropdown menu
+    populateCountryList();
+
+    // Draw the map outline
     drawOutline(outline);
+}
+
+function populateCountryList() {
+    let select = document.getElementById("dropdown_country");
+
+    for(let i = 0; i < countryData.values().length; i++) {
+        let opt = countryData.values()[i];
+        let el = document.createElement("option");
+        el.textContent = opt.name;
+        el.value = opt.country.toLocaleLowerCase();
+        select.appendChild(el);
+    }
 }
 
 function drawOutline(outline) {
@@ -73,25 +91,28 @@ function drawOutline(outline) {
         })
         .on('click', function (d) {
             if (selectedCountry === d.id) {
-                selectedCountry = null;
-                clearLines();
+                dispatch.call('stateSelectedEvent', "null", "null");
             } else {
-                selectedCountry = d.id;
-                drawLines(selectedCountry);
+                dispatch.call('stateSelectedEvent', d.id, d.id);
+
             }
         })
         .attr("d", path)
         .append("title").text(function(d) {
         try {
-            return countryNames.get(d.id) + ": " + mapData.get(d.id).toFixed(2);
-        } catch (error) { /* console.log(d.id, error); */ }
+            return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
+        } catch (error) {
+            /* console.log(d.id, error); */
+        }
     });
 }
 
 function clearLines() {
     try {
         document.querySelector("#map > svg > g.lines").remove();
-    } catch (error) { }
+    } catch (error) {
+
+    }
 }
 
 function drawLines(countryCode) {
@@ -101,7 +122,7 @@ function drawLines(countryCode) {
         .attr("class", "lines")
         .selectAll("line")
         .data(coordinates.filter(function(d){
-            if (studentDirection === studentDirectionEnum.incoming) {
+            if (studentDirection === "incoming") {
                 return d.receivingNumeric === countryCode;
             } else {
                 return d.sendingNumeric === countryCode;
