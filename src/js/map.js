@@ -91,7 +91,7 @@ function drawOutline(outline) {
         })
         .on('click', function (d) {
             if (selectedCountry === d.id) {
-                dispatch.call('stateSelectedEvent', "null", "null");
+                dispatch.call('stateSelectedEvent', "000", "000");
             } else {
                 dispatch.call('stateSelectedEvent', d.id, d.id);
 
@@ -192,4 +192,10 @@ function drawLegend() {
         .attr("y", -3)
         .attr("x", 3)
         .text("number of students incoming per one outgoing");
+}
+
+function assert(condition, message) {
+    if (!condition) {
+        throw message || "Assertion failed";
+    }
 }
