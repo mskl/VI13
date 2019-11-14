@@ -8,8 +8,10 @@
   <meta name="description" content="The HTML5 Herald">
   <meta name="author" content="SitePoint">
 
-    <link rel="stylesheet" href="css/style.css">
-
+  <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/barchart.js"></script>
+  <script src="js/boxplot.js"></script>
 
 </head>
 
@@ -23,7 +25,12 @@
       <div class="chart" id="map"><p>I am a map</p></div>
       <div class="chart" id="parallel_set"><p>I am a parallel set</p></div>
     </div>
-    <div id="second-row"> <div class="chart" id="barchart"><p>I am the barchart</p></div>
+    <div id="second-row">
+      <div class="chart" id="barchart">
+        <span class="btn" id="col">COL</span>
+        <span class="btn" id="rp">RP</span>
+        <span class="btn" id="bp">BP</span>
+      </div>
       <div class="chart" id="boxplot"> <p>I am a boxplot</p></div>
     </div>
 

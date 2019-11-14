@@ -5,7 +5,6 @@
 
 h1{
     margin: 10px 0 10px 0;
-    font-size: ;
 }
 body{
     width: 1280px;
@@ -45,13 +44,14 @@ body{
  }
 
 #barchart{
-    background-color: pink;
+    background-color: white;
     width: 50%;
+    height: 400px;
 
 }
 
 #boxplot{
-    background-color: yellow;
+    background-color: white;
     width: 50%;
-
+    height: 400px;
 }
