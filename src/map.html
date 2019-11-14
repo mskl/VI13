@@ -1,17 +1,26 @@
+<!-- source: https://bl.ocks.org/denisemauldin/3436a3ae06f73a492228059a515821fe -->
 <!doctype html>
-
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Chloropleth map</title>
 
-    <!---
-      <link rel="stylesheet" href="css/style.css?v=1.0">
-    --->
+    <!-- stylesheets -->
+    <link rel="stylesheet" href="css/map.css">
+
+    <!-- js libraries -->
+    <script src="libs/d3.v5.min.js"></script>
+    <script src="libs/topojson.v2.min.js"></script>
 </head>
 
 <body>
-<script src="libs/d3.v5.min.js"></script>
-<h1>Hello world!</h1>
+    <div id="map" style="max-width: 60%; height: 400px">
+       <svg width="100%" height="100%">
+           <!-- the map -->
+       </svg>
+    </div>
+    <script src="js/map.js"></script>
 </body>
 </html>
+
+

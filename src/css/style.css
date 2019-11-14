@@ -1,14 +1,16 @@
-/* Put our styles here */
-
 .chart {
+
 }
 
-h1{
+h1 {
     margin: 10px 0 10px 0;
 }
-body{
-    width: 1280px;
-    height: 720px;
+
+body {
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
 }
 
 .flex-container {
@@ -16,32 +18,65 @@ body{
     flex-wrap: wrap;
     flex-direction: column;
     width: 100%;
-    height: 663px;
+    height: 100%;
 }
 
-#first-row{
+#header, #first-row, #second-row {
     display: flex;
     width: 100%;
-    height: 60%;
 }
+
+#header {
+    height: 5%;
+    overflow: hidden;
+    display: inline-block;
+    background-color: lightgray;
+}
+
+#header > h1 {
+    display: block;
+    float: left;
+    padding-left: 0.5em;
+}
+
+#header > #options {
+    padding-top: 1%;
+    padding-right: 0.5em;
+    display: block;
+    float: right;
+}
+
+#first-row {
+    height: 55%;
+}
+
 #second-row{
-    display: flex;
-    width: 100%;
     height: 40%;
 }
-#map{
-    background-color: #1c7430;
+
+#map {
     width: 60%;
-
-
+    fill: transparent;
 }
 
-#parallel_set{
+#map.states {
+    fill: none;
+    stroke: #fff;
+    stroke-linejoin: round;
+}
+
+#map path:hover {
+    stroke: black;
+    stroke-width: 1;
+    stroke-opacity: 0.4;
+    cursor: pointer;
+}
+
+#parallel_set {
     background-color: #005cbf;
     width: 40%;
-
-
  }
+
 
 #barchart{
     background-color: white;
