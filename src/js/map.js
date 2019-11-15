@@ -2,7 +2,6 @@
 let mapData = d3.map();
 let countryData = d3.map();
 let codeToNumeric = d3.map();
-let coordinates = [];
 
 let mapSVG = d3.select("#map > svg"),
     width = +mapSVG.style("width").replace("px", ""),
@@ -17,6 +16,22 @@ mapSVG.append("rect")
 
 let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let path = d3.geoPath().projection(projection);
+let color = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
+
+let countryCenterCoordinates = d3.map();    // Center of country
+d3.csv("data/map/countrypos.csv", function (d) {
+    countryCenterCoordinates.set(d.country.toLowerCase(), {"long": d.long, "lat": d.lat})
+});
+
+let countryStudentFlows;                    // "Correlation" counts for each pair
+d3.csv("data/map/corstudentcount.csv").then(function (data) {
+    countryStudentFlows = data
+});
+
+let detailedCoordinates;                    // Coords for each university
+d3.csv("data/map/coordinates.csv").then(function (data) {
+    detailedCoordinates = data;
+});
 
 let promises = [
     // The outline of world states
@@ -25,17 +40,9 @@ let promises = [
     d3.csv("data/map/chloroplet-ratio.csv", function (d) {
         mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
         countryData.set(d.numeric, d);
-        codeToNumeric.set(d.country, d.numeric);
-    }),
-    // The coordinates
-    d3.csv("data/arrowmap/coordinates.csv", function(d) {
-        coordinates.push(d);
+        codeToNumeric.set(d.country.toLowerCase(), d.numeric);
     })
 ];
-
-// The color scheme
-let color = d3.scaleSequential().domain([0, 4])
-     .interpolator(d3.interpolateReds);
 
 // Editable options
 let legendWidth = 220;
@@ -78,7 +85,7 @@ function drawOutline(outline) {
             }
         })
         .on('click', function (d) {
-            if (codeToNumeric.get(selectedCountry.toUpperCase()) === d.id) {
+            if (codeToNumeric.get(selectedCountry) === d.id) {
                 events.call('stateSelectedEvent', "", "");
             } else {
                 let countryShortcut = countryData.get(d.id).country.toLowerCase();
@@ -113,17 +120,67 @@ function clearLines() {
     }
 }
 
+function drawLines2(code="at") {
+    // Clear all of the lines in the map
+    clearLines();
+
+    // Convert the country shortcode into a numeric
+    let numeric = codeToNumeric.get(code);
+
+    let incoming = d3.map();
+    countryStudentFlows.map(function(d) {incoming.set(d["country"], d[code])});
+    let incomingArray = incoming.values().map(function (d, i) {
+        return [Object.keys(incoming)[i], d]
+    });
+
+    let outgoing = d3.map(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
+    delete outgoing["country"];
+    let outgoingArray = outgoing.values().map(function (d, i) {
+        return [Object.keys(outgoing)[i], d]
+    });
+
+    if (studentDirection === "incoming") {
+        mapSVG.append("g")
+            .attr("class", "lines")
+            .selectAll("line")
+            .data(incomingArray)
+            .enter()
+            .append("line")
+            .attr("x1", function (d) {
+                return projection([countryCenterCoordinates.get(code).lat, countryCenterCoordinates.get(code).long])[0];
+            })
+            .attr("y1", function (d) {
+                return projection([countryCenterCoordinates.get(code).lat, countryCenterCoordinates.get(code).long])[1];
+            })
+            .attr("x2", function (d) {
+                return projection([countryCenterCoordinates.get(d[0].replace("$", "")).lat,
+                    countryCenterCoordinates.get(d[0].replace("$", "")).long])[0];
+            })
+            .attr("y2", function (d) {
+                return projection([countryCenterCoordinates.get(d[0].replace("$", "")).lat,
+                    countryCenterCoordinates.get(d[0].replace("$", "")).long])[1];
+            })
+            .attr("stroke", "rgba(0, 0, 0, 1)")
+            .attr("stroke-width", function (d) {
+                return d[1] / 100.0;
+            })
+            .attr("pointer-events", "none");
+    } else {
+
+    }
+}
+
 function drawLines(countryShortcut) {
     // Clear all of the lines in the map
     clearLines();
 
     // Convert the country shortcode into a numeric
-    let countryCode = codeToNumeric.get(countryShortcut.toUpperCase());
+    let countryCode = codeToNumeric.get(countryShortcut);
 
     mapSVG.append("g")
         .attr("class", "lines")
         .selectAll("line")
-        .data(coordinates.filter(function(d){
+        .data(detailedCoordinates.filter(function(d){
             if (studentDirection === "incoming") {
                 return d.receivingNumeric === countryCode;
             } else {
