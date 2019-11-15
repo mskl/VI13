@@ -120,57 +120,50 @@ function clearLines() {
     }
 }
 
-function drawLines2(code="at") {
+function drawLines(code) {
     // Clear all of the lines in the map
     clearLines();
 
     // Convert the country shortcode into a numeric
     let numeric = codeToNumeric.get(code);
+    
+    let incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
+    let outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
+    outgoing.splice(0, 1);
 
-    let incoming = d3.map();
-    countryStudentFlows.map(function(d) {incoming.set(d["country"], d[code])});
-    let incomingArray = incoming.values().map(function (d, i) {
-        return [Object.keys(incoming)[i], d]
-    });
+    let codeCoords = projection([countryCenterCoordinates.get(code).lat, countryCenterCoordinates.get(code).long]);
 
-    let outgoing = d3.map(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
-    delete outgoing["country"];
-    let outgoingArray = outgoing.values().map(function (d, i) {
-        return [Object.keys(outgoing)[i], d]
-    });
+    mapSVG.append("g")
+        .attr("class", "lines")
+        .selectAll("line")
+        .data(function () {
+            if (studentDirection === "incoming") {
+                return incoming;
+            } else {
+                return outgoing;
+            }
+        })
+        .enter()
+        .append("line")
+        .attr("x1", codeCoords[0])
+        .attr("y1", codeCoords[1])
+        .attr("x2", function (d) {
+            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
+            return targetCoords[0];
+        })
+        .attr("y2", function (d) {
+            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
+            return targetCoords[1];
+        })
+        .attr("stroke", "rgba(0, 0, 0, 1)")
+        .attr("stroke-width", function (d) {
+            return d[1] / 100.0;
+        })
+        .attr("pointer-events", "none");
 
-    if (studentDirection === "incoming") {
-        mapSVG.append("g")
-            .attr("class", "lines")
-            .selectAll("line")
-            .data(incomingArray)
-            .enter()
-            .append("line")
-            .attr("x1", function (d) {
-                return projection([countryCenterCoordinates.get(code).lat, countryCenterCoordinates.get(code).long])[0];
-            })
-            .attr("y1", function (d) {
-                return projection([countryCenterCoordinates.get(code).lat, countryCenterCoordinates.get(code).long])[1];
-            })
-            .attr("x2", function (d) {
-                return projection([countryCenterCoordinates.get(d[0].replace("$", "")).lat,
-                    countryCenterCoordinates.get(d[0].replace("$", "")).long])[0];
-            })
-            .attr("y2", function (d) {
-                return projection([countryCenterCoordinates.get(d[0].replace("$", "")).lat,
-                    countryCenterCoordinates.get(d[0].replace("$", "")).long])[1];
-            })
-            .attr("stroke", "rgba(0, 0, 0, 1)")
-            .attr("stroke-width", function (d) {
-                return d[1] / 100.0;
-            })
-            .attr("pointer-events", "none");
-    } else {
-
-    }
 }
 
-function drawLines(countryShortcut) {
+function drawLinesDetailed(countryShortcut) {
     // Clear all of the lines in the map
     clearLines();
 

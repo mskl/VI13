@@ -4,16 +4,50 @@ var selectedCountry = "";
 
 var events = d3.dispatch("stateHoverEvent", "stateSelectedEvent", "studentDirectionEvent");
 
+/**
+ * Assert that the country code is valid. Empty is saved as "".
+ * @param code Country code in 2 lowercased letters such as "cz".
+ */
+function assertStateCode(code) {
+    //
+    if (!["", "at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr",
+        "gb", "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv", "mt",
+        "nl", "no", "pl", "pt", "ro", "se", "si", "sk", "tr"].includes(code)) {
+        throw("Invalid country code \"" + code + "\".");
+    }
+}
+
+/**
+ * Assert that the direction is correct string.
+ * @param direction Direction of the student. Values "incoming" or "outgoing".
+ */
+function assertStudentDirection(direction) {
+    // Assert that the student direction is correct string
+    if (!["incoming", "outgoing"].includes(direction)) {
+        throw("Invalid student direction \"" + code + "\".");
+    }
+}
+
+/**
+ * Is called when hovered over a state.
+ */
 events.on("stateHoverEvent", function(state){
     console.log("StateHoverEvent called with \"" + state + "\"");
+    assertStateCode(code);
 });
 
-events.on("stateSelectedEvent", function(countryShortcut){
-    console.log("StateSelectedEvent called with \"" + countryShortcut + "\"");
-    selectedCountry = countryShortcut;
+/**
+ * Is called when a state is selected.
+ */
+events.on("stateSelectedEvent", function(code){
+    console.log("StateSelectedEvent called with \"" + code + "\"");
+    assertStateCode(code);
+
+    // Update the global variable
+    selectedCountry = code;
 
     // Draw the lines if the selected state is not null
-    if (countryShortcut === "") {
+    if (code === "") {
         clearLines();
         document.getElementById("dropdown_country").value = "";
     } else {
@@ -22,8 +56,14 @@ events.on("stateSelectedEvent", function(countryShortcut){
     }
 });
 
+/**
+ * Is called when direction of the students is called.
+ */
 events.on("studentDirectionEvent", function(direction) {
     console.log("StudentDirectionEvent called with \"" + direction + "\"");
+    assertStudentDirection(direction);
+
+    // Update the global variable
     studentDirection = direction;
 
     // Set the dropdown menu
