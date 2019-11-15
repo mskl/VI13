@@ -155,9 +155,9 @@ function drawLines(code) {
             let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
             return targetCoords[1];
         })
-        .attr("stroke", "rgba(0, 0, 0, 1)")
+        .attr("stroke", "rgba(0, 0, 0, 0.8)")
         .attr("stroke-width", function (d) {
-            return d[1] / 100.0;
+            return d[1] / 200;
         })
         .attr("pointer-events", "none");
 
