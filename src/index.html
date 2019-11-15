@@ -7,12 +7,17 @@
   <title>VI13 project</title>
   <meta name="description" content="InfoViz Project">
 
-  <!-- JS libs -->
+  <!-- stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- js libs -->
   <script src="libs/d3.v5.min.js"></script>
   <script src="libs/topojson.v2.min.js"></script>
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css">
+  <!-- custom js functions -->
+  <script src="js/func/events.js"></script>
+  <script src="js/func/assert.js"></script>
+  <script src="js/func/populateCountryList.js"></script>
 </head>
 
 <body>
@@ -21,47 +26,22 @@
     <div id="header">
       <h1>ERASMUS student flow.</h1>
       <div id="options">
-        <script>
-          const studentDirectionEnum = Object.freeze({"incoming":1, "outgoing": 2});
+        <div id="student_direction" style="display: inline-block">
+          student direction:
+          <script src="js/func/changeDropdownDirection.js"></script>
+          <select id="dropdown_direction" onchange="changeDropdownDirection()">
+            <option value="incoming">Incoming</option>
+            <option value="outgoing">Outgoing</option>
+          </select>
+        </div>
 
-          var studentDirection = studentDirectionEnum.incoming;
-          var selectedCountry = "cz";
-
-          function changedDropdownDirection() {
-            let e = document.getElementById("dropdown_direction");
-            let selected = e.options[e.selectedIndex].value;
-
-            if (selected === "incoming") {
-              studentDirection = studentDirectionEnum.incoming;
-            } else if (selected === "outgoing") {
-              studentDirection = studentDirectionEnum.outgoing;
-            }
-            alert(selected);
-          }
-
-          function changedDropdownCountry() {
-            let e = document.getElementById("dropdown_country");
-            let selected = e.options[e.selectedIndex].value;
-
-            selectedCountry = selected;
-            alert(selectedCountry);
-          }
-        </script>
-
-        student direction:
-        <select id="dropdown_direction", onchange="changedDropdownDirection()">
-          <option value="incoming">Incoming</option>
-          <option value="outgoing">Outgoing</option>
-        </select>
-
-        selected country:
-        <select id="dropdown_country", onchange="changedDropdownCountry()">
-          <option value="cz">Czechia</option>
-          <option value="sk">Slovakia</option>
-          <option value="en">England</option>
-          <option value="sw">Sweden</option>
-          <option value="fi">Finland</option>
-        </select>
+        <div id="selected_country" style="display: inline-block">
+          selected country:
+          <script src="js/func/changeDropdownCountry.js"></script>
+          <select id="dropdown_country" onchange="changeDropdownCountry()">
+            <option value="">none</option>
+          </select>
+        </div>
       </div>
     </div>
 

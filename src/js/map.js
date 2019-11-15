@@ -63,18 +63,6 @@ function ready([outline], reject) {
     drawOutline(outline);
 }
 
-function populateCountryList() {
-    let select = document.getElementById("dropdown_country");
-
-    for(let i = 0; i < countryData.values().length; i++) {
-        let opt = countryData.values()[i];
-        let el = document.createElement("option");
-        el.textContent = opt.name;
-        el.value = opt.country.toLocaleLowerCase();
-        select.appendChild(el);
-    }
-}
-
 function drawOutline(outline) {
     mapSVG.append("g")
         .attr("class", "counties")
@@ -90,33 +78,47 @@ function drawOutline(outline) {
             }
         })
         .on('click', function (d) {
-            if (selectedCountry === d.id) {
-                dispatch.call('stateSelectedEvent', "000", "000");
+            if (codeToNumeric.get(selectedCountry.toUpperCase()) === d.id) {
+                events.call('stateSelectedEvent', "", "");
             } else {
-                dispatch.call('stateSelectedEvent', d.id, d.id);
-
+                let countryShortcut = countryData.get(d.id).country.toLowerCase();
+                events.call('stateSelectedEvent', countryShortcut, countryShortcut);
             }
+        })
+        .on('mouseover', function (d) {
+            try {
+                let code = countryData.get(d.id).country.toLowerCase();
+                events.call('stateHoverEvent', code, code);
+            } catch (error) {
+                /* console.log(d.id, error); */
+            }
+
         })
         .attr("d", path)
         .append("title").text(function(d) {
-        try {
-            return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
-        } catch (error) {
-            /* console.log(d.id, error); */
-        }
-    });
+            try {
+                return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
+            } catch (error) {
+                /* console.log(d.id, error); */
+
+            }
+        });
 }
 
 function clearLines() {
     try {
         document.querySelector("#map > svg > g.lines").remove();
     } catch (error) {
-
+        /* console.log(d.id, error); */
     }
 }
 
-function drawLines(countryCode) {
+function drawLines(countryShortcut) {
+    // Clear all of the lines in the map
     clearLines();
+
+    // Convert the country shortcode into a numeric
+    let countryCode = codeToNumeric.get(countryShortcut.toUpperCase());
 
     mapSVG.append("g")
         .attr("class", "lines")
@@ -192,10 +194,4 @@ function drawLegend() {
         .attr("y", -3)
         .attr("x", 3)
         .text("number of students incoming per one outgoing");
-}
-
-function assert(condition, message) {
-    if (!condition) {
-        throw message || "Assertion failed";
-    }
 }

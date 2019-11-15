@@ -13,64 +13,18 @@
     <!-- js libraries -->
     <script src="libs/d3.v5.min.js"></script>
     <script src="libs/topojson.v2.min.js"></script>
+
+    <!-- custom js functions -->
+    <script src="js/func/events.js"></script>
+    <script src="js/func/assert.js"></script>
+    <script src="js/func/populateCountryList.js"></script>
 </head>
 
 <body>
-    <script>
-        // Global variables used in all of the scripts
-        var studentDirection = "incoming";
-        var selectedCountry = "none";
-
-        // The event names
-        var dispatch = d3.dispatch("stateHoverEvent", "stateSelectedEvent", "studentDirectionEvent");
-
-        // HOVER
-        dispatch.on("stateHoverEvent", function(state){
-            alert(state);
-        });
-
-        // STATE SELECTED
-        dispatch.on("stateSelectedEvent", function(numericID){
-            // Check if it is a number
-            assert(!isNaN(numericID));
-
-            selectedCountry = numericID;
-
-            // Draw the lines if the selected state is not null
-            if (numericID === "000") {
-                clearLines();
-                document.getElementById("dropdown_country").value = "none";
-            } else {
-                drawLines(selectedCountry);
-                document.getElementById("dropdown_country").value = countryData.get(numericID).country.toLowerCase();
-            }
-        });
-
-        // DIRECTION SELECTED
-        dispatch.on("studentDirectionEvent", function(direction) {
-            studentDirection = direction;
-
-            // Set the dropdown menu
-            document.getElementById("dropdown_direction").value = direction;
-
-            // Update or draw lines only if a country is selected
-            if (selectedCountry !== "000") {
-                clearLines();
-                drawLines(selectedCountry);
-            }
-        });
-    </script>
-
     <div id="student_direction" style="display: inline-block">
         student direction:
-        <script>
-            function changedDropdownDirection() {
-                // Direction changed
-                let dropdown = document.getElementById("dropdown_direction");
-                dispatch.call('studentDirectionEvent', dropdown.value, dropdown.value);
-            }
-        </script>
-        <select id="dropdown_direction" onchange="changedDropdownDirection()">
+        <script src="js/func/changeDropdownDirection.js"></script>
+        <select id="dropdown_direction" onchange="changeDropdownDirection()">
             <option value="incoming">Incoming</option>
             <option value="outgoing">Outgoing</option>
         </select>
@@ -78,22 +32,9 @@
 
     <div id="selected_country" style="display: inline-block">
         selected country:
-        <script>
-            function changedDropdownCountry() {
-                let dropdown = document.getElementById("dropdown_country");
-                let dropdownVal = dropdown.value.toUpperCase();
-
-                let numeric = "";
-                if (dropdownVal === "none") {
-                    numeric = "000"
-                } else {
-                    numeric = codeToNumeric.get(dropdownVal);
-                }
-                dispatch.call('stateSelectedEvent', numeric, numeric);
-            }
-        </script>
-        <select id="dropdown_country" onchange="changedDropdownCountry()">
-            <option value="none">none</option>
+        <script src="js/func/changeDropdownCountry.js"></script>
+        <select id="dropdown_country" onchange="changeDropdownCountry()">
+            <option value="">none</option>
         </select>
     </div>
 
