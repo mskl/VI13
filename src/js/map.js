@@ -148,20 +148,36 @@ function drawLines(code) {
     lineSelection.enter()
         .merge(lineSelection)
         .append("line")
-        .attrs({"x1": codeCoords[0], "y1": codeCoords[1]})
+        .attr("stroke", "rgba(0, 0, 0, 0.8)")
+        .attrs({"pointer-events": "none"})
         .attrs((d) => {
             let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
-            return {"x2": targetCoords[0], "y2": targetCoords[1]};
-        })
-        .attr("stroke", "rgba(0, 0, 0, 0.8)")
+            if (studentDirection === "incoming") {
+                return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
+            } else {
+                return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
+            }
+         })
         .transition().duration(1000)
+        .attrs((d) => {
+            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
+
+            if (studentDirection === "incoming") {
+                return {"x2": codeCoords[0], "y2": codeCoords[1]};
+            } else {
+                return {"x2": targetCoords[0], "y2": targetCoords[1]};
+            }
+        })
         .attr("stroke-width", function (d) {
             return d[1] / 200;
-        })
-        .attrs({"pointer-events": "none"});
+        });
 
     // Exit
-    lineSelection.exit().transition().duration(1000).attr("stroke-width", 0).remove();
+    lineSelection.exit()
+        .transition()
+        .duration(1000)
+        .attr("stroke-width", 0)
+        .remove();
 }
 
 function drawLinesDetailed(countryShortcut) {
