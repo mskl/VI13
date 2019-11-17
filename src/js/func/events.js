@@ -9,7 +9,6 @@ var events = d3.dispatch("stateHoverEvent", "stateSelectedEvent", "studentDirect
  * @param code Country code in 2 lowercased letters such as "cz".
  */
 function assertStateCode(code) {
-    //
     if (!["", "at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr",
         "gb", "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv", "mt",
         "nl", "no", "pl", "pt", "ro", "se", "si", "sk", "tr"].includes(code)) {
@@ -22,9 +21,8 @@ function assertStateCode(code) {
  * @param direction Direction of the student. Values "incoming" or "outgoing".
  */
 function assertStudentDirection(direction) {
-    // Assert that the student direction is correct string
     if (!["incoming", "outgoing"].includes(direction)) {
-        throw("Invalid student direction \"" + code + "\".");
+        throw("Invalid student direction \"" + direction + "\".");
     }
 }
 
@@ -33,7 +31,7 @@ function assertStudentDirection(direction) {
  */
 events.on("stateHoverEvent", function(state){
     console.log("StateHoverEvent called with \"" + state + "\"");
-    assertStateCode(code);
+    assertStateCode(state);
 });
 
 /**
@@ -48,10 +46,10 @@ events.on("stateSelectedEvent", function(code){
 
     // Draw the lines if the selected state is not null
     if (code === "") {
-        clearLines();
+        drawLines("",);
         document.getElementById("dropdown_country").value = "";
     } else {
-        drawLines(selectedCountry);
+        drawLines(selectedCountry, false);
         document.getElementById("dropdown_country").value = selectedCountry.toLowerCase();
     }
 });
@@ -71,7 +69,6 @@ events.on("studentDirectionEvent", function(direction) {
 
     // Update or draw lines only if a country is selected
     if (selectedCountry !== "") {
-        clearLines();
         drawLines(selectedCountry);
     }
 });
