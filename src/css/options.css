@@ -1,0 +1,36 @@
+#options {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    display: block;
+    float: right;
+}
+
+#student_direction {
+    display: inline-flex;
+    overflow: hidden;
+}
+
+#selected_country {
+    display: inline-flex;
+}
+
+#student_direction input {
+    position: absolute !important;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+    overflow: hidden;
+}
+
+#student_direction label {
+    text-align: center;
+    padding: 8px 16px;
+    transition: all 0.1s ease-in-out;
+}
+
+#student_direction label:hover {
+    cursor: pointer;
+}
+
+#student_direction input:checked + label {
+    background-color: rgba(0, 0, 0, 0.18);
+    box-shadow: none;
+}

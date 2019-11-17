@@ -1,13 +1,5 @@
-.chart {
-
-}
-
-h1 {
-    margin: 10px 0 10px 0;
-}
-
 body {
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     min-height: 100vh;
     margin: 0;
@@ -27,23 +19,25 @@ body {
 }
 
 #header {
-    height: 5%;
-    overflow: hidden;
-    display: inline-block;
     background-color: lightgray;
+    height: 5%;
 }
 
 #header > h1 {
-    display: block;
-    float: left;
     padding-left: 0.5em;
+    float: left;
+    margin: 0;
 }
 
-#header > #options {
-    padding-top: 1%;
-    padding-right: 0.5em;
+#options {
     display: block;
-    float: right;
+    margin-left: auto;
+}
+
+#student_direction, #selected_country {
+    display: inline-block;
+    padding-top: 12px;
+    padding-right: 12px;
 }
 
 #first-row {
@@ -86,23 +80,4 @@ body {
 #boxplot {
     background-color: yellow;
     width: 50%;
-
-}
-
-/* Map related CSS */
-.counties {
-    fill: none;
-}
-
-.states {
-    fill: none;
-    stroke: #fff;
-    stroke-linejoin: round;
-}
-
-path:hover {
-    stroke: black;
-    stroke-width: 1;
-    stroke-opacity: 0.4;
-    cursor: pointer;
 }

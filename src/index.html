@@ -9,6 +9,8 @@
 
   <!-- stylesheets -->
   <link rel="stylesheet" href="css/style.css">
+  <!--<link rel="stylesheet" href="css/options.css">-->
+  <link rel="stylesheet" href="css/map.css">
 
   <!-- js libs -->
   <script src="libs/d3.v5.min.js"></script>
@@ -22,17 +24,17 @@
 
 <body>
   <div class="flex-container">
-    <!-- header -->
     <div id="header">
       <h1>ERASMUS student flow.</h1>
       <div id="options">
-        <form id="student_direction" style="display: inline-block">
+        <form id="student_direction">
           <script src="js/func/changeStudentDirection.js"></script>
-          <label>incoming:<input type="radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked></label>
-          <label>outgoing:<input type="radio" name="direction" value="outgoing" onchange="changeStudentDirection()"></label>
+          <label for="direction-incoming-radio">incoming</label>
+          <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
+          <label for="direction-outgoing-radio">outgoing</label>
+          <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
         </form>
-
-        <form id="selected_country" style="display: inline-block">
+        <form id="selected_country">
           <script src="js/func/changeDropdownCountry.js"></script>
           <label>selected country:
             <select id="dropdown_country" onchange="changeDropdownCountry()">
@@ -42,8 +44,6 @@
         </form>
       </div>
     </div>
-
-    <!-- first row -->
     <div id="first-row">
       <div class="chart" id="map">
         <svg width="100%" height="100%"></svg>
@@ -54,8 +54,6 @@
         <script src="js/parallel_set.js"></script>
       </div>
     </div>
-
-    <!-- second row -->
     <div id="second-row">
       <div class="chart" id="barchart">
         <svg width="100%" height="100%"></svg>
