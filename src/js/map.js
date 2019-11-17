@@ -22,17 +22,17 @@ let path = d3.geoPath().projection(projection);
 let color = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
 
 let countryCenterCoordinates = d3.map();    // Center of country
-d3.csv("data/map/countrypos.csv", function (d) {
+d3.csv("data/map/countrypos.csv", (d) => {
     countryCenterCoordinates.set(d.country.toLowerCase(), {"long": d.long, "lat": d.lat})
 });
 
 let countryStudentFlows;                    // "Correlation" counts for each pair
-d3.csv("data/map/corstudentcount.csv").then(function (data) {
+d3.csv("data/map/corstudentcount.csv").then((data) => {
     countryStudentFlows = data
 });
 
 let detailedCoordinates;                    // Coords for each university
-d3.csv("data/map/coordinates.csv").then(function (data) {
+d3.csv("data/map/coordinates.csv").then((data) => {
     detailedCoordinates = data;
 });
 
@@ -40,7 +40,7 @@ let promises = [
     // The outline of world states
     d3.json("data/map/world-50m.v1.json"),
     // The data to be used in the map
-    d3.csv("data/map/chloroplet-ratio.csv", function (d) {
+    d3.csv("data/map/chloroplet-ratio.csv", (d) => {
         mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
         countryData.set(d.numeric, d);
         codeToNumeric.set(d.country.toLowerCase(), d.numeric);
@@ -85,14 +85,14 @@ function drawOutline(outline) {
 
     countrySelection.enter()
         .append("path")
-        .attr("fill", function (d) {
+        .attr("fill", (d) => {
             try {
                 return color(mapData.get(d.id));
             } catch (error) {
                 /* console.log(d.id, error) */
             }
         })
-        .on('click', function (d) {
+        .on('click', (d) => {
             if (codeToNumeric.get(selectedCountry) === d.id) {
                 events.call('stateSelectedEvent', "", "");
             } else {
@@ -100,7 +100,7 @@ function drawOutline(outline) {
                 events.call('stateSelectedEvent', countryShortcut, countryShortcut);
             }
         })
-        .on('mouseover', function (d) {
+        .on('mouseover', (d) => {
             try {
                 let code = countryData.get(d.id).country.toLowerCase();
                 events.call('stateHoverEvent', code, code);
@@ -136,7 +136,7 @@ function drawLines(code) {
 
     // Define the selection
     let lineSelection = linesGroup.selectAll("line")
-        .data(function () {
+        .data(() => {
             if (studentDirection === "incoming") {
                 return incoming;
             } else {
@@ -168,9 +168,7 @@ function drawLines(code) {
                 return {"x2": targetCoords[0], "y2": targetCoords[1]};
             }
         })
-        .attr("stroke-width", function (d) {
-            return d[1] / 200;
-        });
+        .attr("stroke-width", (d) => {return d[1] / 200;});
 
     // Exit
     lineSelection.exit()
