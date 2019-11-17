@@ -20,12 +20,13 @@
     <!-- custom js functions -->
     <script src="js/func/events.js"></script>
     <script src="js/func/populateCountryList.js"></script>
+    <script src="js/func/changeStudentDirection.js"></script>
+    <script src="js/func/changeDropdownCountry.js"></script>
 </head>
 
 <body>
     <div id="options">
         <form id="student_direction">
-            <script src="js/func/changeStudentDirection.js"></script>
             <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
             <label for="direction-incoming-radio">incoming</label>
             <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
@@ -33,7 +34,6 @@
         </form>
 
         <form id="selected_country">
-            <script src="js/func/changeDropdownCountry.js"></script>
             <label>selected country:
                 <select id="dropdown_country" onchange="changeDropdownCountry()">
                     <option value="">none</option>

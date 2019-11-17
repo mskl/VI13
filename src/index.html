@@ -9,7 +9,7 @@
 
   <!-- stylesheets -->
   <link rel="stylesheet" href="css/style.css">
-  <!--<link rel="stylesheet" href="css/options.css">-->
+  <link rel="stylesheet" href="css/options.css">
   <link rel="stylesheet" href="css/map.css">
 
   <!-- js libs -->
@@ -20,6 +20,8 @@
   <!-- custom js functions -->
   <script src="js/func/events.js"></script>
   <script src="js/func/populateCountryList.js"></script>
+  <script src="js/func/changeStudentDirection.js"></script>
+  <script src="js/func/changeDropdownCountry.js"></script>
 </head>
 
 <body>
@@ -28,14 +30,12 @@
       <h1>ERASMUS student flow.</h1>
       <div id="options">
         <form id="student_direction">
-          <script src="js/func/changeStudentDirection.js"></script>
-          <label for="direction-incoming-radio">incoming</label>
           <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
-          <label for="direction-outgoing-radio">outgoing</label>
+          <label for="direction-incoming-radio">incoming</label>
           <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
+          <label for="direction-outgoing-radio">outgoing</label>
         </form>
         <form id="selected_country">
-          <script src="js/func/changeDropdownCountry.js"></script>
           <label>selected country:
             <select id="dropdown_country" onchange="changeDropdownCountry()">
               <option value="">none</option>

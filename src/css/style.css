@@ -19,7 +19,6 @@ body {
 }
 
 #header {
-    background-color: lightgray;
     height: 5%;
 }
 
@@ -27,11 +26,6 @@ body {
     padding-left: 0.5em;
     float: left;
     margin: 0;
-}
-
-#options {
-    display: block;
-    margin-left: auto;
 }
 
 #student_direction, #selected_country {
