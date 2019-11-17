@@ -64,8 +64,8 @@ events.on("studentDirectionEvent", function(direction) {
     // Update the global variable
     studentDirection = direction;
 
-    // Set the dropdown menu
-    document.getElementById("dropdown_direction").value = direction;
+    // Set the direction buttons
+    document.getElementById("student_direction").elements["direction"].value = direction;
 
     // Update or draw lines only if a country is selected
     if (selectedCountry !== "") {

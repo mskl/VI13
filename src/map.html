@@ -8,7 +8,7 @@
     <title>Chloropleth map</title>
 
     <!-- stylesheets -->
-    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/style.css">
 
     <!-- js libraries -->
     <script src="libs/d3.v5.min.js"></script>
@@ -21,22 +21,20 @@
 </head>
 
 <body>
-    <div id="student_direction" style="display: inline-block">
-        student direction:
-        <script src="js/func/changeDropdownDirection.js"></script>
-        <select id="dropdown_direction" onchange="changeDropdownDirection()">
-            <option value="incoming">Incoming</option>
-            <option value="outgoing">Outgoing</option>
-        </select>
-    </div>
+    <form id="student_direction" style="display: inline-block">
+        <script src="js/func/changeStudentDirection.js"></script>
+        <label>incoming:<input type="radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked></label>
+        <label>outgoing:<input type="radio" name="direction" value="outgoing" onchange="changeStudentDirection()"></label>
+    </form>
 
-    <div id="selected_country" style="display: inline-block">
-        selected country:
+    <form id="selected_country" style="display: inline-block">
         <script src="js/func/changeDropdownCountry.js"></script>
-        <select id="dropdown_country" onchange="changeDropdownCountry()">
-            <option value="">none</option>
-        </select>
-    </div>
+        <label>selected country:
+            <select id="dropdown_country" onchange="changeDropdownCountry()">
+                <option value="">none</option>
+            </select>
+        </label>
+    </form>
 
     <div id="map" style="max-width: 60%; height: 400px">
        <svg width="100%" height="100%">
