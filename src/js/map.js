@@ -120,14 +120,13 @@ function drawOutline(outline) {
 
 function drawLines(code) {
     // Convert the country shortcode into a numeric
-    var incoming, outgoing, codeCoords;
     let numeric = codeToNumeric.get(code);
 
-    if (code === "") {
-        incoming = [];
-        outgoing = [];
-        codeCoords = [];
-    } else {
+    let incoming = [];
+    let outgoing = [];
+    let codeCoords = [];
+
+    if (code !== "") {
         incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
         outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
         outgoing.splice(0, 1);
@@ -149,22 +148,17 @@ function drawLines(code) {
     lineSelection.enter()
         .merge(lineSelection)
         .append("line")
-        .attr("x1", codeCoords[0])
-        .attr("y1", codeCoords[1])
-        .attr("x2", function (d) {
+        .attrs({"x1": codeCoords[0], "y1": codeCoords[1]})
+        .attrs((d) => {
             let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
-            return targetCoords[0];
-        })
-        .attr("y2", function (d) {
-            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
-            return targetCoords[1];
+            return {"x2": targetCoords[0], "y2": targetCoords[1]};
         })
         .attr("stroke", "rgba(0, 0, 0, 0.8)")
         .transition().duration(1000)
         .attr("stroke-width", function (d) {
             return d[1] / 200;
         })
-        .attr("pointer-events", "none");
+        .attrs({"pointer-events": "none"});
 
     // Exit
     lineSelection.exit().transition().duration(1000).attr("stroke-width", 0).remove();
