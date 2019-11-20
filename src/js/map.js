@@ -2,6 +2,8 @@
 let mapData = d3.map();
 let countryData = d3.map();
 let codeToNumeric = d3.map();
+let numericToCode = d3.map();
+let chloroplethData = d3.map();
 
 let mapSVG = d3.select("#map > svg"),
     width = +mapSVG.style("width").replace("px", ""),
@@ -42,6 +44,7 @@ let promises = [
         mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
         countryData.set(d.numeric, d);
         codeToNumeric.set(d.country.toLowerCase(), d.numeric);
+        numericToCode.set(d.numeric, d.country.toLowerCase());
     })
 ];
 
@@ -60,7 +63,7 @@ let legendHeight = tickWidth / 2;
 // Create the legend
 drawLegend();
 
-// Load all of the promises and then call the ready funtion
+// Load all of the promises and then call the ready function
 Promise.all(promises).then(ready);
 
 function ready([outline], reject) {
@@ -79,14 +82,28 @@ function drawOutline(outline) {
     let countrySelection = mapSVG.append("g")
         .attr("class", "counties")
         .selectAll("path")
-        .data(topojson.feature(outline, outline.objects.countries).features,
+        .data(() => {
+                // TODO: Do this instead in the loading of the CSV, not here.
+                let features = topojson.feature(outline, outline.objects.countries).features;
+                // Assign the color and stroke into the json
+                features.map((feat) => {
+                   feat["color"] =  color(mapData.get(feat.id));
+                   feat["stroke"] = 0;
+
+                   let featCode = numericToCode.get(feat.id);
+                   chloroplethData.set(featCode, feat);
+                });
+
+                return chloroplethData.values();
+            },
             topojson.feature(outline, outline.objects.countries).features.id);
 
     countrySelection.enter()
+        .merge(countrySelection)
         .append("path")
         .attr("fill", d => {
             try {
-                return color(mapData.get(d.id));
+                return d.color;
             } catch (error) {
                 /* console.log(d.id, error) */
             }
