@@ -79,7 +79,8 @@ function drawOutline(outline) {
     let countrySelection = mapSVG.append("g")
         .attr("class", "counties")
         .selectAll("path")
-        .data(topojson.feature(outline, outline.objects.countries).features);
+        .data(topojson.feature(outline, outline.objects.countries).features,
+            topojson.feature(outline, outline.objects.countries).features.id);
 
     countrySelection.enter()
         .append("path")
