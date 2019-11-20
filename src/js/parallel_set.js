@@ -52,13 +52,7 @@ function gen_vis() {
         .attr("d", d3.sankeyLinkHorizontal())
         .attr("stroke-width", function(d) { return Math.max(1, d.width); })
         .attr("id", function (d) {return "link" + d.index})
-        .on("mouseover", function(d,i){
-            d3.select(this).transition().duration('50').attr('stroke-opacity', '0.5')
-        })
-        .on("mouseout", function (d, i) {
-            d3.select(this).transition()
-                .duration('50')
-                .attr('stroke-opacity', '0.2')});
+       ;
 
 
     // link hover values
@@ -110,6 +104,7 @@ function gen_vis() {
 var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode","hoverLink");
 
 dispatch.on("mouseoverNode", function(node){
+    console.log("hellomousein");
 
     selectedNode = d3.select("rect[title=\'" + node.name + node.index + "\']");
     //previousColor = selectedNode.style.background;
@@ -121,6 +116,7 @@ dispatch.on("mouseoverNode", function(node){
     }
 });
 dispatch.on("mouseoutNode", function(node){
+    console.log("hellomouseout");
     selectedNode.transition().duration('50').attr("fill", parallelsets_color(node.name.replace(/ .*/, "")));
     //change back link opacity to 0.2
     for (i = 0; i < linksToSelectedNode.length; i++) {
