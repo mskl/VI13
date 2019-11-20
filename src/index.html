@@ -22,9 +22,21 @@
   <script src="js/func/populateCountryList.js"></script>
   <script src="js/func/changeStudentDirection.js"></script>
   <script src="js/func/changeDropdownCountry.js"></script>
+
+  <!-- resize func -->
+  <script>
+    function resizeFunc() {
+      const headerHeight = 40;
+      let windowHeight = window.innerHeight;
+
+      document.getElementById("header").style.height = headerHeight + "px";
+      document.getElementById("first-row").style.height = (windowHeight*0.6 - headerHeight/2) + "px";
+      document.getElementById("second-row").style.height = (windowHeight*0.4 - headerHeight/2) + "px";
+    }
+  </script>
 </head>
 
-<body>
+<body onresize="resizeFunc()">
   <div class="flex-container">
     <div id="header">
       <h1>ERASMUS student flow.</h1>
