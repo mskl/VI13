@@ -9,8 +9,6 @@ let mapSVG = d3.select("#map > svg"),
 
 // Square around the whole SVG
 mapSVG.append("rect")
-    .attr("width", width)
-    .attr("height", height)
     .attr("fill", "transparent")
     .attr("stroke", "black");
 
@@ -101,12 +99,12 @@ function drawOutline(outline) {
             }
         })
         .on('mouseover', d => {
-            try {
-                let code = countryData.get(d.id).country.toLowerCase();
-                events.call('stateHoverEvent', code, code);
-            } catch (error) {
-                /* console.log(d.id, error); */
-            }
+            let code = countryData.get(d.id).country.toLowerCase();
+            events.call('stateOnMouseOver', code, code);
+        })
+        .on('mouseout', d => {
+            let code = countryData.get(d.id).country.toLowerCase();
+            events.call('stateOnMouseOut', code, code);
         })
         .attr("d", d => path(d))
         .append("title").text(function(d) {

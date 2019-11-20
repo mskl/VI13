@@ -2,7 +2,7 @@
 var studentDirection = "incoming";
 var selectedCountry = "";
 
-var events = d3.dispatch("stateHoverEvent", "stateSelectedEvent", "studentDirectionEvent");
+var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent");
 
 /**
  * Assert that the country code is valid. Empty is saved as "".
@@ -29,8 +29,16 @@ function assertStudentDirection(direction) {
 /**
  * Is called when hovered over a state.
  */
-events.on("stateHoverEvent", function(state){
-    console.log("StateHoverEvent called with \"" + state + "\"");
+events.on("stateOnMouseOver", function(state){
+    console.log("StateOnMouseOver called with \"" + state + "\"");
+    assertStateCode(state);
+});
+
+/**
+ * Is called when hovered off a state.
+ */
+events.on("stateOnMouseOut", function(state){
+    console.log("StateOnMouseOut called with \"" + state + "\"");
     assertStateCode(state);
 });
 
