@@ -16,6 +16,7 @@ mapSVG.append("rect")
 
 // Group of lines
 let linesGroup;
+let countryGroup;
 
 let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let path = d3.geoPath().projection(projection);
@@ -36,6 +37,7 @@ d3.csv("data/map/coordinates.csv").then(data => {
     detailedCoordinates = data;
 });
 
+let foo;
 let promises = [
     // The outline of world states
     d3.json("data/map/world-50m.v1.json"),
@@ -70,44 +72,42 @@ function ready([outline], reject) {
     // Add the states to a country dropdown menu
     populateCountryList();
 
-    // Draw the map outline
-    drawOutline(outline);
+    // TODO: Do this when loading the CSV
+    let features = topojson.feature(outline, outline.objects.countries).features;
+    features.map((feat) => {
+        feat["color"] =  color(mapData.get(feat.id));
+        feat["stroke"] = 0;
 
-    // Create the group
+        let featCode = numericToCode.get(feat.id);
+        chloroplethData.set(featCode, feat);
+    });
+
+    // Create the line group
+    // TODO: Put this somewhere else
+    countryGroup = mapSVG.append("g")
+        .attr("class", "counties");
+
     linesGroup = mapSVG.append("g")
         .attr("class", "lines");
+
+    // Draw the map outline
+    drawOutline();
 }
 
-function drawOutline(outline) {
-    let countrySelection = mapSVG.append("g")
-        .attr("class", "counties")
-        .selectAll("path")
-        .data(() => {
-                // TODO: Do this instead in the loading of the CSV, not here.
-                let features = topojson.feature(outline, outline.objects.countries).features;
-                // Assign the color and stroke into the json
-                features.map((feat) => {
-                   feat["color"] =  color(mapData.get(feat.id));
-                   feat["stroke"] = 0;
-
-                   let featCode = numericToCode.get(feat.id);
-                   chloroplethData.set(featCode, feat);
-                });
-
-                return chloroplethData.values();
-            },
-            topojson.feature(outline, outline.objects.countries).features.id);
+function drawOutline() {
+    let countrySelection = countryGroup.selectAll("path")
+        .data(chloroplethData.values());
 
     countrySelection.enter()
-        .merge(countrySelection)
         .append("path")
-        .attr("fill", d => {
-            try {
-                return d.color;
-            } catch (error) {
-                /* console.log(d.id, error) */
-            }
-        })
+        .attr("fill", d => d.color)
+        .attr("d", d => path(d));
+
+    countrySelection.attr("fill", "gray");
+
+    countrySelection.exit().remove();
+    /*
+
         .on('click', d => {
             if (codeToNumeric.get(selectedCountry) === d.id) {
                 events.call('stateSelectedEvent', "", "");
@@ -124,14 +124,13 @@ function drawOutline(outline) {
             let code = countryData.get(d.id).country.toLowerCase();
             events.call('stateOnMouseOut', code, code);
         })
-        .attr("d", d => path(d))
         .append("title").text(function(d) {
             try {
                 return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
             } catch (error) {
-                /* console.log(d.id, error); */
             }
         });
+    */
 }
 
 function drawLines(code) {
