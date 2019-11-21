@@ -4,8 +4,6 @@ var setsSVG = d3.select("#parallel_set > svg"),
 
 // Square around the whole SVG
 setsSVG.append("rect")
-    .attr("width", setsWidth)
-    .attr("height", setsHeight)
     .attr("fill", "transparent")
     .attr("stroke", "black");
 

@@ -30,9 +30,8 @@ body {
     padding-right: 12px;
 }
 
-/* height is set by JS */
 #header {
-    height: 5%;
+    height: 5%; /* height is set by JS */
 }
 
 #first-row {
@@ -46,19 +45,6 @@ body {
 #map {
     width: 60%;
     fill: transparent;
-}
-
-#map.states {
-    fill: none;
-    stroke: #fff;
-    stroke-linejoin: round;
-}
-
-#map path:hover {
-    stroke: black;
-    stroke-width: 1;
-    stroke-opacity: 0.4;
-    cursor: pointer;
 }
 
 #parallel_set {

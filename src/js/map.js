@@ -35,10 +35,10 @@ let coordinatesPremise = d3.csv("data/map/coordinates.csv").then(data => {
     detailedCoordinates = data;
 });
 
-let mapRatio = d3.map();
-let countryData = d3.map();
 let codeToNumeric = d3.map();
 let numericToCode = d3.map();
+let mapRatio = d3.map();
+let countryData = d3.map();
 let ratioPremise = d3.csv("data/map/chloroplet-ratio.csv", d => {
     mapRatio.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
     countryData.set(d.numeric, d);
@@ -62,34 +62,46 @@ let worldMapPremise = d3.json("data/map/world-50m.v1.json").then(outline=>{
 // After all of the premises are loaded, draw the shit.
 Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPremise, ratioPremise, worldMapPremise])
     .then(() => {
+        // Populate the dropdown menu
+        populateCountryList();
         // Create the legend
         drawLegend();
         // Draw the chloropleth
         drawOutline();
     });
 
+function populateCountryList() {
+    let select = document.getElementById("dropdown_country");
+
+    for(let i = 0; i < countryData.values().length; i++) {
+        let opt = countryData.values()[i];
+        let el = document.createElement("option");
+        el.textContent = opt.name;
+        el.value = opt.country.toLocaleLowerCase();
+        select.appendChild(el);
+    }
+}
+
+function highlightState(code) {
+    chloroplethData.get(code).stroke = 1;
+    drawOutline();
+}
+
+function unHiglightState(code) {
+    chloroplethData.get(code).stroke = 0;
+    drawOutline();
+}
+
 function drawOutline() {
     let countrySelection = countryGroup.selectAll("path")
         .data(chloroplethData.values());
 
+    // Enter
     countrySelection.enter()
         .append("path")
+        .attr("stroke-width", 0)
         .attr("fill", d => d.color)
-        .attr("d", d => path(d));
-
-    countrySelection.attr("fill", "gray");
-
-    countrySelection.exit().remove();
-    /*
-
-        .on('click', d => {
-            if (codeToNumeric.get(selectedCountry) === d.id) {
-                events.call('stateSelectedEvent', "", "");
-            } else {
-                let countryShortcut = countryData.get(d.id).country.toLowerCase();
-                events.call('stateSelectedEvent', countryShortcut, countryShortcut);
-            }
-        })
+        .attr("d", d => path(d))
         .on('mouseover', d => {
             let code = countryData.get(d.id).country.toLowerCase();
             events.call('stateOnMouseOver', code, code);
@@ -98,13 +110,20 @@ function drawOutline() {
             let code = countryData.get(d.id).country.toLowerCase();
             events.call('stateOnMouseOut', code, code);
         })
-        .append("title").text(function(d) {
-            try {
-                return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
-            } catch (error) {
+        .on('click', d => {
+            if (codeToNumeric.get(selectedCountry) === d.id) {
+                events.call('stateSelectedEvent', "", "");
+            } else {
+                let countryShortcut = countryData.get(d.id).country.toLowerCase();
+                events.call('stateSelectedEvent', countryShortcut, countryShortcut);
             }
+        })
+        .append("title").text(function(d) {
+            return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
         });
-    */
+
+    // Update
+    countrySelection.attr("stroke-width", d => {return d.stroke});
 }
 
 function drawLines(code) {
@@ -167,55 +186,13 @@ function drawLines(code) {
         .remove();
 }
 
-function drawLinesDetailed(countryShortcut) {
-    // Clear all of the lines in the map
-    clearLines();
-
-    // Convert the country shortcode into a numeric
-    let countryCode = codeToNumeric.get(countryShortcut);
-
-    mapSVG.append("g")
-        .attr("class", "lines")
-        .selectAll("line")
-        .data(detailedCoordinates.filter(function(d){
-            if (studentDirection === "incoming") {
-                return d.receivingNumeric === countryCode;
-            } else {
-                return d.sendingNumeric === countryCode;
-            }
-
-        }))
-        .enter()
-        .append("line")
-        .attr("x1", function (d) {
-            return projection([d.sendLon, d.sendLat])[0]
-        })
-        .attr("y1", function (d) {
-            return projection([d.sendLon, d.sendLat])[1]
-        })
-        .attr("x2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[0]
-        })
-        .attr("y2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[1]
-        })
-        .attr("stroke", "rgba(0, 0, 0, 0.02)")
-        .attr("stroke-width", function () {
-            return 1;
-        })
-        .attr("pointer-events", "none");
-}
-
 function drawLegend() {
     // Editable options
-    const legendWidth = 220;
     const legendTicks = 10;
-    const legendMin = 0;
-    const legendMax = 4;
-    const legendPosY = 20;
+    const legendWidth = 220;
 
-    // Calculated stuff
-    const legendPosX = width - legendWidth - 20;
+    const [legendMin, legendMax]   = [0                       ,  4];
+    const [legendPosX, legendPosY] = [width - legendWidth - 20, 20];
     const tickWidth = legendWidth / legendTicks;
     const legendHeight = tickWidth / 2;
 
@@ -261,3 +238,44 @@ function drawLegend() {
         .attr("x", 3)
         .text("number of students incoming per one outgoing");
 }
+
+/*
+function drawLinesDetailed(countryShortcut) {
+    // Clear all of the lines in the map
+    clearLines();
+
+    // Convert the country shortcode into a numeric
+    let countryCode = codeToNumeric.get(countryShortcut);
+
+    mapSVG.append("g")
+        .attr("class", "lines")
+        .selectAll("line")
+        .data(detailedCoordinates.filter(function(d){
+            if (studentDirection === "incoming") {
+                return d.receivingNumeric === countryCode;
+            } else {
+                return d.sendingNumeric === countryCode;
+            }
+
+        }))
+        .enter()
+        .append("line")
+        .attr("x1", function (d) {
+            return projection([d.sendLon, d.sendLat])[0]
+        })
+        .attr("y1", function (d) {
+            return projection([d.sendLon, d.sendLat])[1]
+        })
+        .attr("x2", function (d) {
+            return projection([d.receiveLon, d.receiveLat])[0]
+        })
+        .attr("y2", function (d) {
+            return projection([d.receiveLon, d.receiveLat])[1]
+        })
+        .attr("stroke", "rgba(0, 0, 0, 0.02)")
+        .attr("stroke-width", function () {
+            return 1;
+        })
+        .attr("pointer-events", "none");
+}
+*/

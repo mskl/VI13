@@ -32,6 +32,9 @@ function assertStudentDirection(direction) {
 events.on("stateOnMouseOver", function(state){
     console.log("StateOnMouseOver called with \"" + state + "\"");
     assertStateCode(state);
+
+    // Highlight the state
+    highlightState(state);
 });
 
 /**
@@ -40,6 +43,9 @@ events.on("stateOnMouseOver", function(state){
 events.on("stateOnMouseOut", function(state){
     console.log("StateOnMouseOut called with \"" + state + "\"");
     assertStateCode(state);
+
+    // Unhiglight the state
+    unHiglightState(state);
 });
 
 /**
