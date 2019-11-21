@@ -31,7 +31,7 @@ let corStudentCountPromise = d3.csv("data/map/corstudentcount.csv").then(data =>
 
 // Coords for each university
 let detailedCoordinates;
-let coordinatesPremise = d3.csv("data/map/coordinates.csv").then(data => {
+let coordinatesPromise = d3.csv("data/map/coordinates.csv").then(data => {
     detailedCoordinates = data;
 });
 
@@ -39,19 +39,20 @@ let codeToNumeric = d3.map();
 let numericToCode = d3.map();
 let mapRatio = d3.map();
 let countryData = d3.map();
-let ratioPremise = d3.csv("data/map/chloroplet-ratio.csv", d => {
+let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
     mapRatio.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
     countryData.set(d.numeric, d);
+
     codeToNumeric.set(d.country.toLowerCase(), d.numeric);
     numericToCode.set(d.numeric, d.country.toLowerCase());
 });
 
 let chloroplethData = d3.map();
-let worldMapPremise = d3.json("data/map/world-50m.v1.json").then(outline=>{
+let chloroplethDataPromise = d3.json("data/map/world-50m.v1.json").then(outline=>{
     let features = topojson.feature(outline, outline.objects.countries).features;
 
     features.map((feat) => {
-        feat["color"] =  color(mapRatio.get(feat.id));
+        feat["color"] = color(mapRatio.get(feat.id));
         feat["stroke"] = 0;
 
         let featCode = numericToCode.get(feat.id);
@@ -60,7 +61,7 @@ let worldMapPremise = d3.json("data/map/world-50m.v1.json").then(outline=>{
 });
 
 // After all of the premises are loaded, draw the shit.
-Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPremise, ratioPremise, worldMapPremise])
+Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, ratioPromise, chloroplethDataPromise])
     .then(() => {
         // Populate the dropdown menu
         populateCountryList();
@@ -73,7 +74,7 @@ Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPremise, rati
 function populateCountryList() {
     let select = document.getElementById("dropdown_country");
 
-    for(let i = 0; i < countryData.values().length; i++) {
+    for (let i = 0; i < countryData.values().length; i++) {
         let opt = countryData.values()[i];
         let el = document.createElement("option");
         el.textContent = opt.name;
@@ -119,7 +120,11 @@ function drawOutline() {
             }
         })
         .append("title").text(function(d) {
-            return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
+            try {
+                return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
+            } catch (e) {
+                return "unknown";
+            }
         });
 
     // Update
