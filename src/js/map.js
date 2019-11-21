@@ -1,10 +1,3 @@
-// numeric -> ratio
-let mapData = d3.map();
-let countryData = d3.map();
-let codeToNumeric = d3.map();
-let numericToCode = d3.map();
-let chloroplethData = d3.map();
-
 let mapSVG = d3.select("#map > svg"),
     width = +mapSVG.style("width").replace("px", ""),
     height = +mapSVG.style("height").replace("px", "");
@@ -14,85 +7,66 @@ mapSVG.append("rect")
     .attr("fill", "transparent")
     .attr("stroke", "black");
 
-// Group of lines
-let linesGroup;
-let countryGroup;
+let countryGroup = mapSVG.append("g")
+    .attr("class", "counties");
+
+let linesGroup = mapSVG.append("g")
+    .attr("class", "lines");
 
 let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let path = d3.geoPath().projection(projection);
 let color = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
 
-let countryCenterCoordinates = d3.map();    // Center of country
-d3.csv("data/map/countrypos.csv", d => {
+// Center of country
+let countryCenterCoordinates = d3.map();
+let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
     countryCenterCoordinates.set(d.country.toLowerCase(), {"long": d.long, "lat": d.lat})
 });
 
-let countryStudentFlows;                    // "Correlation" counts for each pair
-d3.csv("data/map/corstudentcount.csv").then(data => {
+// "Correlation" counts for each pair
+let countryStudentFlows;
+let corStudentCountPromise = d3.csv("data/map/corstudentcount.csv").then(data => {
     countryStudentFlows = data
 });
 
-let detailedCoordinates;                    // Coords for each university
-d3.csv("data/map/coordinates.csv").then(data => {
+// Coords for each university
+let detailedCoordinates;
+let coordinatesPremise = d3.csv("data/map/coordinates.csv").then(data => {
     detailedCoordinates = data;
 });
 
-let foo;
-let promises = [
-    // The outline of world states
-    d3.json("data/map/world-50m.v1.json"),
-    // The data to be used in the map
-    d3.csv("data/map/chloroplet-ratio.csv", d => {
-        mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
-        countryData.set(d.numeric, d);
-        codeToNumeric.set(d.country.toLowerCase(), d.numeric);
-        numericToCode.set(d.numeric, d.country.toLowerCase());
-    })
-];
+let mapRatio = d3.map();
+let countryData = d3.map();
+let codeToNumeric = d3.map();
+let numericToCode = d3.map();
+let ratioPremise = d3.csv("data/map/chloroplet-ratio.csv", d => {
+    mapRatio.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
+    countryData.set(d.numeric, d);
+    codeToNumeric.set(d.country.toLowerCase(), d.numeric);
+    numericToCode.set(d.numeric, d.country.toLowerCase());
+});
 
-// Editable options
-let legendWidth = 220;
-let legendTicks = 10;
-let legendMin = 0;
-let legendMax = 4;
-let legendPosY = 20;
-
-// Calculated stuff
-let legendPosX = width - legendWidth - 20;
-let tickWidth = legendWidth / legendTicks;
-let legendHeight = tickWidth / 2;
-
-// Create the legend
-drawLegend();
-
-// Load all of the promises and then call the ready function
-Promise.all(promises).then(ready);
-
-function ready([outline], reject) {
-    // Add the states to a country dropdown menu
-    populateCountryList();
-
-    // TODO: Do this when loading the CSV
+let chloroplethData = d3.map();
+let worldMapPremise = d3.json("data/map/world-50m.v1.json").then(outline=>{
     let features = topojson.feature(outline, outline.objects.countries).features;
+
     features.map((feat) => {
-        feat["color"] =  color(mapData.get(feat.id));
+        feat["color"] =  color(mapRatio.get(feat.id));
         feat["stroke"] = 0;
 
         let featCode = numericToCode.get(feat.id);
         chloroplethData.set(featCode, feat);
     });
+});
 
-    // Create the line group
-    // TODO: Put this somewhere else
-    countryGroup = mapSVG.append("g")
-        .attr("class", "counties");
-
-    linesGroup = mapSVG.append("g")
-        .attr("class", "lines");
-
-    // Draw the map outline
-    drawOutline();
-}
+// After all of the premises are loaded, draw the shit.
+Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPremise, ratioPremise, worldMapPremise])
+    .then(() => {
+        // Create the legend
+        drawLegend();
+        // Draw the chloropleth
+        drawOutline();
+    });
 
 function drawOutline() {
     let countrySelection = countryGroup.selectAll("path")
@@ -233,6 +207,18 @@ function drawLinesDetailed(countryShortcut) {
 }
 
 function drawLegend() {
+    // Editable options
+    const legendWidth = 220;
+    const legendTicks = 10;
+    const legendMin = 0;
+    const legendMax = 4;
+    const legendPosY = 20;
+
+    // Calculated stuff
+    const legendPosX = width - legendWidth - 20;
+    const tickWidth = legendWidth / legendTicks;
+    const legendHeight = tickWidth / 2;
+
     let legend = mapSVG.append("g")
         .attr("class", "legend")
         .attr("transform", "translate(" + legendPosX + ", " + legendPosY + ")");
