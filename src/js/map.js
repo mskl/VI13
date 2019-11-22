@@ -13,9 +13,9 @@ let countryGroup = mapSVG.append("g")
 let linesGroup = mapSVG.append("g")
     .attr("class", "lines");
 
-let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
-let path = d3.geoPath().projection(projection);
-let color = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
+let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
+let mapPath = d3.geoPath().projection(mapProjection);
+let mapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
 
 // "Correlation" counts for each pair
 let countryStudentFlows;
@@ -103,8 +103,8 @@ function drawOutline() {
     countrySelection.enter()
         .append("path")
         .attr("stroke-width", 0)
-        .attr("d", d => path(d.topo))
-        .attr("fill", d => color(d.recSendRatio))
+        .attr("d", d => mapPath(d.topo))
+        .attr("fill", d => mapColor(d.recSendRatio))
         .on('mouseover', d => events.call('stateOnMouseOver', d.country, d.country))
         .on('mouseout', d => events.call('stateOnMouseOut', d.country, d.country))
         .on('click', d => selectedCountry === d.country
@@ -132,7 +132,7 @@ function drawLines(code) {
         outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
         outgoing.splice(0, 1);
 
-        codeCoords = projection([countryData.get(code).country_pos.lat, countryData.get(code).country_pos.long]);
+        codeCoords = mapProjection([countryData.get(code).country_pos.lat, countryData.get(code).country_pos.long]);
     }
 
     // Define the selection
@@ -152,7 +152,7 @@ function drawLines(code) {
         .attr("stroke", "rgba(0, 0, 0, 0.8)")
         .attrs({"pointer-events": "none"})
         .attrs((d) => {
-            let targetCoords = projection([countryData.get(d[0]).country_pos.lat,
+            let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat,
                 countryData.get(d[0]).country_pos.long]);
             if (studentDirection === "incoming") {
                 return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
@@ -162,7 +162,7 @@ function drawLines(code) {
          })
         .transition().duration(1000)
         .attrs(d => {
-            let targetCoords = projection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+            let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
 
             if (studentDirection === "incoming") {
                 return {"x2": codeCoords[0], "y2": codeCoords[1]};
@@ -204,7 +204,7 @@ function drawLegend() {
         })
         .attr("width", tickWidth)
         .attr("fill", function(d) {
-            return color(d);
+            return mapColor(d);
         });
 
     legend.selectAll("text")
