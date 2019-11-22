@@ -33,7 +33,6 @@ events.on("stateOnMouseOver", function(state){
     console.log("StateOnMouseOver called with \"" + state + "\"");
     assertStateCode(state);
 
-    // Highlight the state
     highlightState(state);
 });
 
@@ -44,7 +43,6 @@ events.on("stateOnMouseOut", function(state){
     console.log("StateOnMouseOut called with \"" + state + "\"");
     assertStateCode(state);
 
-    // Unhiglight the state
     unHiglightState(state);
 });
 
@@ -58,14 +56,11 @@ events.on("stateSelectedEvent", function(code){
     // Update the global variable
     selectedCountry = code;
 
-    // Draw the lines
-    drawLines(selectedCountry);
-
-    // Redraw the chloropleth
-    drawChloropleth()
-
     // Set the dropdown
     document.getElementById("dropdown_country").value = selectedCountry;
+
+    drawLines(selectedCountry);
+    drawChloropleth();
 });
 
 /**
@@ -81,8 +76,6 @@ events.on("studentDirectionEvent", function(direction) {
     // Set the direction buttons
     document.getElementById("student_direction").elements["direction"].value = direction;
 
-    // Update or draw lines only if a country is selected
-    if (selectedCountry !== "") {
-        drawLines(selectedCountry);
-    }
+    drawLines(selectedCountry);
+    drawChloropleth();
 });
