@@ -17,12 +17,6 @@ let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([
 let path = d3.geoPath().projection(projection);
 let color = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
 
-// Center of country
-let countryCenterCoordinates = d3.map();
-let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
-    countryCenterCoordinates.set(d.country.toLowerCase(), {"long": d.long, "lat": d.lat})
-});
-
 // "Correlation" counts for each pair
 let countryStudentFlows;
 let corStudentCountPromise = d3.csv("data/map/corstudentcount.csv").then(data => {
@@ -42,17 +36,23 @@ let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
     d["country"] = d.country.toLowerCase();
     d["hovered"] = false;
     d["selected"] = false;
-    d["receivingSendingRatio"] = parseFloat(d.receiving) / parseFloat(d.sending);
+    d["recSendRatio"] = parseFloat(d.receiving) / parseFloat(d.sending);
     countryData.set(d.country, d);
 
     codeToNumeric.set(d.country, d.numeric);
     numericToCode.set(d.numeric, d.country);
 });
 
-let chloroplethDataPromise = d3.json("data/map/world-50m.v1.json").then(outline=>{
-    let features = topojson.feature(outline, outline.objects.countries).features;
+let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
+    try {
+        countryData.get(d.country.toLowerCase())["country_pos"] = {"long": d.long, "lat": d.lat}
+    } catch (e) {
+        // Some of the countries are not defined in the countryData so this fails
+    }
+});
 
-    features.map((feat) => {
+let chloroplethDataPromise = d3.json("data/map/world-50m.v1.json").then(outline=>{
+    topojson.feature(outline, outline.objects.countries).features.map((feat) => {
         try {
             let featCode = numericToCode.get(feat.id);
             countryData.get(featCode)["topo"] = feat;
@@ -103,43 +103,26 @@ function drawOutline() {
     countrySelection.enter()
         .append("path")
         .attr("stroke-width", 0)
-        .attr("fill", d => color(d.receivingSendingRatio)) // TODO: use the ratio
         .attr("d", d => path(d.topo))
-        .on('mouseover', d => {
-            events.call('stateOnMouseOver', d.country, d.country);
-        })
-        .on('mouseout', d => {
-            events.call('stateOnMouseOut', d.country, d.country);
-        })
-        .on('click', d => {
-            if (selectedCountry === d.country) {
-                events.call('stateSelectedEvent', "", "");
-            } else {
-                events.call('stateSelectedEvent', c.country, d.country);
-            }
-        })
+        .attr("fill", d => color(d.recSendRatio))
+        .on('mouseover', d => events.call('stateOnMouseOver', d.country, d.country))
+        .on('mouseout', d => events.call('stateOnMouseOut', d.country, d.country))
+        .on('click', d => selectedCountry === d.country
+            ? events.call('stateSelectedEvent', "", "")
+            : events.call('stateSelectedEvent', d.country, d.country))
         .append("title").text(d => {
             try {
-                return d.country + ": " + d.receivingSendingRatio.toFixed(2);
+                return d.country + ": " + d.recSendRatio.toFixed(2);
             } catch (e) {
                 return "unknown";
             }
         });
 
     // Update
-    countrySelection.attr("stroke-width", d => {
-        if (d.hovered) {
-            return 1;
-        } else {
-            return 0;
-        }
-    });
+    countrySelection.attr("stroke-width", d => d.hovered ? 1 : 0);
 }
 
 function drawLines(code) {
-    // Convert the country shortcode into a numeric
-    let numeric = codeToNumeric.get(code);
-
     let incoming = [];
     let outgoing = [];
     let codeCoords = [];
@@ -149,7 +132,7 @@ function drawLines(code) {
         outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
         outgoing.splice(0, 1);
 
-        codeCoords = projection([countryCenterCoordinates.get(code).lat, countryCenterCoordinates.get(code).long]);
+        codeCoords = projection([countryData.get(code).country_pos.lat, countryData.get(code).country_pos.long]);
     }
 
     // Define the selection
@@ -169,7 +152,8 @@ function drawLines(code) {
         .attr("stroke", "rgba(0, 0, 0, 0.8)")
         .attrs({"pointer-events": "none"})
         .attrs((d) => {
-            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
+            let targetCoords = projection([countryData.get(d[0]).country_pos.lat,
+                countryData.get(d[0]).country_pos.long]);
             if (studentDirection === "incoming") {
                 return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
             } else {
@@ -178,7 +162,7 @@ function drawLines(code) {
          })
         .transition().duration(1000)
         .attrs(d => {
-            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
+            let targetCoords = projection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
 
             if (studentDirection === "incoming") {
                 return {"x2": codeCoords[0], "y2": codeCoords[1]};
