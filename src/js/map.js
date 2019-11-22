@@ -34,8 +34,6 @@ let numericToCode = d3.map();
 let countryData = d3.map();
 let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
     d["country"] = d.country.toLowerCase();
-    d["hovered"] = false;
-    d["selected"] = false;
     d["recSendRatio"] = parseFloat(d.receiving) / parseFloat(d.sending);
     countryData.set(d.country, d);
 
@@ -86,12 +84,10 @@ function populateCountryList() {
 }
 
 function highlightState(code) {
-    countryData.get(code).hovered = true;
     drawChloropleth();
 }
 
 function unHiglightState(code) {
-    countryData.get(code).hovered = false;
     drawChloropleth();
 }
 
@@ -120,7 +116,7 @@ function drawChloropleth() {
 
     // Update
     countrySelection
-        .attr("stroke-width", d => d.hovered ? 1 : 0)
+        .attr("stroke-width", d => d.country === selectedCountry ? 1 : 0)
         .attr("fill", d => {
             if (selectedCountry === "") {
                 return mapColor(d.recSendRatio);
@@ -164,23 +160,26 @@ function drawLines(code) {
         .attr("stroke", "rgba(0, 0, 0, 0.8)")
         .attrs({"pointer-events": "none"})
         .attrs((d) => {
-            let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat,
-                countryData.get(d[0]).country_pos.long]);
-            if (studentDirection === "incoming") {
-                return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
-            } else {
-                return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
-            }
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+                if (studentDirection === "incoming") {
+                    return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
+                } else {
+                    return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
+                }
+            } catch (e) { }
          })
         .transition().duration(1000)
         .attrs(d => {
-            let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
 
-            if (studentDirection === "incoming") {
-                return {"x2": codeCoords[0], "y2": codeCoords[1]};
-            } else {
-                return {"x2": targetCoords[0], "y2": targetCoords[1]};
-            }
+                if (studentDirection === "incoming") {
+                    return {"x2": codeCoords[0], "y2": codeCoords[1]};
+                } else {
+                    return {"x2": targetCoords[0], "y2": targetCoords[1]};
+                }
+            } catch (e) { }
         })
         .attr("stroke-width", d => {return d[1] / 200;});
 
