@@ -131,9 +131,7 @@ function drawChloropleth() {
 }
 
 function drawLines(code) {
-    let incoming = [];
-    let outgoing = [];
-    let codeCoords = [];
+    let [incoming, outgoing, codeCoords] = [[], [], []];
 
     if (code !== "") {
         incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
@@ -167,7 +165,7 @@ function drawLines(code) {
                 } else {
                     return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
                 }
-            } catch (e) { }
+            } catch (e) {console.log("Error in " + d.country)}
          })
         .transition().duration(1000)
         .attrs(d => {
@@ -179,7 +177,7 @@ function drawLines(code) {
                 } else {
                     return {"x2": targetCoords[0], "y2": targetCoords[1]};
                 }
-            } catch (e) { }
+            } catch (e) {console.log("Error in " + d.country)}
         })
         .attr("stroke-width", d => {return d[1] / 200;});
 
