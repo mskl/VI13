@@ -70,7 +70,7 @@ Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, rati
         // Create the legend
         drawLegend();
         // Draw the chloropleth
-        drawOutline();
+        drawChloropleth();
     });
 
 function populateCountryList() {
@@ -87,15 +87,15 @@ function populateCountryList() {
 
 function highlightState(code) {
     countryData.get(code).hovered = true;
-    drawOutline();
+    drawChloropleth();
 }
 
 function unHiglightState(code) {
     countryData.get(code).hovered = false;
-    drawOutline();
+    drawChloropleth();
 }
 
-function drawOutline() {
+function drawChloropleth() {
     let countrySelection = countryGroup.selectAll("path")
         .data(countryData.values());
 
@@ -119,7 +119,19 @@ function drawOutline() {
         });
 
     // Update
-    countrySelection.attr("stroke-width", d => d.hovered ? 1 : 0);
+    countrySelection
+        .attr("stroke-width", d => d.hovered ? 1 : 0)
+        .attr("fill", d => {
+            if (selectedCountry === "") {
+                return mapColor(d.recSendRatio);
+            } else {
+                if (d.country === selectedCountry) {
+                    return "yellow";
+                } else {
+                    return "grey";
+                }
+            }
+        });
 }
 
 function drawLines(code) {

@@ -58,14 +58,14 @@ events.on("stateSelectedEvent", function(code){
     // Update the global variable
     selectedCountry = code;
 
-    // Draw the lines if the selected state is not null
-    if (code === "") {
-        drawLines("",);
-        document.getElementById("dropdown_country").value = "";
-    } else {
-        drawLines(selectedCountry, false);
-        document.getElementById("dropdown_country").value = selectedCountry.toLowerCase();
-    }
+    // Draw the lines
+    drawLines(selectedCountry);
+
+    // Redraw the chloropleth
+    drawChloropleth()
+
+    // Set the dropdown
+    document.getElementById("dropdown_country").value = selectedCountry;
 });
 
 /**
