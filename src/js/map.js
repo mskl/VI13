@@ -37,26 +37,28 @@ let coordinatesPromise = d3.csv("data/map/coordinates.csv").then(data => {
 
 let codeToNumeric = d3.map();
 let numericToCode = d3.map();
-let mapRatio = d3.map();
 let countryData = d3.map();
 let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
-    mapRatio.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
-    countryData.set(d.numeric, d);
+    d["country"] = d.country.toLowerCase();
+    d["hovered"] = false;
+    d["selected"] = false;
+    d["receivingSendingRatio"] = parseFloat(d.receiving) / parseFloat(d.sending);
+    countryData.set(d.country, d);
 
-    codeToNumeric.set(d.country.toLowerCase(), d.numeric);
-    numericToCode.set(d.numeric, d.country.toLowerCase());
+    codeToNumeric.set(d.country, d.numeric);
+    numericToCode.set(d.numeric, d.country);
 });
 
-let chloroplethData = d3.map();
 let chloroplethDataPromise = d3.json("data/map/world-50m.v1.json").then(outline=>{
     let features = topojson.feature(outline, outline.objects.countries).features;
 
     features.map((feat) => {
-        feat["color"] = color(mapRatio.get(feat.id));
-        feat["stroke"] = 0;
-
-        let featCode = numericToCode.get(feat.id);
-        chloroplethData.set(featCode, feat);
+        try {
+            let featCode = numericToCode.get(feat.id);
+            countryData.get(featCode)["topo"] = feat;
+        } catch (e) {
+            // Some of the countries are not defined in the countryData so this fails
+        }
     });
 });
 
@@ -84,44 +86,41 @@ function populateCountryList() {
 }
 
 function highlightState(code) {
-    chloroplethData.get(code).stroke = 1;
+    countryData.get(code).hovered = true;
     drawOutline();
 }
 
 function unHiglightState(code) {
-    chloroplethData.get(code).stroke = 0;
+    countryData.get(code).hovered = false;
     drawOutline();
 }
 
 function drawOutline() {
     let countrySelection = countryGroup.selectAll("path")
-        .data(chloroplethData.values());
+        .data(countryData.values());
 
     // Enter
     countrySelection.enter()
         .append("path")
         .attr("stroke-width", 0)
-        .attr("fill", d => d.color)
-        .attr("d", d => path(d))
+        .attr("fill", d => color(d.receivingSendingRatio)) // TODO: use the ratio
+        .attr("d", d => path(d.topo))
         .on('mouseover', d => {
-            let code = countryData.get(d.id).country.toLowerCase();
-            events.call('stateOnMouseOver', code, code);
+            events.call('stateOnMouseOver', d.country, d.country);
         })
         .on('mouseout', d => {
-            let code = countryData.get(d.id).country.toLowerCase();
-            events.call('stateOnMouseOut', code, code);
+            events.call('stateOnMouseOut', d.country, d.country);
         })
         .on('click', d => {
-            if (codeToNumeric.get(selectedCountry) === d.id) {
+            if (selectedCountry === d.country) {
                 events.call('stateSelectedEvent', "", "");
             } else {
-                let countryShortcut = countryData.get(d.id).country.toLowerCase();
-                events.call('stateSelectedEvent', countryShortcut, countryShortcut);
+                events.call('stateSelectedEvent', c.country, d.country);
             }
         })
-        .append("title").text(function(d) {
+        .append("title").text(d => {
             try {
-                return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
+                return d.country + ": " + d.receivingSendingRatio.toFixed(2);
             } catch (e) {
                 return "unknown";
             }
