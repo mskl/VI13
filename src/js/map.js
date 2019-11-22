@@ -127,7 +127,13 @@ function drawOutline() {
         });
 
     // Update
-    countrySelection.attr("stroke-width", d => {return d.stroke});
+    countrySelection.attr("stroke-width", d => {
+        if (d.hovered) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
 }
 
 function drawLines(code) {
