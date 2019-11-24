@@ -67,7 +67,7 @@ function gen_vis() {
     node.append("rect")
         .attr("x", function(d) { return d.x0; })
         .attr("y", function(d) { return d.y0; })
-        .attr("height", function(d) { return d.y1 - d.y0; })
+        .attr("height", function(d) { return d.y1 - d.y0 + 3; })
         .attr("width", function(d) { return d.x1 - d.x0; })
         .attr("fill", function(d) { return parallelsets_color(d.name.replace(/ .*/, "")); })
         .attr("title", function (d) {return d.name + d.index})
@@ -105,19 +105,25 @@ var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode","hoverLink");
 
 dispatch.on("mouseoverNode", function(node){
     console.log("hellomousein");
-
+    if (selectedNode != null){
+        for (i = 0; i < linksToSelectedNode.length; i++) {
+            let htmlLink = d3.select("#link"+ linksToSelectedNode[i].index);
+            htmlLink.attr("stroke-opacity", 0.2);
+        }
+    }
     selectedNode = d3.select("rect[title=\'" + node.name + node.index + "\']");
     //previousColor = selectedNode.style.background;
     selectedNode.attr("fill","black");
+
     linksToSelectedNode = node.sourceLinks.concat(node.targetLinks);
     for (i = 0; i < linksToSelectedNode.length; i++) {
         let htmlLink = d3.select("#link"+ linksToSelectedNode[i].index);
-        htmlLink.transition().duration('50').attr("stroke-opacity", 0.5);
+        htmlLink.transition().duration('50').attr("stroke-opacity", 0.4);
     }
 });
 dispatch.on("mouseoutNode", function(node){
     console.log("hellomouseout");
-    selectedNode.transition().duration('50').attr("fill", parallelsets_color(node.name.replace(/ .*/, "")));
+    selectedNode.attr("fill", parallelsets_color(node.name.replace(/ .*/, "")));
     //change back link opacity to 0.2
     for (i = 0; i < linksToSelectedNode.length; i++) {
         let htmlLink = d3.select("#link"+ linksToSelectedNode[i].index);

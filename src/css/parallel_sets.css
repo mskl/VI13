@@ -18,3 +18,8 @@
 .link:hover {
     stroke-opacity: .5;
 }
+
+.g_main {
+    cursor:pointer;
+    pointer-events: all;
+}
