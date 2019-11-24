@@ -15,7 +15,8 @@ let linesGroup = mapSVG.append("g")
 
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
-let mapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
+let chloroplethMapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
+let selectedMapColor = d3.scaleSequential().domain([0, 1]).interpolator(d3.interpolateBlues);
 
 // "Correlation" counts for each pair
 let countryStudentFlows;
@@ -92,6 +93,18 @@ function unHiglightState(code) {
 }
 
 function drawChloropleth() {
+    // Calculate the total amount of students
+    let totalStudentCount = 0;
+    // TODO: Convert the array into a dict, to make lookups faster instead of O(n)
+    let [incoming, outgoing] = [[], []];
+    if (selectedCountry !== "") {
+       [incoming, outgoing] = getIncomingOutgoingFromCode(selectedCountry);
+        let selected = (studentDirection === "incoming") ? incoming : outgoing;
+
+        // Sum all of the elements in the array
+        totalStudentCount = selected.map(d => d[1]).reduce((x, y) => parseInt(x) + parseInt(y));
+    }
+
     let countrySelection = countryGroup.selectAll("path")
         .data(countryData.values());
 
@@ -100,7 +113,7 @@ function drawChloropleth() {
         .append("path")
         .attr("stroke-width", 0)
         .attr("d", d => mapPath(d.topo))
-        .attr("fill", d => mapColor(d.recSendRatio))
+        .attr("fill", d => chloroplethMapColor(d.recSendRatio))
         .on('mouseover', d => events.call('stateOnMouseOver', d.country, d.country))
         .on('mouseout', d => events.call('stateOnMouseOut', d.country, d.country))
         .on('click', d => selectedCountry === d.country
@@ -116,29 +129,45 @@ function drawChloropleth() {
 
     // Update
     countrySelection
-        .attr("stroke-width", d => d.country === selectedCountry ? 1 : 0)
+        .transition()
+        .duration(1000)
+        .attr("stroke-width", d => d.country === selectedCountry ? 2 : 0)
         .attr("fill", d => {
             if (selectedCountry === "") {
-                return mapColor(d.recSendRatio);
+                return chloroplethMapColor(d.recSendRatio);
             } else {
                 if (d.country === selectedCountry) {
-                    return "yellow";
+                    return "white";
                 } else {
-                    return "grey";
+                    let selected = (studentDirection === "incoming") ? incoming : outgoing;
+                    let num = selected.find(x => x[0] === d.country)[1];
+                    return selectedMapColor(num / totalStudentCount);
                 }
             }
         });
 }
 
-function drawLines(code) {
-    let [incoming, outgoing, codeCoords] = [[], [], []];
+function getIncomingOutgoingFromCode(code) {
+    let [incoming, outgoing] = [[], []];
 
     if (code !== "") {
+        // TODO: Merge countryStudentFlows into countryData array
         incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
         outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
         outgoing.splice(0, 1);
+    }
 
-        codeCoords = mapProjection([countryData.get(code).country_pos.lat, countryData.get(code).country_pos.long]);
+    return [incoming, outgoing];
+}
+
+function drawLines(code) {
+    let [incoming, outgoing] = [[], []];
+    let codeCoords = [];
+
+    if (code !== "") {
+        [incoming, outgoing] = getIncomingOutgoingFromCode(code);
+        codeCoords = mapProjection([countryData.get(code).country_pos.lat,
+                                    countryData.get(code).country_pos.long]);
     }
 
     // Define the selection
@@ -213,7 +242,7 @@ function drawLegend() {
         })
         .attr("width", tickWidth)
         .attr("fill", function(d) {
-            return mapColor(d);
+            return chloroplethMapColor(d);
         });
 
     legend.selectAll("text")
