@@ -23,3 +23,8 @@
     cursor:pointer;
     pointer-events: all;
 }
+
+#parallel_set_title{
+    margin-bottom: 2px;
+    margin-left: 15px;
+}

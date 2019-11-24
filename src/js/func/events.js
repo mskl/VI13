@@ -61,9 +61,11 @@ events.on("stateSelectedEvent", function(code){
     // Draw the lines if the selected state is not null
     if (code === "") {
         drawLines("",);
+        drawSankey(selectedCountry, studentDirection);
         document.getElementById("dropdown_country").value = "";
     } else {
-        drawLines(selectedCountry, false);
+        //drawLines(selectedCountry, false);
+        drawSankey(selectedCountry, studentDirection="outgoing");
         document.getElementById("dropdown_country").value = selectedCountry.toLowerCase();
     }
 });

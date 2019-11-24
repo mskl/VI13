@@ -2,38 +2,58 @@ var selectedNode;
 var previousNodeColor;
 var linksToSelectedNode;
 var selectedLink;
+var degree_data;
 
-var selected_country = null;
 
 
 var svg = d3.select("#parallel_set > svg"),
     setsWidth = +svg.style("width").replace("px", ""),
     setsHeight = +svg.style("height").replace("px", "");
 
-// Square around the whole SVG
-svg.append("rect")
-    .attr("width", setsWidth)
-    .attr("height", setsHeight)
-    .attr("fill", "transparent")
-    .attr("stroke", "black");
+
 
 let formatNumber = d3.format(",.0f"),
     format = function(d) { return formatNumber(d) + " students"; },
     parallelsets_color = d3.scaleOrdinal(d3.schemeCategory10);
 
 
-d3.json("data/parallel_sets/receiving_countryselection_degree.json").then(function (data) {
-    degree_data = data['NO'];
+function drawSankey(selectedCountry, studentDirection){
+    if (selectedCountry == ""){
+        d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
+            degree_data = data;
+            gen_vis();
+        });
+    }
+    else if (selectedCountry && studentDirection == "incoming"){
+        d3.json("data/parallel_sets/receiving_countryselection_degree.json").then(function (data) {
 
-    gen_vis();
+            degree_data = data[selectedCountry.toUpperCase()];
+            console.log(selectedCountry)
+        }).then(function (){
+            gen_vis();
+            console.log("hello")
+        });
+    }
+    else if (selectedCountry && studentDirection=="outgoing"){
+        d3.json("data/parallel_sets/sending_countryselection_degree.json").then(function (data) {
+            degree_data = data[selectedCountry.toUpperCase()];
+            gen_vis(degree_data);
+        });
+    }
+}
+
+d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
+    degree_data = data;
+    gen_vis(degree_data);
 });
 
 function gen_vis() {
+    svg.selectAll("*").remove();
 
     const sankey = d3.sankey()
         .nodeWidth(15)
         .nodePadding(10)
-        .extent([[1, 1], [setsWidth - 1, setsHeight - 6]]).nodeSort(null);
+        .extent([[20, 10], [setsWidth - 10, setsHeight - 10]]).nodeSort(null);
 
     var link = svg.append("g")
         .attr("class", "links")
