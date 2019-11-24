@@ -131,7 +131,7 @@ function drawChloropleth() {
     countrySelection
         .transition()
         .duration(1000)
-        .attr("stroke-width", d => d.country === selectedCountry ? 2 : 0)
+        .attr("stroke-width", d => d.country === selectedCountry ? 1 : 0)
         .attr("fill", d => {
             if (selectedCountry === "") {
                 return chloroplethMapColor(d.recSendRatio);
@@ -221,7 +221,7 @@ function drawLines(code) {
 function drawLegend() {
     // Editable options
     const legendTicks = 10;
-    const legendWidth = 220;
+    const legendWidth = 240;
 
     const [legendMin, legendMax]   = [0                       ,  4];
     const [legendPosX, legendPosY] = [width - legendWidth - 20, 20];
@@ -249,7 +249,7 @@ function drawLegend() {
         .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
         .enter()
         .append("text")
-        .attr("font-size", 8)
+        .attr("font-size", 7)
         .attr("fill", "black")
         .attr("y", legendHeight - 3)
         .attr("x", function (d, i) {

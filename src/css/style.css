@@ -3,6 +3,7 @@ body {
     height: 100vh;
     min-height: 100vh;
     margin: 0;
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
 }
 
 .flex-container {

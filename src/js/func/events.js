@@ -33,7 +33,7 @@ events.on("stateOnMouseOver", function(state){
     console.log("StateOnMouseOver called with \"" + state + "\"");
     assertStateCode(state);
 
-    highlightState(state);
+    // highlightState(state);
 });
 
 /**
@@ -43,7 +43,7 @@ events.on("stateOnMouseOut", function(state){
     console.log("StateOnMouseOut called with \"" + state + "\"");
     assertStateCode(state);
 
-    unHiglightState(state);
+    // unHiglightState(state);
 });
 
 /**
