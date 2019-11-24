@@ -7,21 +7,46 @@
   <title>VI13 project</title>
   <meta name="description" content="InfoViz Project">
 
-  <!-- JS libs -->
+  <!-- stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/options.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/parallel_sets.css">
+  <!-- js libs -->
   <script src="libs/d3.v5.min.js"></script>
   <script src="libs/topojson.v2.min.js"></script>
+  <script src="libs/d3-selection-multi.v1.min.js"></script>
 
   <!-- have to change this to a local lib -->
   <script src="libs/d3-sankey/d3-sankey.min.js"></script>
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/parallel_sets.css">
+  <!-- custom js functions -->
+  <script src="js/func/events.js"></script>
+  <script src="js/func/changeStudentDirection.js"></script>
+  <script src="js/func/changeDropdownCountry.js"></script>
+  <script src="js/func/resizeFunc.js"></script>
 </head>
 
-<body>
-
+<body onresize="resizeFunc()" onload="resizeFunc()">
   <div class="flex-container">
+    <div id="header">
+      <h1>ERASMUS student flow.</h1>
+      <div id="options">
+        <form id="student_direction">
+          <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
+          <label for="direction-incoming-radio">incoming</label>
+          <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
+          <label for="direction-outgoing-radio">outgoing</label>
+        </form>
+        <form id="selected_country">
+          <label>selected country:
+            <select id="dropdown_country" onchange="changeDropdownCountry()">
+              <option value="">none</option>
+            </select>
+          </label>
+        </form>
+      </div>
+    </div>
     <div id="first-row">
       <div class="chart" id="map">
         <svg width="100%" height="100%"></svg>
@@ -43,6 +68,5 @@
       </div>
     </div>
   </div>
-
 </body>
 </html>

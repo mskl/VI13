@@ -1,13 +1,5 @@
-.chart {
-
-}
-
-h1 {
-    margin: 10px 0 10px 0;
-}
-
 body {
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     min-height: 100vh;
     margin: 0;
@@ -21,33 +13,38 @@ body {
     height: 100%;
 }
 
-#first-row {
+#header, #first-row, #second-row {
     display: flex;
     width: 100%;
-    height: 60%;
 }
+
+#header > h1 {
+    padding-left: 0.5em;
+    float: left;
+    margin: 0;
+}
+
+#student_direction, #selected_country {
+    display: inline-block;
+    padding-top: 12px;
+    padding-right: 12px;
+}
+
+#header {
+    height: 5%; /* height is set by JS */
+}
+
+#first-row {
+    height: 55%;
+}
+
 #second-row{
-    display: flex;
-    width: 100%;
     height: 40%;
 }
 
 #map {
     width: 50%;
     fill: transparent;
-}
-
-#map.states {
-    fill: none;
-    stroke: #fff;
-    stroke-linejoin: round;
-}
-
-#map path:hover {
-    stroke: black;
-    stroke-width: 1;
-    stroke-opacity: 0.4;
-    cursor: pointer;
 }
 
 #parallel_set {
@@ -63,5 +60,4 @@ body {
 #boxplot {
     background-color: yellow;
     width: 50%;
-
 }
