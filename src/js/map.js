@@ -282,7 +282,7 @@ function drawLines(code) {
             return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
         })
         .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
-        .attr("stroke-width", d => d.count * 0.005)
+        .attr("stroke-width", d => d.count * 0.05)
         .attr("pointer-events", "none");
 
     lineSelection.exit().remove();
