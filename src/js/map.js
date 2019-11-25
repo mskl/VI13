@@ -93,10 +93,9 @@ function unHiglightState(code) {
 }
 
 function getIncomingOutgoingFromCode(code) {
-    let [incoming, outgoing] = [[], []];
+    let [incoming, outgoing] = [{}, {}];
 
     if (code !== "") {
-        // TODO: Merge countryStudentFlows into countryData array
         incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
         outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
         outgoing.splice(0, 1);
@@ -162,6 +161,7 @@ function drawChloropleth() {
         });
 }
 
+/*
 function drawLines(code) {
     let [incoming, outgoing] = [[], []];
     let codeCoords = [];
@@ -212,7 +212,7 @@ function drawLines(code) {
         .duration(1000)
         .attr("stroke-width", 0)
         .remove();
-}
+}*/
 
 function drawLegend() {
     // Editable options
@@ -267,43 +267,27 @@ function drawLegend() {
         .text("number of students incoming per one outgoing");
 }
 
-/*
-function drawLinesDetailed(countryShortcut) {
-    // Clear all of the lines in the map
-    clearLines();
+function drawLines(code) {
+    // TODO: Clear all of the lines in the map
 
-    // Convert the country shortcode into a numeric
-    let countryCode = codeToNumeric.get(countryShortcut);
+    let lineSelection = linesGroup.selectAll("line")
+        .data(detailedCoordinates.filter(d =>
+            studentDirection === "incoming"
+                ? d.sendingCode === code
+                : d.receivingCode === code));
 
-    mapSVG.append("g")
-        .attr("class", "lines")
-        .selectAll("line")
-        .data(detailedCoordinates.filter(function(d){
-            if (studentDirection === "incoming") {
-                return d.receivingNumeric === countryCode;
-            } else {
-                return d.sendingNumeric === countryCode;
-            }
-
-        }))
-        .enter()
+    lineSelection.enter()
         .append("line")
-        .attr("x1", function (d) {
-            return projection([d.sendLon, d.sendLat])[0]
+        .attrs(d => {
+            let send = mapProjection([d.sendLon, d.sendLat]);
+            let receive = mapProjection([d.receiveLon, d.receiveLat]);
+            return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
         })
-        .attr("y1", function (d) {
-            return projection([d.sendLon, d.sendLat])[1]
-        })
-        .attr("x2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[0]
-        })
-        .attr("y2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[1]
-        })
-        .attr("stroke", "rgba(0, 0, 0, 0.02)")
+        .attr("stroke", "rgba(0, 0, 0, 1)")
         .attr("stroke-width", function () {
             return 1;
         })
         .attr("pointer-events", "none");
+
+    lineSelection.exit().remove();
 }
-*/
