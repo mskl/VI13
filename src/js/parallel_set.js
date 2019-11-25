@@ -6,6 +6,7 @@ var degree_data;
 
 
 
+
 var svg = d3.select("#parallel_set > svg"),
     setsWidth = +svg.style("width").replace("px", ""),
     setsHeight = +svg.style("height").replace("px", "");
@@ -52,7 +53,7 @@ function gen_vis() {
 
     const sankey = d3.sankey()
         .nodeWidth(15)
-        .nodePadding(10)
+        .nodePadding(7)
         .extent([[20, 10], [setsWidth - 10, setsHeight - 10]]).nodeSort(null);
 
     var link = svg.append("g")
@@ -91,17 +92,18 @@ function gen_vis() {
     node.append("rect")
         .attr("x", function(d) { return d.x0; })
         .attr("y", function(d) { return d.y0; })
-        .attr("height", function(d) { return d.y1 - d.y0 + 3; })
+        .attr("height", function(d) { return d.y1 - d.y0; })
         .attr("width", function(d) { return d.x1 - d.x0; })
         .attr("fill", function(d) { return parallelsets_color(d.name.replace(/ .*/, "")); })
         .attr("fill-opacity", 0.7)
         .attr("title", function (d) {return d.name + d.index})
         .attr("stroke", "#000")
         .on("mouseover", function(d){
-        dispatch.call("mouseoverNode", d, d)
-    }).on("mouseout", function(d){
-        dispatch.call("mouseoutNode", d, d)
-    });
+            dispatch.call("mouseoverNode", d, d);
+            dispatch.call("hoverShowTextBox", d, d)})
+        .on("mouseout", function(d){
+            dispatch.call("mouseoutNode", d, d)
+        });
 
     node.append("text")
         .attr("x", function(d) { return d.x0 - 6; })
@@ -126,7 +128,7 @@ function gen_vis() {
     }
 }
 
-var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode","hoverLink");
+var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode","hoverLink", "hoverShowTextBox");
 
 dispatch.on("mouseoverNode", function(node){
     console.log("hellomousein");
@@ -155,6 +157,26 @@ dispatch.on("mouseoutNode", function(node){
         let htmlLink = d3.select("#link"+ linksToSelectedNode[i].index);
         htmlLink.attr("stroke-opacity", 0.2);
     }
+});
+
+/**/
+dispatch.on("hoverShowTextBox", function (node) {
+    var text = svg.selectAll(".nodeInfo").data(node).enter().append("text").attr("class", "nodeInfo");
+    console.log(node.name());
+    text.attr("x", 280)
+        .attr("y", 350)
+        .text(function (d) {
+            linksToNode = node.links();
+            console.log(linksToNode);
+            if (!(d.index in [ 34, 35, 36])) {
+                return d.name + "\n"+ "Bachelorstudents:" + node.links()
+            }else{
+                return "hello pado"
+            }})
+        .attr("font_family", "sans-serif")
+        .attr("font-size", "20px")
+        .attr("fill", "red");
+    console.log("du er teit");
 });
 
 
