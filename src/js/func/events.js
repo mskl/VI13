@@ -56,6 +56,9 @@ events.on("stateSelectedEvent", function(code){
     // Update the global variable
     selectedCountry = code;
 
+    // Hide or unhide the buttons
+    document.getElementById("student_direction").style.visibility = code === "" ? "hidden" : "visible";
+
     // Set the dropdown
     document.getElementById("dropdown_country").value = selectedCountry;
 
