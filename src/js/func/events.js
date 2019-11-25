@@ -79,4 +79,5 @@ events.on("studentDirectionEvent", function(direction) {
 
     drawLines(selectedCountry);
     drawChloropleth();
+    drawSankey(selectedCountry, studentDirection)
 });

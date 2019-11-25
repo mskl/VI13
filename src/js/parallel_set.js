@@ -49,7 +49,12 @@ d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
 });
 
 function gen_sankeyvis() {
-    sankey_svg.selectAll("*").remove();
+    sankey_svg.selectAll("*").transition().duration(1000).remove();
+
+    if(selectedCountry == ""){
+        sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", 18).attr("font-size", 11).text("Outgoing students");
+        sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", setsWidth-95).attr("font-size", 11).text("Incoming student")
+    }
 
     const sankey = d3.sankey()
         .nodeWidth(15)
