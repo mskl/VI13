@@ -84,11 +84,10 @@ function populateCountryList() {
     }
 }
 
-function highlightState(code) {
-    drawChloropleth();
-}
+let highlightedState = "";
 
-function unHiglightState(code) {
+function highlightState(code) {
+    highlightedState = code;
     drawChloropleth();
 }
 
@@ -144,9 +143,9 @@ function drawChloropleth() {
 
     // Update
     countrySelection
+        .attr("stroke-width", d => (d.country === selectedCountry || d.country === highlightedState) ? 1 : 0)
         .transition()
-        .duration(1000)
-        .attr("stroke-width", d => d.country === selectedCountry ? 1 : 0)
+        .duration(600)
         .attr("fill", d => {
             if (selectedCountry === "") {
                 return chloroplethMapColor(d.recSendRatio);
@@ -159,60 +158,6 @@ function drawChloropleth() {
                 }
             }
         });
-}
-
-
-function drawLines(code) {
-    let [incoming, outgoing] = [[], []];
-    let codeCoords = [];
-
-    if (code !== "") {
-        [incoming, outgoing] = getIncomingOutgoingFromCode(code);
-        codeCoords = mapProjection([countryData.get(code).country_pos.lat,
-                                    countryData.get(code).country_pos.long]);
-    }
-
-    // Define the selection
-    let lineSelection = linesGroup.selectAll("line")
-        .data(() => {
-            return studentDirection === "incoming" ? incoming : outgoing;
-        }, (d) => (d[0] + d[1] + codeCoords[0] + codeCoords[1]));
-
-    // Enter
-    lineSelection.enter()
-        .merge(lineSelection)
-        .append("line")
-        .attr("stroke", "rgba(0, 0, 0, 0.8)")
-        .attrs({"pointer-events": "none"})
-        .attrs((d) => {
-            try {
-                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
-                if (studentDirection === "incoming") {
-                    return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
-                } else {
-                    return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
-                }
-            } catch (e) {console.log("Error in " + d.country)}
-         })
-        .transition()
-        .duration(1000)
-        .attrs(d => {
-            try {
-                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
-
-                return studentDirection === "incoming"
-                    ? {"x2": codeCoords[0], "y2": codeCoords[1]}
-                    : {"x2": targetCoords[0], "y2": targetCoords[1]};
-            } catch (e) {console.log("Error in " + d.country)}
-        })
-        .attr("stroke-width", d => {return d[1] / 200;});
-
-    // Exit
-    lineSelection.exit()
-        .transition()
-        .duration(1000)
-        .attr("stroke-width", 0)
-        .remove();
 }
 
 function drawLegend() {
@@ -268,23 +213,77 @@ function drawLegend() {
         .text("number of students incoming per one outgoing");
 }
 
-// function drawLines(code) {
-//     let lineSelection = linesGroup.selectAll("line")
-//         .data(detailedCoordinates.filter(d =>
-//             studentDirection === "incoming"
-//                 ? d.sendingCode === code
-//                 : d.receivingCode === code));
-//
-//     lineSelection.enter()
-//         .append("line")
-//         .attrs(d => {
-//             let send = mapProjection([d.sendLon, d.sendLat]);
-//             let receive = mapProjection([d.receiveLon, d.receiveLat]);
-//             return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
-//         })
-//         .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
-//         .attr("stroke-width", d => d.count * 0.05)
-//         .attr("pointer-events", "none");
-//
-//     lineSelection.exit().remove();
-// }
+function drawLines(code) {
+     let lineSelection = linesGroup.selectAll("line")
+         .data(detailedCoordinates.filter(
+             d => studentDirection === "incoming" ? d.sendingCode === code : d.receivingCode === code),
+             d => d.sendLat + " " + d.sendLon);
+
+     lineSelection.enter()
+         .append("line")
+         .attrs(d => {
+             let send = mapProjection([d.sendLon, d.sendLat]);
+             let receive = mapProjection([d.receiveLon, d.receiveLat]);
+             return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
+         })
+         .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
+         .attr("stroke-width", d => d.count * 0.05)
+         .attr("pointer-events", "none");
+
+     lineSelection.exit().remove();
+}
+
+/*
+function drawLinesSimple(code) {
+    let [incoming, outgoing] = [[], []];
+    let codeCoords = [];
+
+    if (code !== "") {
+        [incoming, outgoing] = getIncomingOutgoingFromCode(code);
+        codeCoords = mapProjection([countryData.get(code).country_pos.lat,
+            countryData.get(code).country_pos.long]);
+    }
+
+    // Define the selection
+    let lineSelection = linesGroup.selectAll("line")
+        .data(() => {
+            return studentDirection === "incoming" ? incoming : outgoing;
+        }, (d) => (d[0] + d[1] + codeCoords[0] + codeCoords[1]));
+
+    // Enter
+    lineSelection.enter()
+        .merge(lineSelection)
+        .append("line")
+        .attr("stroke", "rgba(0, 0, 0, 0.8)")
+        .attrs({"pointer-events": "none"})
+        .attrs((d) => {
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+                if (studentDirection === "incoming") {
+                    return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
+                } else {
+                    return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
+                }
+            } catch (e) {console.log("Error in " + d.country)}
+        })
+        .transition()
+        .duration(1000)
+        .attrs(d => {
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+
+                return studentDirection === "incoming"
+                    ? {"x2": codeCoords[0], "y2": codeCoords[1]}
+                    : {"x2": targetCoords[0], "y2": targetCoords[1]};
+            } catch (e) {console.log("Error in " + d.country)}
+        })
+        .attr("stroke-width", d => {return d[1] / 200;});
+
+    // Exit
+    lineSelection.exit()
+        .transition()
+        .duration(1000)
+        .attr("stroke-width", 0)
+        .remove();
+}
+*/
