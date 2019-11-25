@@ -1,8 +1,12 @@
 #map path {
     /* Is set by JS
     stroke-width: 1; */
-    stroke-opacity: 0.4;
+    /*stroke-opacity: 0.4;*/
     stroke: black;
+}
+
+#map > svg > g.lines {
+    opacity: 0.4;
 }
 
 #map path:hover {

@@ -268,8 +268,6 @@ function drawLegend() {
 }
 
 function drawLines(code) {
-    // TODO: Clear all of the lines in the map
-
     let lineSelection = linesGroup.selectAll("line")
         .data(detailedCoordinates.filter(d =>
             studentDirection === "incoming"
@@ -283,10 +281,8 @@ function drawLines(code) {
             let receive = mapProjection([d.receiveLon, d.receiveLat]);
             return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
         })
-        .attr("stroke", "rgba(0, 0, 0, 1)")
-        .attr("stroke-width", function () {
-            return 1;
-        })
+        .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
+        .attr("stroke-width", d => d.count * 0.005)
         .attr("pointer-events", "none");
 
     lineSelection.exit().remove();
