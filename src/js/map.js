@@ -13,8 +13,7 @@ let countryGroup = mapSVG.append("g")
 let linesGroup = mapSVG.append("g")
     .attr("class", "lines");
 
-let legendGroup = mapSVG.append("g")
-    .attr("class", "legend");
+let mapLegendGroup = null;
 
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
@@ -188,9 +187,14 @@ function drawLegend() {
     const mapLegendTickWidth = mapLegendWidth / mapLegendTicks;
     const mapLegendHeight = mapLegendTickWidth / 2;
 
-    legendGroup.attr("transform", "translate(" + mapLegendPosX + ", " + mapLegendPosY + ")");
+    try {
+        mapLegendGroup.selectAll("*").remove();
+    } catch (e) {}
 
-    legendGroup.selectAll("rect")
+    mapLegendGroup = mapSVG.append("g")
+        .attr("class", "legend").attr("transform", "translate(" + mapLegendPosX + ", " + mapLegendPosY + ")");
+
+    mapLegendGroup.selectAll("rect")
         .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
         .enter()
         .append("rect")
@@ -206,7 +210,7 @@ function drawLegend() {
             }
         });
 
-    legendGroup.selectAll("text")
+    mapLegendGroup.selectAll("text")
         .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
         .enter()
         .append("text")
@@ -229,13 +233,14 @@ function drawLegend() {
             }
         });
 
-    legendGroup.selectAll("text")
+    mapLegendGroup
         .append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
         .attr("y", -3)
         .attr("x", 3)
-        .text("number of students incoming per one outgoing");
+        .text(() =>
+            selectedCountry === "" ? "number of students incoming per one outgoing" : "percent of students incoming or outgoing");
 }
 
 function drawLines(code) {
