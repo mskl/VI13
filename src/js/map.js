@@ -16,7 +16,7 @@ let linesGroup = mapSVG.append("g")
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
 let chloroplethMapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateBlues);
-let selectedMapColor = d3.scaleSequential().domain([0, 0.41]).interpolator(d3.interpolateReds);
+let selectedMapColor = d3.scaleSequential().domain([0, 0.41]).interpolator(d3.interpolatePuRd);
 
 // "Correlation" counts for each pair
 let countryStudentFlows;
@@ -145,7 +145,7 @@ function drawChloropleth() {
     countrySelection
         .attr("stroke-width", d => (d.country === selectedCountry || d.country === highlightedState) ? 1 : 0)
         .transition()
-        .duration(600)
+        .duration(1000)
         .attr("fill", d => {
             if (selectedCountry === "") {
                 return chloroplethMapColor(d.recSendRatio);
@@ -215,20 +215,35 @@ function drawLegend() {
 
 function drawLines(code) {
      let lineSelection = linesGroup.selectAll("line")
-         .data(detailedCoordinates.filter(
-             d => studentDirection === "incoming" ? d.sendingCode === code : d.receivingCode === code),
+         .data(detailedCoordinates.filter(d => studentDirection === "incoming"
+             ? d.sendingCode === code
+             : d.receivingCode === code),
              d => d.sendLat + " " + d.sendLon);
 
      lineSelection.enter()
+         .merge(lineSelection)
          .append("line")
+         .attr("pointer-events", "none")
          .attrs(d => {
              let send = mapProjection([d.sendLon, d.sendLat]);
              let receive = mapProjection([d.receiveLon, d.receiveLat]);
-             return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
+
+             return {"x1": receive[0], "y1": receive[1], "x2": receive[0], "y2": receive[1]};
+         })
+         .transition()
+         .duration(1000)
+         .attrs(d => {
+             let send = mapProjection([d.sendLon, d.sendLat]);
+             let receive = mapProjection([d.receiveLon, d.receiveLat]);
+
+             if (studentDirection === "incoming")
+                return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
+             else
+                 return {"x1": receive[0], "y1": receive[1], "x2": send[0], "y2": send[1]};
          })
          .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
-         .attr("stroke-width", d => d.count * 0.05)
-         .attr("pointer-events", "none");
+         .attr("stroke-width", d => d.count * 0.05);
+
 
      lineSelection.exit().remove();
 }
