@@ -16,7 +16,7 @@ let linesGroup = mapSVG.append("g")
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
 let chloroplethMapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
-let selectedMapColor = d3.scaleSequential().domain([0, 1]).interpolator(d3.interpolateBlues);
+let selectedMapColor = d3.scaleSequential().domain([0, 0.41]).interpolator(d3.interpolateBlues);
 
 // "Correlation" counts for each pair
 let countryStudentFlows;
@@ -92,10 +92,22 @@ function unHiglightState(code) {
     drawChloropleth();
 }
 
+function getIncomingOutgoingFromCode(code) {
+    let [incoming, outgoing] = [[], []];
+
+    if (code !== "") {
+        // TODO: Merge countryStudentFlows into countryData array
+        incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
+        outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
+        outgoing.splice(0, 1);
+    }
+
+    return [incoming, outgoing];
+}
+
 function drawChloropleth() {
     // Calculate the total amount of students
     let totalStudentCount = 0;
-    // TODO: Convert the array into a dict, to make lookups faster instead of O(n)
     let [incoming, outgoing] = [[], []];
     if (selectedCountry !== "") {
        [incoming, outgoing] = getIncomingOutgoingFromCode(selectedCountry);
@@ -103,6 +115,10 @@ function drawChloropleth() {
 
         // Sum all of the elements in the array
         totalStudentCount = selected.map(d => d[1]).reduce((x, y) => parseInt(x) + parseInt(y));
+
+        // Convert the array into an object
+        incoming = incoming.reduce((o, key) => Object.assign(o, {[key[0]]: key[1]}), {});
+        outgoing = outgoing.reduce((o, key) => Object.assign(o, {[key[0]]: key[1]}), {});
     }
 
     let countrySelection = countryGroup.selectAll("path")
@@ -140,24 +156,10 @@ function drawChloropleth() {
                     return "white";
                 } else {
                     let selected = (studentDirection === "incoming") ? incoming : outgoing;
-                    let num = selected.find(x => x[0] === d.country)[1];
-                    return selectedMapColor(num / totalStudentCount);
+                    return selectedMapColor(selected[d.country] / totalStudentCount);
                 }
             }
         });
-}
-
-function getIncomingOutgoingFromCode(code) {
-    let [incoming, outgoing] = [[], []];
-
-    if (code !== "") {
-        // TODO: Merge countryStudentFlows into countryData array
-        incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
-        outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
-        outgoing.splice(0, 1);
-    }
-
-    return [incoming, outgoing];
 }
 
 function drawLines(code) {
@@ -173,11 +175,7 @@ function drawLines(code) {
     // Define the selection
     let lineSelection = linesGroup.selectAll("line")
         .data(() => {
-            if (studentDirection === "incoming") {
-                return incoming;
-            } else {
-                return outgoing;
-            }
+            return studentDirection === "incoming" ? incoming : outgoing;
         }, (d) => (d[0] + d[1] + codeCoords[0] + codeCoords[1]));
 
     // Enter
@@ -201,11 +199,9 @@ function drawLines(code) {
             try {
                 let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
 
-                if (studentDirection === "incoming") {
-                    return {"x2": codeCoords[0], "y2": codeCoords[1]};
-                } else {
-                    return {"x2": targetCoords[0], "y2": targetCoords[1]};
-                }
+                return studentDirection === "incoming"
+                    ? {"x2": codeCoords[0], "y2": codeCoords[1]}
+                    : {"x2": targetCoords[0], "y2": targetCoords[1]};
             } catch (e) {console.log("Error in " + d.country)}
         })
         .attr("stroke-width", d => {return d[1] / 200;});
@@ -253,7 +249,7 @@ function drawLegend() {
         .attr("fill", "black")
         .attr("y", legendHeight - 3)
         .attr("x", function (d, i) {
-            return i*tickWidth + 3;
+            return i * tickWidth + 3;
         })
         .text(function (d, i) {
             if (i % 3 === 0) {
