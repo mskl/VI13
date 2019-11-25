@@ -67,7 +67,7 @@ body {
  }
 
 #barchart {
-    background-color: pink;
+    fill: transparent;
     width: 50%;
 
 }
@@ -75,4 +75,11 @@ body {
 #boxplot {
     background-color: yellow;
     width: 50%;
+}
+
+#selected_parameter {
+    display: inline-block;
+    padding-top: 12px;
+    padding-right: 12px;
+    float: right;
 }
