@@ -1,4 +1,6 @@
-<!-- source: https://bl.ocks.org/denisemauldin/3436a3ae06f73a492228059a515821fe -->
+<!-- source chloropleth: https://bl.ocks.org/denisemauldin/3436a3ae06f73a492228059a515821fe -->
+<!-- source arrowmap: http://bl.ocks.org/Andrew-Reid/8de4b9d0d0a87a478770e0cc86e2f5e4 -->
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,14 +8,41 @@
     <title>Chloropleth map</title>
 
     <!-- stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/options.css">
     <link rel="stylesheet" href="css/map.css">
 
     <!-- js libraries -->
     <script src="libs/d3.v5.min.js"></script>
     <script src="libs/topojson.v2.min.js"></script>
+    <script src="libs/d3-selection-multi.v1.min.js"></script>
+
+    <!-- custom js functions -->
+    <script src="js/func/events.js"></script>
+    <script src="js/func/populateCountryList.js"></script>
+    <script src="js/func/changeStudentDirection.js"></script>
+    <script src="js/func/changeDropdownCountry.js"></script>
+    <script src="js/func/resizeFunc.js"></script>
 </head>
 
-<body>
+<body onresize="resizeFunc()" onload="resizeFunc()">
+    <div id="options">
+        <form id="student_direction">
+            <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
+            <label for="direction-incoming-radio">incoming</label>
+            <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
+            <label for="direction-outgoing-radio">outgoing</label>
+        </form>
+
+        <form id="selected_country">
+            <label>selected country:
+                <select id="dropdown_country" onchange="changeDropdownCountry()">
+                    <option value="">none</option>
+                </select>
+            </label>
+        </form>
+    </div>
+
     <div id="map" style="max-width: 60%; height: 400px">
        <svg width="100%" height="100%">
            <!-- the map -->

@@ -7,62 +7,43 @@
   <title>VI13 project</title>
   <meta name="description" content="InfoViz Project">
 
-  <!-- JS libs -->
+  <!-- stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/options.css">
+  <link rel="stylesheet" href="css/map.css">
+
+  <!-- js libs -->
   <script src="libs/d3.v5.min.js"></script>
   <script src="libs/topojson.v2.min.js"></script>
+  <script src="libs/d3-selection-multi.v1.min.js"></script>
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css">
-
+  <!-- custom js functions -->
+  <script src="js/func/events.js"></script>
+  <script src="js/func/populateCountryList.js"></script>
+  <script src="js/func/changeStudentDirection.js"></script>
+  <script src="js/func/changeDropdownCountry.js"></script>
+  <script src="js/func/resizeFunc.js"></script>
 </head>
 
-<body>
+<body onresize="resizeFunc()" onload="resizeFunc()">
   <div class="flex-container">
     <!-- header -->
     <div id="header">
       <h1>ERASMUS student flow.</h1>
       <div id="options">
-        <script>
-          const studentDirectionEnum = Object.freeze({"incoming":1, "outgoing": 2});
-
-          var studentDirection = studentDirectionEnum.incoming;
-          var selectedCountry = "cz";
-
-          function changedDropdownDirection() {
-            let e = document.getElementById("dropdown_direction");
-            let selected = e.options[e.selectedIndex].value;
-
-            if (selected === "incoming") {
-              studentDirection = studentDirectionEnum.incoming;
-            } else if (selected === "outgoing") {
-              studentDirection = studentDirectionEnum.outgoing;
-            }
-            alert(selected);
-          }
-
-          function changedDropdownCountry() {
-            let e = document.getElementById("dropdown_country");
-            let selected = e.options[e.selectedIndex].value;
-
-            selectedCountry = selected;
-            alert(selectedCountry);
-          }
-        </script>
-
-        student direction:
-        <select id="dropdown_direction", onchange="changedDropdownDirection()">
-          <option value="incoming">Incoming</option>
-          <option value="outgoing">Outgoing</option>
-        </select>
-
-        selected country:
-        <select id="dropdown_country", onchange="changedDropdownCountry()">
-          <option value="cz">Czechia</option>
-          <option value="sk">Slovakia</option>
-          <option value="en">England</option>
-          <option value="sw">Sweden</option>
-          <option value="fi">Finland</option>
-        </select>
+        <form id="student_direction">
+          <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
+          <label for="direction-incoming-radio">incoming</label>
+          <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
+          <label for="direction-outgoing-radio">outgoing</label>
+        </form>
+        <form id="selected_country">
+          <label>selected country:
+            <select id="dropdown_country" onchange="changeDropdownCountry()">
+              <option value="">none</option>
+            </select>
+          </label>
+        </form>
       </div>
     </div>
 
@@ -81,6 +62,7 @@
     <!-- second row -->
     <div id="second-row">
       <div class="chart" id="barchart">
+        <svg width="100%" height="100%"></svg>
         <script src="js/barchart.js"></script>
         <span class="btn" id="col">COL</span>
         <span class="btn" id="rp">RP</span>

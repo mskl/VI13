@@ -1,13 +1,5 @@
-.chart {
-
-}
-
-h1 {
-    margin: 10px 0 10px 0;
-}
-
 body {
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     min-height: 100vh;
     margin: 0;
@@ -26,24 +18,21 @@ body {
     width: 100%;
 }
 
+#header > h1 {
+    padding-left: 0.5em;
+    float: left;
+    margin: 0;
+}
+
+#student_direction, #selected_country {
+    display: inline-block;
+    padding-top: 12px;
+    padding-right: 12px;
+}
+
+/* height is set by JS */
 #header {
     height: 5%;
-    overflow: hidden;
-    display: inline-block;
-    background-color: lightgray;
-}
-
-#header > h1 {
-    display: block;
-    float: left;
-    padding-left: 0.5em;
-}
-
-#header > #options {
-    padding-top: 1%;
-    padding-right: 0.5em;
-    display: block;
-    float: right;
 }
 
 #first-row {
@@ -77,16 +66,13 @@ body {
     width: 40%;
  }
 
-
-#barchart{
-    background-color: white;
+#barchart {
+    background-color: pink;
     width: 50%;
-    height: 400px;
 
 }
 
-#boxplot{
-    background-color: white;
+#boxplot {
+    background-color: yellow;
     width: 50%;
-    height: 400px;
 }
