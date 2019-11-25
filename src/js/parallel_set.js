@@ -7,9 +7,9 @@ var degree_data;
 
 
 
-var svg = d3.select("#parallel_set > svg"),
-    setsWidth = +svg.style("width").replace("px", ""),
-    setsHeight = +svg.style("height").replace("px", "");
+var sankey_svg = d3.select("#parallel_set > svg"),
+    setsWidth = +sankey_svg.style("width").replace("px", ""),
+    setsHeight = +sankey_svg.style("height").replace("px", "");
 
 
 
@@ -22,7 +22,7 @@ function drawSankey(selectedCountry, studentDirection){
     if (selectedCountry == ""){
         d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
             degree_data = data;
-            gen_vis();
+            gen_sankeyvis();
         });
     }
     else if (selectedCountry && studentDirection == "incoming"){
@@ -31,39 +31,39 @@ function drawSankey(selectedCountry, studentDirection){
             degree_data = data[selectedCountry.toUpperCase()];
             console.log(selectedCountry)
         }).then(function (){
-            gen_vis();
+            gen_sankeyvis();
             console.log("hello")
         });
     }
     else if (selectedCountry && studentDirection=="outgoing"){
         d3.json("data/parallel_sets/sending_countryselection_degree.json").then(function (data) {
             degree_data = data[selectedCountry.toUpperCase()];
-            gen_vis(degree_data);
+            gen_sankeyvis(degree_data);
         });
     }
 }
 
 d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
     degree_data = data;
-    gen_vis(degree_data);
+    gen_sankeyvis(degree_data);
 });
 
-function gen_vis() {
-    svg.selectAll("*").remove();
+function gen_sankeyvis() {
+    sankey_svg.selectAll("*").remove();
 
     const sankey = d3.sankey()
         .nodeWidth(15)
         .nodePadding(7)
         .extent([[20, 10], [setsWidth - 10, setsHeight - 10]]).nodeSort(null);
 
-    var link = svg.append("g")
+    var link = sankey_svg.append("g")
         .attr("class", "links")
         .attr("fill", "none")
         .attr("stroke", "#000")
         .attr("stroke-opacity", 0.2)
         .selectAll("path");
 
-    var node = svg.append("g")
+    var node = sankey_svg.append("g")
         .attr("class", "nodes")
         .attr("font-family", "sans-serif")
         .attr("font-size", 10)
@@ -161,7 +161,7 @@ dispatch.on("mouseoutNode", function(node){
 
 /**/
 dispatch.on("hoverShowTextBox", function (node) {
-    var text = svg.selectAll(".nodeInfo").data(node).enter().append("text").attr("class", "nodeInfo");
+    var text = sankey_svg.selectAll(".nodeInfo").data(node).enter().append("text").attr("class", "nodeInfo");
     text.attr("x", 280)
         .attr("y", 350)
         .text(function (d) {
@@ -175,7 +175,6 @@ dispatch.on("hoverShowTextBox", function (node) {
         .attr("font_family", "sans-serif")
         .attr("font-size", "20px")
         .attr("fill", "red");
-    console.log("du er teit");
 });
 
 
