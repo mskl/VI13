@@ -61,6 +61,7 @@ events.on("stateSelectedEvent", function(code){
 
     drawLines(selectedCountry);
     drawChloropleth();
+    drawSankey(selectedCountry, studentDirection);
 });
 
 /**

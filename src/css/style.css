@@ -44,14 +44,14 @@ body {
 }
 
 #map {
-    width: 60%;
+    width: 50%;
     fill: transparent;
 }
 
 #parallel_set {
-    background-color: #005cbf;
-    width: 40%;
+    width: 50%;
  }
+
 
 #barchart {
     background-color: pink;
