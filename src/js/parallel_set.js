@@ -162,7 +162,6 @@ dispatch.on("mouseoutNode", function(node){
 /**/
 dispatch.on("hoverShowTextBox", function (node) {
     var text = svg.selectAll(".nodeInfo").data(node).enter().append("text").attr("class", "nodeInfo");
-    console.log(node.name());
     text.attr("x", 280)
         .attr("y", 350)
         .text(function (d) {
