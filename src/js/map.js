@@ -13,6 +13,9 @@ let countryGroup = mapSVG.append("g")
 let linesGroup = mapSVG.append("g")
     .attr("class", "lines");
 
+let legendGroup = mapSVG.append("g")
+    .attr("class", "legend");
+
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
 let chloroplethMapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateBlues);
@@ -185,11 +188,9 @@ function drawLegend() {
     const mapLegendTickWidth = mapLegendWidth / mapLegendTicks;
     const mapLegendHeight = mapLegendTickWidth / 2;
 
-    let legend = mapSVG.append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(" + mapLegendPosX + ", " + mapLegendPosY + ")");
+    legendGroup.attr("transform", "translate(" + mapLegendPosX + ", " + mapLegendPosY + ")");
 
-    legend.selectAll("rect")
+    legendGroup.selectAll("rect")
         .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
         .enter()
         .append("rect")
@@ -205,7 +206,7 @@ function drawLegend() {
             }
         });
 
-    legend.selectAll("text")
+    legendGroup.selectAll("text")
         .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
         .enter()
         .append("text")
@@ -228,7 +229,7 @@ function drawLegend() {
             }
         });
 
-    legend.selectAll("text")
+    legendGroup.selectAll("text")
         .append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
