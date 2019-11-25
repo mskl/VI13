@@ -15,7 +15,8 @@ let linesGroup = mapSVG.append("g")
 
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
-let mapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
+let chloroplethMapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
+let selectedMapColor = d3.scaleSequential().domain([0, 0.41]).interpolator(d3.interpolateBlues);
 
 // "Correlation" counts for each pair
 let countryStudentFlows;
@@ -34,8 +35,6 @@ let numericToCode = d3.map();
 let countryData = d3.map();
 let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
     d["country"] = d.country.toLowerCase();
-    d["hovered"] = false;
-    d["selected"] = false;
     d["recSendRatio"] = parseFloat(d.receiving) / parseFloat(d.sending);
     countryData.set(d.country, d);
 
@@ -70,7 +69,7 @@ Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, rati
         // Create the legend
         drawLegend();
         // Draw the chloropleth
-        drawOutline();
+        drawChloropleth();
     });
 
 function populateCountryList() {
@@ -86,16 +85,41 @@ function populateCountryList() {
 }
 
 function highlightState(code) {
-    countryData.get(code).hovered = true;
-    drawOutline();
+    drawChloropleth();
 }
 
 function unHiglightState(code) {
-    countryData.get(code).hovered = false;
-    drawOutline();
+    drawChloropleth();
 }
 
-function drawOutline() {
+function getIncomingOutgoingFromCode(code) {
+    let [incoming, outgoing] = [{}, {}];
+
+    if (code !== "") {
+        incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
+        outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
+        outgoing.splice(0, 1);
+    }
+
+    return [incoming, outgoing];
+}
+
+function drawChloropleth() {
+    // Calculate the total amount of students
+    let totalStudentCount = 0;
+    let [incoming, outgoing] = [[], []];
+    if (selectedCountry !== "") {
+       [incoming, outgoing] = getIncomingOutgoingFromCode(selectedCountry);
+        let selected = (studentDirection === "incoming") ? incoming : outgoing;
+
+        // Sum all of the elements in the array
+        totalStudentCount = selected.map(d => d[1]).reduce((x, y) => parseInt(x) + parseInt(y));
+
+        // Convert the array into an object
+        incoming = incoming.reduce((o, key) => Object.assign(o, {[key[0]]: key[1]}), {});
+        outgoing = outgoing.reduce((o, key) => Object.assign(o, {[key[0]]: key[1]}), {});
+    }
+
     let countrySelection = countryGroup.selectAll("path")
         .data(countryData.values());
 
@@ -104,7 +128,7 @@ function drawOutline() {
         .append("path")
         .attr("stroke-width", 0)
         .attr("d", d => mapPath(d.topo))
-        .attr("fill", d => mapColor(d.recSendRatio))
+        .attr("fill", d => chloroplethMapColor(d.recSendRatio))
         .on('mouseover', d => events.call('stateOnMouseOver', d.country, d.country))
         .on('mouseout', d => events.call('stateOnMouseOut', d.country, d.country))
         .on('click', d => selectedCountry === d.country
@@ -119,30 +143,39 @@ function drawOutline() {
         });
 
     // Update
-    countrySelection.attr("stroke-width", d => d.hovered ? 1 : 0);
+    countrySelection
+        .transition()
+        .duration(1000)
+        .attr("stroke-width", d => d.country === selectedCountry ? 1 : 0)
+        .attr("fill", d => {
+            if (selectedCountry === "") {
+                return chloroplethMapColor(d.recSendRatio);
+            } else {
+                if (d.country === selectedCountry) {
+                    return "white";
+                } else {
+                    let selected = (studentDirection === "incoming") ? incoming : outgoing;
+                    return selectedMapColor(selected[d.country] / totalStudentCount);
+                }
+            }
+        });
 }
 
+/*
 function drawLines(code) {
-    let incoming = [];
-    let outgoing = [];
+    let [incoming, outgoing] = [[], []];
     let codeCoords = [];
 
     if (code !== "") {
-        incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
-        outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
-        outgoing.splice(0, 1);
-
-        codeCoords = mapProjection([countryData.get(code).country_pos.lat, countryData.get(code).country_pos.long]);
+        [incoming, outgoing] = getIncomingOutgoingFromCode(code);
+        codeCoords = mapProjection([countryData.get(code).country_pos.lat,
+                                    countryData.get(code).country_pos.long]);
     }
 
     // Define the selection
     let lineSelection = linesGroup.selectAll("line")
         .data(() => {
-            if (studentDirection === "incoming") {
-                return incoming;
-            } else {
-                return outgoing;
-            }
+            return studentDirection === "incoming" ? incoming : outgoing;
         }, (d) => (d[0] + d[1] + codeCoords[0] + codeCoords[1]));
 
     // Enter
@@ -152,23 +185,24 @@ function drawLines(code) {
         .attr("stroke", "rgba(0, 0, 0, 0.8)")
         .attrs({"pointer-events": "none"})
         .attrs((d) => {
-            let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat,
-                countryData.get(d[0]).country_pos.long]);
-            if (studentDirection === "incoming") {
-                return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
-            } else {
-                return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
-            }
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+                if (studentDirection === "incoming") {
+                    return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
+                } else {
+                    return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
+                }
+            } catch (e) {console.log("Error in " + d.country)}
          })
         .transition().duration(1000)
         .attrs(d => {
-            let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
 
-            if (studentDirection === "incoming") {
-                return {"x2": codeCoords[0], "y2": codeCoords[1]};
-            } else {
-                return {"x2": targetCoords[0], "y2": targetCoords[1]};
-            }
+                return studentDirection === "incoming"
+                    ? {"x2": codeCoords[0], "y2": codeCoords[1]}
+                    : {"x2": targetCoords[0], "y2": targetCoords[1]};
+            } catch (e) {console.log("Error in " + d.country)}
         })
         .attr("stroke-width", d => {return d[1] / 200;});
 
@@ -178,12 +212,12 @@ function drawLines(code) {
         .duration(1000)
         .attr("stroke-width", 0)
         .remove();
-}
+}*/
 
 function drawLegend() {
     // Editable options
     const legendTicks = 10;
-    const legendWidth = 220;
+    const legendWidth = 240;
 
     const [legendMin, legendMax]   = [0                       ,  4];
     const [legendPosX, legendPosY] = [width - legendWidth - 20, 20];
@@ -204,18 +238,18 @@ function drawLegend() {
         })
         .attr("width", tickWidth)
         .attr("fill", function(d) {
-            return mapColor(d);
+            return chloroplethMapColor(d);
         });
 
     legend.selectAll("text")
         .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
         .enter()
         .append("text")
-        .attr("font-size", 8)
+        .attr("font-size", 7)
         .attr("fill", "black")
         .attr("y", legendHeight - 3)
         .attr("x", function (d, i) {
-            return i*tickWidth + 3;
+            return i * tickWidth + 3;
         })
         .text(function (d, i) {
             if (i % 3 === 0) {
@@ -233,43 +267,23 @@ function drawLegend() {
         .text("number of students incoming per one outgoing");
 }
 
-/*
-function drawLinesDetailed(countryShortcut) {
-    // Clear all of the lines in the map
-    clearLines();
+function drawLines(code) {
+    let lineSelection = linesGroup.selectAll("line")
+        .data(detailedCoordinates.filter(d =>
+            studentDirection === "incoming"
+                ? d.sendingCode === code
+                : d.receivingCode === code));
 
-    // Convert the country shortcode into a numeric
-    let countryCode = codeToNumeric.get(countryShortcut);
-
-    mapSVG.append("g")
-        .attr("class", "lines")
-        .selectAll("line")
-        .data(detailedCoordinates.filter(function(d){
-            if (studentDirection === "incoming") {
-                return d.receivingNumeric === countryCode;
-            } else {
-                return d.sendingNumeric === countryCode;
-            }
-
-        }))
-        .enter()
+    lineSelection.enter()
         .append("line")
-        .attr("x1", function (d) {
-            return projection([d.sendLon, d.sendLat])[0]
+        .attrs(d => {
+            let send = mapProjection([d.sendLon, d.sendLat]);
+            let receive = mapProjection([d.receiveLon, d.receiveLat]);
+            return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
         })
-        .attr("y1", function (d) {
-            return projection([d.sendLon, d.sendLat])[1]
-        })
-        .attr("x2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[0]
-        })
-        .attr("y2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[1]
-        })
-        .attr("stroke", "rgba(0, 0, 0, 0.02)")
-        .attr("stroke-width", function () {
-            return 1;
-        })
+        .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
+        .attr("stroke-width", d => d.count * 0.005)
         .attr("pointer-events", "none");
+
+    lineSelection.exit().remove();
 }
-*/
