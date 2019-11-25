@@ -194,7 +194,8 @@ function drawLines(code) {
                 }
             } catch (e) {console.log("Error in " + d.country)}
          })
-        .transition().duration(1000)
+        .transition()
+        .duration(1000)
         .attrs(d => {
             try {
                 let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
