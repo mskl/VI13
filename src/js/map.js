@@ -223,11 +223,10 @@ function drawLegend() {
         }).text((d, i) => {
             // Only draw every third tick
             if (i % 3 === 0) {
-                let num = d.toFixed(1);
                 if (selectedCountry === "") {
-                    return num;
+                    return d.toFixed(1);
                 } else {
-                    return num + "%";
+                    return (d*100).toFixed(1) + "%";
                 }
             } else {
                 return "";
