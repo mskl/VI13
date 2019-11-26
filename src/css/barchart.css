@@ -1,0 +1,28 @@
+#barchart {
+    margin: 0 15px 2px 15px;
+}
+#barchart_header {
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#barchart_title {
+    margin: 0px;
+    padding-left: 0.5em;
+}
+
+#barchart_menu {
+    display: block;
+    margin-left: auto;
+    margin-right: 4px;
+    height: auto;
+}
+
+#barchart_selected_parameter {
+    padding: 0;
+}
+
+.bar:hover {
+    opacity:1;
+}

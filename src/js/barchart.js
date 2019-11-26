@@ -1,9 +1,9 @@
 //visualisation is based on the code on website: https://www.d3-graph-gallery.com/graph/barplot_basic.html
 
 var dataset;
-var margin = {top: 30, right: 30, bottom: 70, left: 60};
-width = 600 - margin.left - margin.right;
-height = 280 - margin.top - margin.bottom;
+var margin = {top: 20, right: 20, bottom: 40, left: 40};
+width = 780 - margin.left - margin.right;
+height = 230 - margin.top - margin.bottom;
 
 var svg = d3.select("#barchart")
     .append("svg")
@@ -66,11 +66,32 @@ function gen_vis() {
         .attr("height", function (d) {
             return height - yscale(d.cost);
         })
-        .attr("fill", "#69b3a2");
+        .attr("fill", "#76b3d8")
+        .attr("opacity", "0.7")
+        .attr("class", "bar");
 
     svg.selectAll("rect").append("title") // adding a title for each bar
         .data(dataset)
         .text(function(d) { return d.cost;});
+
+    svg.append("text")
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("y", height+margin.bottom-10)
+        .attr("x", width/2)
+        .text("Country");
+
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (margin.left/2)-8)
+        .attr("x",0 - height / 2)
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("id","ylabel")
+        .text("Index");
+
+
 }
 
 function generateRentalPrice() {
@@ -91,11 +112,26 @@ function generateRentalPrice() {
         .attr("height", function (d) {
             return height - yscale(d.RentIndex);
         })
-        .attr("fill", "#69b3a2")
         .attr("y", function (d) {
             return yscale(d.RentIndex)
         }).select("title")
         .text(function(d) { return d.RentIndex;});
+
+    if(!selectedCountry){
+        svg.selectAll("rect")
+            .attr("fill","#76b3d8")
+    } else {
+        svg.selectAll("rect")
+            .attr("fill","#d47fbc");
+    }
+
+    svg.select("#ylabel")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (margin.left/2)-8)
+        .attr("x",0 - height / 2)
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .text("Index");
 }
 
         function generateBeerPrice() {
@@ -113,10 +149,25 @@ function generateRentalPrice() {
                 .transition() //add smooth transition
                 .duration(1000)
                 .attr("height", function(d) { return height - yscale(d.DomesticBeer); })
-                .attr("fill","#69b3a2")
                 .attr("y", function(d) { return yscale(d.DomesticBeer); })
                 .select("title")
-                .text(function(d) { return d.DomesticBeer;});;
+                .text(function(d) { return d.DomesticBeer;});
+
+            svg.select("#ylabel")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - (margin.left/2)-8)
+                .attr("x",0 - height / 2)
+                .attr("fill", "black")
+                .attr("font-size", 11)
+                .text("EUR");
+
+            if(!selectedCountry){
+                svg.selectAll("rect")
+                    .attr("fill","#76b3d8")
+            } else {
+                svg.selectAll("rect")
+                    .attr("fill","#d47fbc");
+            }
         }
 
         function generateCostOfLiving() {
@@ -133,14 +184,29 @@ function generateRentalPrice() {
                 .transition() //add smooth transition
                 .duration(1000)
                 .attr("height", function(d) { return height - yscale(d.cost); })
-                .attr("fill","#69b3a2")
                 .attr("y", function(d) { return yscale(d.cost); })
                 .select("title")
-                .text(function(d) { return d.cost;});;
+                .text(function(d) { return d.cost;});
+
+            if(!selectedCountry){
+                svg.selectAll("rect")
+                    .attr("fill","#76b3d8")
+            } else {
+                svg.selectAll("rect")
+                    .attr("fill","#d47fbc");
+            }
+
+            svg.select("#ylabel")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - (margin.left/2)-8)
+                .attr("x",0 - height / 2)
+                .attr("fill", "black")
+                .attr("font-size", 11)
+                .text("Index");
         }
 
 function changeDropdownParameter() {
-    var dropdown = document.getElementById("dropdown_parameter");
+    var dropdown = document.getElementById("barchart_dropdown_parameter");
     var dropdownVal = dropdown.value.toLowerCase();
 
     if(!dropdownVal.localeCompare("ri")) {
@@ -149,5 +215,19 @@ function changeDropdownParameter() {
         generateBeerPrice();
     } else {
         generateCostOfLiving();
+    }
+}
+
+function drawBarchart() {
+    console.log("Here");
+    if(selectedCountry){
+    svg.selectAll("rect")
+        .transition() //add smooth transition
+        .duration(1000)
+        .attr("fill","#d47fbc");}else{
+        svg.selectAll("rect")
+            .transition() //add smooth transition
+            .duration(1000)
+            .attr("fill","#76b3d8")
     }
 }

@@ -32,6 +32,9 @@ function assertStudentDirection(direction) {
 events.on("stateOnMouseOver", function(state){
     console.log("StateOnMouseOver called with \"" + state + "\"");
     assertStateCode(state);
+
+    // Highlight the state on the map
+    highlightState(state);
 });
 
 /**
@@ -40,6 +43,9 @@ events.on("stateOnMouseOver", function(state){
 events.on("stateOnMouseOut", function(state){
     console.log("StateOnMouseOut called with \"" + state + "\"");
     assertStateCode(state);
+
+    // Cancel the highlight of the state in the map
+    highlightState("");
 });
 
 /**
@@ -52,14 +58,15 @@ events.on("stateSelectedEvent", function(code){
     // Update the global variable
     selectedCountry = code;
 
-    // Draw the lines if the selected state is not null
-    if (code === "") {
-        drawLines("",);
-        document.getElementById("dropdown_country").value = "";
-    } else {
-        drawLines(selectedCountry, false);
-        document.getElementById("dropdown_country").value = selectedCountry.toLowerCase();
-    }
+    // Hide or unhide the buttons
+    document.getElementById("student_direction").style.visibility = code === "" ? "hidden" : "visible";
+
+    // Set the dropdown
+    document.getElementById("dropdown_country").value = selectedCountry;
+    drawLines(selectedCountry);
+    drawChloropleth();
+    drawSankey(selectedCountry, studentDirection);
+    drawBarchart();
 });
 
 /**
@@ -75,8 +82,6 @@ events.on("studentDirectionEvent", function(direction) {
     // Set the direction buttons
     document.getElementById("student_direction").elements["direction"].value = direction;
 
-    // Update or draw lines only if a country is selected
-    if (selectedCountry !== "") {
-        drawLines(selectedCountry);
-    }
+    drawLines(selectedCountry);
+    drawChloropleth();
 });
