@@ -240,7 +240,7 @@ function drawLegend() {
         .attr("y", -3)
         .attr("x", 3)
         .text(() =>
-            selectedCountry === "" ? "number of students incoming per one outgoing" : "percent of students incoming or outgoing");
+            selectedCountry === "" ? "Number of students incoming per one outgoing" : "Percent of students incoming or outgoing");
 }
 
 function drawLines(code) {
