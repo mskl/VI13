@@ -1,5 +1,6 @@
 #barchart {
-    margin: 0 15px 2px 15px;
+    margin: 0;
+    padding:0 10px 0 10px;
 }
 #barchart_header {
     display: flex;
@@ -8,7 +9,7 @@
 }
 
 #barchart_title {
-    margin: 0px;
+    margin: 0;
     padding-left: 0.5em;
 }
 

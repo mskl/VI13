@@ -15,6 +15,11 @@ body {
     height: 100%;
 }
 
+/*.chart {*/
+/*    border: solid;*/
+/*    border-width: thin;*/
+/*    border-color: gray;*/
+/*}*/
 #header, #first-row, #second-row {
     display: flex;
     width: 100%;
@@ -62,7 +67,6 @@ h1, h4 {
 }
 
 #boxplot {
-    background-color: yellow;
     width: 50%;
 }
 
