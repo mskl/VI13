@@ -31,7 +31,7 @@
   <div class="flex-container">
     <!-- header -->
     <div id="header">
-      <h1>ERASMUS student flow.</h1>
+      <h1 >Erasmus student visualization</h1>
       <div id="options">
         <form id="student_direction" style="visibility: hidden">
           <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
@@ -40,7 +40,7 @@
           <label for="direction-outgoing-radio">outgoing</label>
         </form>
         <form id="selected_country">
-          <label>selected country:
+          <label>Selected country:
             <select id="dropdown_country" onchange="changeDropdownCountry()">
               <option value="">none</option>
             </select>
@@ -52,12 +52,13 @@
     <!-- first row -->
     <div id="first-row">
       <div class="chart" id="map">
-          <svg width="100%" height="100%"></svg>
+        <h4>Student flow</h4>
+        <svg width="100%" height="95%"></svg>
         <script src="js/map.js"></script>
       </div>
       <div class="chart" id="parallel_set">
-        <h3 id="parallel_set_title">Degree flow</h3>
-        <svg width="100%" height="90%"></svg>
+        <h4 id="parallel_set_title">Degree flow</h4>
+        <svg width="100%" height="95%"></svg>
         <script src="js/parallel_set.js"></script>
       </div>
     </div>
@@ -66,7 +67,7 @@
     <div id="second-row">
       <div class="chart" id="barchart">
           <form id="selected_parameter">
-              <label>selected parameter:
+              <label>Selected parameter:
                   <select id="dropdown_parameter" onchange="changeDropdownParameter()">
                       <option value="col">Cost of living</option>
                       <option value="ri">Rental index</option>
