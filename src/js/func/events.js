@@ -2,7 +2,7 @@
 var studentDirection = "incoming";
 var selectedCountry = "";
 
-var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent");
+var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent", "sankeyNodeOnMouseOver", "sankeyNodeOnMouseOut");
 
 /**
  * Assert that the country code is valid. Empty is saved as "".
@@ -39,6 +39,14 @@ events.on("stateOnMouseOver", function(state){
     highlightSankeyNode(state)
 });
 
+events.on("sankeyNodeOnMouseOver", function(state){
+    assertStateCode(state);
+    highlightState(state);
+});
+events.on("sankeyNodeOnMouseOut", function(state){
+    assertStateCode(state);
+    highlightState("");
+});
 /**
  * Is called when hovered off a state.
  */
