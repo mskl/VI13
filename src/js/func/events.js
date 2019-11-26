@@ -63,6 +63,7 @@ events.on("stateSelectedEvent", function(code){
 
     // Set the dropdown
     document.getElementById("dropdown_country").value = selectedCountry;
+
     drawLines(selectedCountry);
     drawChloropleth();
     drawSankey(selectedCountry, studentDirection);

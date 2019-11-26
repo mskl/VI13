@@ -19,13 +19,12 @@
 
     <!-- custom js functions -->
     <script src="js/func/events.js"></script>
-    <script src="js/func/populateCountryList.js"></script>
     <script src="js/func/changeStudentDirection.js"></script>
     <script src="js/func/changeDropdownCountry.js"></script>
     <script src="js/func/resizeFunc.js"></script>
 </head>
 
-<body onresize="resizeFunc()" onload="resizeFunc()">
+<body>
     <div id="options">
         <form id="student_direction">
             <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>

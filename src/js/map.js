@@ -1,146 +1,297 @@
-// numeric -> ratio
-let mapData = d3.map();
-let countryData = d3.map();
-let codeToNumeric = d3.map();
-
 let mapSVG = d3.select("#map > svg"),
-    width = +mapSVG.style("width").replace("px", ""),
-    height = +mapSVG.style("height").replace("px", "");
+    mapSvgWidth = +mapSVG.style("width").replace("px", ""),
+    mapSvgHeight = +mapSVG.style("height").replace("px", "");
 
 // Square around the whole SVG
 mapSVG.append("rect")
     .attr("fill", "transparent")
     .attr("stroke", "black");
 
-// Group of lines
-let linesGroup;
+let countryGroup = mapSVG.append("g")
+    .attr("class", "counties");
 
-let projection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
-let path = d3.geoPath().projection(projection);
-let color = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateReds);
+let linesGroup = mapSVG.append("g")
+    .attr("class", "lines");
 
-let countryCenterCoordinates = d3.map();    // Center of country
-d3.csv("data/map/countrypos.csv", d => {
-    countryCenterCoordinates.set(d.country.toLowerCase(), {"long": d.long, "lat": d.lat})
-});
+let mapLegendGroup = null;
 
-let countryStudentFlows;                    // "Correlation" counts for each pair
-d3.csv("data/map/corstudentcount.csv").then(data => {
+let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
+let mapPath = d3.geoPath().projection(mapProjection);
+let chloroplethMapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateBlues);
+let selectedMapColor = d3.scaleSequential().domain([0, 0.40]).interpolator(d3.interpolatePuRd);
+
+// "Correlation" counts for each pair
+let countryStudentFlows;
+let corStudentCountPromise = d3.csv("data/map/corstudentcount.csv").then(data => {
     countryStudentFlows = data
 });
 
-let detailedCoordinates;                    // Coords for each university
-d3.csv("data/map/coordinates.csv").then(data => {
+// Coords for each university
+let detailedCoordinates;
+let coordinatesPromise = d3.csv("data/map/coordinates.csv").then(data => {
     detailedCoordinates = data;
 });
 
-let promises = [
-    // The outline of world states
-    d3.json("data/map/world-50m.v1.json"),
-    // The data to be used in the map
-    d3.csv("data/map/chloroplet-ratio.csv", d => {
-        mapData.set(d.numeric, parseFloat(d.receiving) / parseFloat(d.sending));
-        countryData.set(d.numeric, d);
-        codeToNumeric.set(d.country.toLowerCase(), d.numeric);
-    })
-];
+let codeToNumeric = d3.map();
+let numericToCode = d3.map();
+let countryData = d3.map();
+let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
+    d["country"] = d.country.toLowerCase();
+    d["recSendRatio"] = parseFloat(d.receiving) / parseFloat(d.sending);
+    countryData.set(d.country, d);
 
-// Editable options
-let legendWidth = 220;
-let legendTicks = 10;
-let legendMin = 0;
-let legendMax = 4;
-let legendPosY = 20;
+    codeToNumeric.set(d.country, d.numeric);
+    numericToCode.set(d.numeric, d.country);
+});
 
-// Calculated stuff
-let legendPosX = width - legendWidth - 20;
-let tickWidth = legendWidth / legendTicks;
-let legendHeight = tickWidth / 2;
+let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
+    try {
+        countryData.get(d.country.toLowerCase())["country_pos"] = {"long": d.long, "lat": d.lat}
+    } catch (e) {
+        // Some of the countries are not defined in the countryData so this fails
+    }
+});
 
-// Create the legend
-drawLegend();
+let chloroplethDataPromise = d3.json("data/map/world-50m.v1.json").then(outline=>{
+    topojson.feature(outline, outline.objects.countries).features.map((feat) => {
+        try {
+            let featCode = numericToCode.get(feat.id);
+            countryData.get(featCode)["topo"] = feat;
+        } catch (e) {
+            // Some of the countries are not defined in the countryData so this fails
+        }
+    });
+});
 
-// Load all of the promises and then call the ready funtion
-Promise.all(promises).then(ready);
+// After all of the premises are loaded, draw the shit.
+Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, ratioPromise, chloroplethDataPromise])
+    .then(() => {
+        // Populate the dropdown menu
+        populateCountryList();
+        // Draw the chloropleth
+        drawChloropleth();
+    });
 
-function ready([outline], reject) {
-    // Add the states to a country dropdown menu
-    populateCountryList();
+function populateCountryList() {
+    let select = document.getElementById("dropdown_country");
 
-    // Draw the map outline
-    drawOutline(outline);
-
-    // Create the group
-    linesGroup = mapSVG.append("g")
-        .attr("class", "lines");
+    for (let i = 0; i < countryData.values().length; i++) {
+        let opt = countryData.values()[i];
+        let el = document.createElement("option");
+        el.textContent = opt.name;
+        el.value = opt.country.toLocaleLowerCase();
+        select.appendChild(el);
+    }
 }
 
-function drawOutline(outline) {
-    let countrySelection = mapSVG.append("g")
-        .attr("class", "counties")
-        .selectAll("path")
-        .data(topojson.feature(outline, outline.objects.countries).features,
-            topojson.feature(outline, outline.objects.countries).features.id);
+let highlightedState = "";
 
-    countrySelection.enter()
-        .append("path")
-        .attr("fill", d => {
-            try {
-                return color(mapData.get(d.id));
-            } catch (error) {
-                /* console.log(d.id, error) */
-            }
-        })
-        .on('click', d => {
-            if (codeToNumeric.get(selectedCountry) === d.id) {
-                events.call('stateSelectedEvent', "", "");
-            } else {
-                let countryShortcut = countryData.get(d.id).country.toLowerCase();
-                events.call('stateSelectedEvent', countryShortcut, countryShortcut);
-            }
-        })
-        .on('mouseover', d => {
-            let code = countryData.get(d.id).country.toLowerCase();
-            events.call('stateOnMouseOver', code, code);
-        })
-        .on('mouseout', d => {
-            let code = countryData.get(d.id).country.toLowerCase();
-            events.call('stateOnMouseOut', code, code);
-        })
-        .attr("d", d => path(d))
-        .append("title").text(function(d) {
-            try {
-                return countryData.get(d.id).country + ": " + mapData.get(d.id).toFixed(2);
-            } catch (error) {
-                /* console.log(d.id, error); */
-            }
-        });
+function highlightState(code) {
+    highlightedState = code;
+    drawChloropleth();
 }
 
-function drawLines(code) {
-    // Convert the country shortcode into a numeric
-    let numeric = codeToNumeric.get(code);
-
-    let incoming = [];
-    let outgoing = [];
-    let codeCoords = [];
+function getIncomingOutgoingFromCode(code) {
+    let [incoming, outgoing] = [{}, {}];
 
     if (code !== "") {
         incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
         outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
         outgoing.splice(0, 1);
+    }
 
-        codeCoords = projection([countryCenterCoordinates.get(code).lat, countryCenterCoordinates.get(code).long]);
+    return [incoming, outgoing];
+}
+
+function drawChloropleth() {
+    // Update the legend
+    drawLegend();
+
+    // Calculate the total amount of students
+    let totalStudentCount = 0;
+    let [incoming, outgoing] = [[], []];
+
+    if (selectedCountry !== "") {
+       [incoming, outgoing] = getIncomingOutgoingFromCode(selectedCountry);
+        let selected = (studentDirection === "incoming") ? incoming : outgoing;
+
+        // Sum all of the elements in the array
+        totalStudentCount = selected.map(d => d[1]).reduce((x, y) => parseInt(x) + parseInt(y));
+
+        // Convert the array into an object
+        incoming = incoming.reduce((o, key) => Object.assign(o, {[key[0]]: key[1]}), {});
+        outgoing = outgoing.reduce((o, key) => Object.assign(o, {[key[0]]: key[1]}), {});
+    }
+
+    let selected = (studentDirection === "incoming") ? incoming : outgoing;
+
+    let countrySelection = countryGroup.selectAll("path")
+        .data(countryData.values());
+
+    // First draw
+    countrySelection.enter()
+        .append("path")
+        .attr("stroke-width", 0)
+        .attr("d", d => mapPath(d.topo))
+        .attr("fill", d => chloroplethMapColor(d.recSendRatio))
+        .on('mouseover', d => events.call('stateOnMouseOver', d.country, d.country))
+        .on('mouseout', d => events.call('stateOnMouseOut', d.country, d.country))
+        .on('click', d => selectedCountry === d.country
+            ? events.call('stateSelectedEvent', "", "")
+            : events.call('stateSelectedEvent', d.country, d.country))
+        .append("title").text(d => d.country + ": " + d.recSendRatio.toFixed(2));
+
+    // Update the text
+    countrySelection.select("title").text(d => {
+        if (selectedCountry !== ""){
+            if (d.country === selectedCountry) {
+                return "";
+            } else {
+                return d.country + ": " + ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%";
+            }
+        } else {
+            return d.country + ": " + d.recSendRatio.toFixed(2);
+        }
+    });
+
+    // Update the stroke
+    countrySelection
+        .attr("stroke-width", d => (d.country === selectedCountry || d.country === highlightedState) ? 1 : 0);
+
+    // Update the colors and stroke
+    countrySelection
+        .transition()
+        .duration(1000)
+        .attr("fill", d => {
+            if (selectedCountry === "") {
+                return chloroplethMapColor(d.recSendRatio);
+            } else {
+                if (d.country === selectedCountry) {
+                    return "white";
+                } else {
+                    return selectedMapColor(selected[d.country] / totalStudentCount);
+                }
+            }
+        });
+}
+
+function drawLegend() {
+    // Editable options
+    const mapLegendTicks = 10;
+    const mapLegendWidth = 240;
+
+    const [mapLegendMin, mapLegendMax] = selectedCountry === ""
+        ? chloroplethMapColor.domain()
+        : selectedMapColor.domain() ;
+    const [mapLegendPosX, mapLegendPosY] = [mapSvgWidth - mapLegendWidth - 20, 20];
+    const mapLegendTickWidth = mapLegendWidth / mapLegendTicks;
+    const mapLegendHeight = mapLegendTickWidth / 2;
+
+    try {
+        mapLegendGroup.selectAll("*").remove();
+    } catch (e) {}
+
+    mapLegendGroup = mapSVG.append("g")
+        .attr("class", "legend").attr("transform", "translate(" + mapLegendPosX + ", " + mapLegendPosY + ")");
+
+    mapLegendGroup.selectAll("rect")
+        .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
+        .enter()
+        .append("rect")
+        .attr("height", mapLegendHeight)
+        .attr("x", function (d, i) {
+            return i * mapLegendTickWidth;
+        }).attr("width", mapLegendTickWidth)
+        .attr("fill", function(d) {
+            if (selectedCountry === "") {
+                return chloroplethMapColor(d);
+            } else {
+                return selectedMapColor(d);
+            }
+        });
+
+    mapLegendGroup.selectAll("text")
+        .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
+        .enter()
+        .append("text")
+        .attr("font-size", 7)
+        .attr("fill", "black")
+        .attr("y", mapLegendHeight - 3)
+        .attr("x", function (d, i) {
+            return i * mapLegendTickWidth + 3;
+        }).text((d, i) => {
+            // Only draw every third tick
+            if (i % 3 === 0) {
+                let num = d.toFixed(1);
+                if (selectedCountry === "") {
+                    return num;
+                } else {
+                    return num + "%";
+                }
+            } else {
+                return "";
+            }
+        });
+
+    mapLegendGroup
+        .append("text")
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("y", -3)
+        .attr("x", 3)
+        .text(() =>
+            selectedCountry === "" ? "number of students incoming per one outgoing" : "percent of students incoming or outgoing");
+}
+
+function drawLines(code) {
+     let lineSelection = linesGroup.selectAll("line")
+         .data(detailedCoordinates.filter(d => studentDirection === "incoming"
+             ? d.sendingCode === code
+             : d.receivingCode === code),
+             d => d.sendLat + " " + d.sendLon);
+
+     lineSelection.enter()
+         .merge(lineSelection)
+         .append("line")
+         .attr("pointer-events", "none")
+         .attrs(d => {
+             let send = mapProjection([d.sendLon, d.sendLat]);
+             let receive = mapProjection([d.receiveLon, d.receiveLat]);
+
+             return {"x1": receive[0], "y1": receive[1], "x2": receive[0], "y2": receive[1]};
+         }).transition()
+         .duration(1000)
+         .attrs(d => {
+             let send = mapProjection([d.sendLon, d.sendLat]);
+             let receive = mapProjection([d.receiveLon, d.receiveLat]);
+
+             if (studentDirection === "incoming")
+                return {"x1": send[0], "y1": send[1], "x2": receive[0], "y2": receive[1]};
+             else
+                 return {"x1": receive[0], "y1": receive[1], "x2": send[0], "y2": send[1]};
+         })
+         .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
+         .attr("stroke-width", d => d.count * 0.07);
+
+
+     lineSelection.exit().remove();
+}
+
+/*
+function drawLinesSimple(code) {
+    let [incoming, outgoing] = [[], []];
+    let codeCoords = [];
+
+    if (code !== "") {
+        [incoming, outgoing] = getIncomingOutgoingFromCode(code);
+        codeCoords = mapProjection([countryData.get(code).country_pos.lat,
+            countryData.get(code).country_pos.long]);
     }
 
     // Define the selection
     let lineSelection = linesGroup.selectAll("line")
         .data(() => {
-            if (studentDirection === "incoming") {
-                return incoming;
-            } else {
-                return outgoing;
-            }
+            return studentDirection === "incoming" ? incoming : outgoing;
         }, (d) => (d[0] + d[1] + codeCoords[0] + codeCoords[1]));
 
     // Enter
@@ -150,22 +301,25 @@ function drawLines(code) {
         .attr("stroke", "rgba(0, 0, 0, 0.8)")
         .attrs({"pointer-events": "none"})
         .attrs((d) => {
-            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
-            if (studentDirection === "incoming") {
-                return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
-            } else {
-                return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
-            }
-         })
-        .transition().duration(1000)
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
+                if (studentDirection === "incoming") {
+                    return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
+                } else {
+                    return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
+                }
+            } catch (e) {console.log("Error in " + d.country)}
+        })
+        .transition()
+        .duration(1000)
         .attrs(d => {
-            let targetCoords = projection([countryCenterCoordinates.get(d[0]).lat, countryCenterCoordinates.get(d[0]).long]);
+            try {
+                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
 
-            if (studentDirection === "incoming") {
-                return {"x2": codeCoords[0], "y2": codeCoords[1]};
-            } else {
-                return {"x2": targetCoords[0], "y2": targetCoords[1]};
-            }
+                return studentDirection === "incoming"
+                    ? {"x2": codeCoords[0], "y2": codeCoords[1]}
+                    : {"x2": targetCoords[0], "y2": targetCoords[1]};
+            } catch (e) {console.log("Error in " + d.country)}
         })
         .attr("stroke-width", d => {return d[1] / 200;});
 
@@ -176,86 +330,4 @@ function drawLines(code) {
         .attr("stroke-width", 0)
         .remove();
 }
-
-function drawLinesDetailed(countryShortcut) {
-    // Clear all of the lines in the map
-    clearLines();
-
-    // Convert the country shortcode into a numeric
-    let countryCode = codeToNumeric.get(countryShortcut);
-
-    mapSVG.append("g")
-        .attr("class", "lines")
-        .selectAll("line")
-        .data(detailedCoordinates.filter(function(d){
-            if (studentDirection === "incoming") {
-                return d.receivingNumeric === countryCode;
-            } else {
-                return d.sendingNumeric === countryCode;
-            }
-
-        }))
-        .enter()
-        .append("line")
-        .attr("x1", function (d) {
-            return projection([d.sendLon, d.sendLat])[0]
-        })
-        .attr("y1", function (d) {
-            return projection([d.sendLon, d.sendLat])[1]
-        })
-        .attr("x2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[0]
-        })
-        .attr("y2", function (d) {
-            return projection([d.receiveLon, d.receiveLat])[1]
-        })
-        .attr("stroke", "rgba(0, 0, 0, 0.02)")
-        .attr("stroke-width", function () {
-            return 1;
-        })
-        .attr("pointer-events", "none");
-}
-
-function drawLegend() {
-    let legend = mapSVG.append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(" + legendPosX + ", " + legendPosY + ")");
-
-    legend.selectAll("rect")
-        .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
-        .enter()
-        .append("rect")
-        .attr("height", legendHeight)
-        .attr("x", function (d, i) {
-            return i*tickWidth;
-        })
-        .attr("width", tickWidth)
-        .attr("fill", function(d) {
-            return color(d);
-        });
-
-    legend.selectAll("text")
-        .data(d3.range(legendMin, legendMax, (legendMax - legendMin) / legendTicks))
-        .enter()
-        .append("text")
-        .attr("font-size", 8)
-        .attr("fill", "black")
-        .attr("y", legendHeight - 3)
-        .attr("x", function (d, i) {
-            return i*tickWidth + 3;
-        })
-        .text(function (d, i) {
-            if (i % 3 === 0) {
-                return d.toFixed(1);
-            } else {
-                return "";
-            }
-        });
-
-    legend.append("text")
-        .attr("fill", "black")
-        .attr("font-size", 11)
-        .attr("y", -3)
-        .attr("x", 3)
-        .text("number of students incoming per one outgoing");
-}
+*/

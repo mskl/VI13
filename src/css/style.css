@@ -3,6 +3,7 @@ body {
     height: 100vh;
     min-height: 100vh;
     margin: 0;
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
 }
 
 .flex-container {
@@ -30,9 +31,8 @@ body {
     padding-right: 12px;
 }
 
-/* height is set by JS */
 #header {
-    height: 5%;
+    height: 5%; /* height is set by JS */
 }
 
 #first-row {
@@ -44,27 +44,14 @@ body {
 }
 
 #map {
-    width: 60%;
+    width: 50%;
     fill: transparent;
 }
 
-#map.states {
-    fill: none;
-    stroke: #fff;
-    stroke-linejoin: round;
-}
-
-#map path:hover {
-    stroke: black;
-    stroke-width: 1;
-    stroke-opacity: 0.4;
-    cursor: pointer;
-}
-
 #parallel_set {
-    background-color: #005cbf;
-    width: 40%;
+    width: 50%;
  }
+
 
 #barchart {
     fill: transparent;
