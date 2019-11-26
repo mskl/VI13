@@ -108,7 +108,7 @@ function gen_sankeyvis() {
             dispatch.call("mouseoutNode", d, d)
         })
         .on("click", function (d) {
-           highlightSankeyNode(d.name)
+           events.call("stateSelectedEvent", d.name.toLowerCase(), d.name.toLowerCase())
         });
 
     node.append("text")
