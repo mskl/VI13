@@ -103,9 +103,16 @@ function gen_sankeyvis() {
         .attr("stroke", "#000")
         .on("mouseover", function(d){
             dispatch.call("mouseoverNode", d, d);
-            dispatch.call("hoverShowTextBox", d, d)})
+            dispatch.call("hoverShowTextBox", d, d);
+            if (d.name.length == 2){
+                events.call("sankeyNodeOnMouseOver", d.name.toLowerCase(), d.name.toLowerCase());
+            }
+        })
         .on("mouseout", function(d){
-            dispatch.call("mouseoutNode", d, d)
+            dispatch.call("mouseoutNode", d, d);
+            if (d.name.length == 2) {
+                events.call("sankeyNodeOnMouseOut", d.name.toLowerCase(), d.name.toLowerCase())
+            }
         })
         .on("click", function (d) {
            events.call("stateSelectedEvent", d.name.toLowerCase(), d.name.toLowerCase())

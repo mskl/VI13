@@ -88,6 +88,7 @@ let highlightedState = "";
 
 function highlightState(code) {
     highlightedState = code;
+    console.log("highlighState")
     drawChloropleth();
 }
 
