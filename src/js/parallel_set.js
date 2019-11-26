@@ -1,11 +1,9 @@
 var selectedNode;
-var previousNodeColor;
+var highlightedNode;
+var highlightedNode2;
 var linksToSelectedNode;
 var selectedLink;
 var degree_data;
-
-
-
 
 var sankey_svg = d3.select("#parallel_set > svg"),
     setsWidth = +sankey_svg.style("width").replace("px", ""),
@@ -50,6 +48,11 @@ d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
 
 function gen_sankeyvis() {
     sankey_svg.selectAll("*").remove();
+
+    if(selectedCountry == ""){
+        sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", 18).attr("font-size", 11).text("Outgoing students");
+        sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", setsWidth-95).attr("font-size", 11).text("Incoming student")
+    }
 
     const sankey = d3.sankey()
         .nodeWidth(15)
@@ -103,6 +106,9 @@ function gen_sankeyvis() {
             dispatch.call("hoverShowTextBox", d, d)})
         .on("mouseout", function(d){
             dispatch.call("mouseoutNode", d, d)
+        })
+        .on("click", function (d) {
+           events.call("stateSelectedEvent", d.name.toLowerCase(), d.name.toLowerCase())
         });
 
     node.append("text")
@@ -127,7 +133,30 @@ function gen_sankeyvis() {
         link.attr("d", path);
     }
 }
+function highlightSankeyNode(country){
+    try{
+        let nodeIndex = degree_data.nodes.find(node => node.name === country.toUpperCase()).index;
+        highlightedNode = d3.select("rect[title=\'" + country.toUpperCase() + nodeIndex + "\']");
+        highlightedNode.attr("stroke-width", 3).attr("fill-opacity", 1);
+        if (selectedCountry === ""){
+            let index2 = degree_data.nodes.length - ((degree_data.nodes.length - 3)/2 - nodeIndex);
+            console.log(index2);
+            highlightedNode2 = d3.select(("rect[title=\'" + country.toUpperCase() + index2  + "\']")).attr("stroke-width", 3).attr("fill-opacity", 1);;
+        }
+    }catch(error){
+        highlightedNode = "none";
+        console.log("Country not highlighted in sankey, because there is no incoming/outgoing students from there for selected country. " );
+    }
 
+}
+function unHighlightSankeyNode() {
+    if (highlightedNode !== "none"){
+        highlightedNode.attr("stroke-width", 1).attr("fill-opacity", 0.7);
+    }
+    if (selectedCountry === ""){
+        highlightedNode2.attr("stroke-width", 1).attr("fill-opacity", 0.7);
+    }
+}
 var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode","hoverLink", "hoverShowTextBox");
 
 dispatch.on("mouseoverNode", function(node){

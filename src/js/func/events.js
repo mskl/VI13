@@ -35,6 +35,8 @@ events.on("stateOnMouseOver", function(state){
 
     // Highlight the state on the map
     highlightState(state);
+    //Highlight sankeynode
+    highlightSankeyNode(state)
 });
 
 /**
@@ -43,7 +45,7 @@ events.on("stateOnMouseOver", function(state){
 events.on("stateOnMouseOut", function(state){
     console.log("StateOnMouseOut called with \"" + state + "\"");
     assertStateCode(state);
-
+    unHighlightSankeyNode();
     // Cancel the highlight of the state in the map
     highlightState("");
 });
@@ -85,4 +87,5 @@ events.on("studentDirectionEvent", function(direction) {
 
     drawLines(selectedCountry);
     drawChloropleth();
+    drawSankey(selectedCountry, studentDirection)
 });
