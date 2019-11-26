@@ -33,7 +33,7 @@
     <div id="header">
       <h1 >Erasmus student visualization</h1>
       <div id="options">
-        <form id="student_direction">
+        <form id="student_direction" style="visibility: hidden">
           <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
           <label for="direction-incoming-radio">incoming</label>
           <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
@@ -78,7 +78,7 @@
         <script src="js/barchart.js"></script>
       </div>
       <div class="chart" id="boxplot">
-        <svg width="100%" height="100%"></svg>
+        <svg width="100%" height="90%"></svg>
        <script src="js/boxplot.js"></script>
       </div>
     </div>

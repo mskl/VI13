@@ -6,7 +6,7 @@
 }
 
 #map > svg > g.lines {
-    opacity: 0.4;
+    opacity: 0.5;
 }
 
 #map path:hover {
