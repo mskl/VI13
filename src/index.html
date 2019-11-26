@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/options.css">
   <link rel="stylesheet" href="css/map.css">
   <link rel="stylesheet" href="css/parallel_sets.css">
+  <link rel="stylesheet" href="css/barchart.css">
   <!-- js libs -->
   <script src="libs/d3.v5.min.js"></script>
   <script src="libs/topojson.v2.min.js"></script>
@@ -66,20 +67,27 @@
     <!-- second row -->
     <div id="second-row">
       <div class="chart" id="barchart">
-          <form id="selected_parameter">
-              <label>Selected parameter:
-                  <select id="dropdown_parameter" onchange="changeDropdownParameter()">
-                      <option value="col">Cost of living</option>
-                      <option value="ri">Rental index</option>
-                      <option value="bp">Beer prince</option>
-                  </select>
-              </label>
-          </form>
+        <div id="barchart_header">
+        <h3 id="barchart_title"> Price index</h3>
+          <div id="barchart_menu">
+            <form id="barchart_selected_parameter">
+                <label>selected parameter:
+                    <select id="barchart_dropdown_parameter" onchange="changeDropdownParameter()">
+                        <option value="col">Cost of living</option>
+                        <option value="ri">Rental index</option>
+                        <option value="bp">Beer price</option>
+                    </select>
+                </label>
+            </form>
+          </div>
+        </div>
+<!--        <svg width="100%" height="90%"></svg>-->
         <script src="js/barchart.js"></script>
       </div>
       <div class="chart" id="boxplot">
-        <svg width="100%" height="90%"></svg>
-       <script src="js/boxplot.js"></script>
+        <img height="100%" src="boxplot.jpg">
+<!--        <svg width="100%" height="90%"></svg>-->
+<!--       <script src="js/boxplot.js"></script>-->
       </div>
     </div>
   </div>
