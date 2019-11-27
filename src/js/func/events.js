@@ -43,10 +43,12 @@ events.on("sankeyNodeOnMouseOver", function(state){
     assertStateCode(state);
     highlightState(state);
 });
+
 events.on("sankeyNodeOnMouseOut", function(state){
     assertStateCode(state);
     highlightState("");
 });
+
 /**
  * Is called when hovered off a state.
  */
