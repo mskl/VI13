@@ -4,17 +4,22 @@ var highlightedNode2;
 var linksToSelectedNode;
 var selectedLink;
 var degree_data;
-
+var sankeyTip;
 var sankey_svg = d3.select("#parallel_set > svg"),
     setsWidth = +sankey_svg.style("width").replace("px", ""),
     setsHeight = +sankey_svg.style("height").replace("px", "");
-
-
 
 let formatNumber = d3.format(",.0f"),
     format = function(d) { return formatNumber(d) + " students"; },
     parallelsets_color = d3.scaleOrdinal(d3.schemeCategory10);
 
+var sankeyTooltip = d3.select("#parallel_set")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("font-size", "16px").style("width", "20px");
+sankeyTooltip.append('div').attr("class", "tipTitle");
+sankeyTooltip.append('div').attr("class", "linkSource");
+sankeyTooltip.append('div').attr("class", "linkValue");
 
 function drawSankey(selectedCountry, studentDirection){
     if (selectedCountry == ""){
@@ -45,6 +50,8 @@ d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
     degree_data = data;
     gen_sankeyvis(degree_data);
 });
+
+
 
 function gen_sankeyvis() {
     sankey_svg.selectAll("*").remove();
@@ -80,7 +87,18 @@ function gen_sankeyvis() {
         .attr("d", d3.sankeyLinkHorizontal())
         .attr("stroke-width", function(d) { return Math.max(1, d.width); })
         .attr("id", function (d) {return "link" + d.index})
+
        ;
+    link.on("mouseover", function (d){
+        sankeyTooltip.select(".tipTitle").html("link.source.name");
+        sankeyTooltip.transition().duration(200).style("display", "block");})
+        .on("mousemove", function(d){
+            sankeyTooltip.style('top', d.y0 )          // NEW
+                .style('left', 100);             // NEW
+        })
+        .on("mouseout", function(){
+            sankeyTooltip.style("display", "none")
+        });
 
 
     // link hover values
@@ -132,7 +150,33 @@ function gen_sankeyvis() {
         else{
             return (d.y1 + d.y0) / 2;
         }})
-        .attr("text-anchor", "end");}
+        .attr("text-anchor", "end");
+
+
+/*
+    sankeyTip = d3.tip().attr("class", "d3-tip").direction("e").offset([0,5]).html(
+        function(d){
+        var content = "<span style='margin-left: 2.5px;'><b>" + "title" + "</b></span><br>";
+        content +=`
+                        <table style="margin-top: 2.5px;">
+                                <tr><td>Max: </td><td style="text-align: right">` + "hello" + `</td></tr>
+                                <tr><td>Q3: </td><td style="text-align: right">` + "hola" + `</td></tr>
+                                <tr><td>Median: </td><td style="text-align: right">` + "bon dia" + `</td></tr>
+                                <tr><td>Q1: </td><td style="text-align: right">` + "boa tarde" + `</td></tr>
+                                <tr><td>Min: </td><td style="text-align: right">` + "bon noite" + `</td></tr>
+                        </table>
+                        `;
+        console.log(d);
+        return content;
+    });
+    sankey_svg.call(sankeyTip);
+
+
+
+
+ */
+}
+
 
 function highlightSankeyNode(country){
     try{
@@ -159,10 +203,10 @@ function unHighlightSankeyNode() {
         highlightedNode2.attr("stroke-width", 0).attr("fill-opacity", 0.7);
     }
 }
-var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode","hoverLink", "hoverShowTextBox");
+var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode", "hoverShowTextBox", "hoverLink");
 
 dispatch.on("mouseoverNode", function(node){
-    console.log("hellomousein");
+
     if (selectedNode != null){
         for (i = 0; i < linksToSelectedNode.length; i++) {
             let htmlLink = d3.select("#link"+ linksToSelectedNode[i].index);
@@ -210,13 +254,11 @@ dispatch.on("hoverShowTextBox", function (node) {
 
 
 dispatch.on("hoverLink", function(link){
-    console.log(link['source'].name);
 
-    if (selectedLink != null){
-        selectedLink.attr("stroke", "#000")
-    }
-    selectedLink = d3.select("#link"+ link.index);
-    let colorToSource =  parallelsets_color(link['source'].name.replace(/ .*/, ""));
-    console.log(colorToSource);
-    selectedLink.attr("stroke", colorToSource);
+    /*sankeyTooltip.html("<span style='color:grey'>Country </span>" + link.source.name) // + d.Prior_disorder + "<br>" + "HR: " +  d.HR)
+        .style("left", (d3.mouse(link)[0]+30) + "px")
+        .style("top", (d3.mouse(link)[1]+30) + "px");
+     */
 });
+
+
