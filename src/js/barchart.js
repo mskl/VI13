@@ -1,91 +1,94 @@
 //visualisation is based on the code on website: https://www.d3-graph-gallery.com/graph/barplot_basic.html
 
-var dataset;
-var margin = {top: 20, right: 20, bottom: 40, left: 40};
-width = 780 - margin.left - margin.right;
-height = 230 - margin.top - margin.bottom;
+var bchDataset;
+var bchMargin = {top: 20, right: 20, bottom: 40, left: 40};
+bchWidth = 780 - bchMargin.left - bchMargin.right;
+bchHeight = 230 - bchMargin.top - bchMargin.bottom;
 
-var svg = d3.select("#barchart")
+var bchXscale = d3.scaleBand();
+var bchXaxis = d3.axisBottom();
+var bchYscale = d3.scaleLinear();
+var bchYaxis = d3.axisLeft();
+
+
+var bchSvg = d3.select("#barchart")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", bchWidth + bchMargin.left + bchMargin.right)
+    .attr("height", bchHeight + bchMargin.top + bchMargin.bottom)
     .append("g")
     .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+        "translate(" + bchMargin.left + "," + bchMargin.top + ")");
 
 
 d3.csv("./data/cost-of-living.csv").then(function (data) {
-dataset = data;
+bchDataset = data;
 gen_vis();
 });
 
+//basic visualisation of cost of living
 function gen_vis() {
-
-    // append the svg object to the body of the page
-
-    //basic visualisation of cost of living
 // X axis
-    var xscale = d3.scaleBand()
-        .range([0, width])
-        .domain(dataset.map(function (d) {
+    bchXscale
+        .range([0, bchWidth])
+        .domain(bchDataset.map(function (d) {
             return d.ISO;
         }))
         .padding(0.2);
-    var xaxis = d3.axisBottom()
-        .scale(xscale);
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .attr("class", "xaxis")
-        .call(xaxis)
+    bchXaxis
+        .scale(bchXscale);
+    bchSvg.append("g")
+        .attr("transform", "translate(0," + bchHeight + ")")
+        .attr("class", "bchXaxis")
+        .call(bchXaxis)
         .selectAll("text")
         .attr("transform", "translate(-10,0)rotate(-45)")
         .style("text-anchor", "end");
 
 // Add Y axis
-    var yscale = d3.scaleLinear()
+    bchYscale
         .domain([0, 130])
-        .range([height, 0]);
-    var yaxis = d3.axisLeft()
-        .scale(yscale);
-    svg.append("g")
-        .attr("class", "yaxis")
-        .call(yaxis);
+        .range([bchHeight, 0]);
+    bchYaxis
+        .scale(bchYscale);
+    bchSvg.append("g")
+        .attr("class", "bchYaxis")
+        .call(bchYaxis);
 
 // Bars
-    svg.selectAll("mybar")
-        .data(dataset)
+    bchSvg.selectAll("mybar")
+        .data(bchDataset)
         .enter()
         .append("rect")
         .attr("x", function (d) {
-            return xscale(d.ISO);
+            return bchXscale(d.ISO);
         })
         .attr("y", function (d) {
-            return yscale(d.cost);
+            return bchYscale(d.cost);
         })
-        .attr("width", xscale.bandwidth())
+        .attr("width", bchXscale.bandwidth())
         .attr("height", function (d) {
-            return height - yscale(d.cost);
+            return bchHeight - bchYscale(d.cost);
         })
-        .attr("fill", "#76b3d8")
+        .attr("fill", "#60e679")
         .attr("opacity", "0.7")
         .attr("class", "bar");
 
-    svg.selectAll("rect").append("title") // adding a title for each bar
-        .data(dataset)
+    bchSvg.selectAll("rect").append("title") // adding a title for each bar
+        .data(bchDataset)
         .text(function(d) { return d.cost;});
 
-    svg.append("text")
+    bchSvg.append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
-        .attr("y", height+margin.bottom-10)
-        .attr("x", width/2)
+        .attr("y", bchHeight+bchMargin.bottom-10)
+        .attr("x", bchWidth/2)
         .text("Country");
 
 
-    svg.append("text")
+    bchSvg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - (margin.left/2)-8)
-        .attr("x",0 - height / 2)
+        .attr("y", 0 - (bchMargin.left/2)-8)
+        .attr("x",0 - bchHeight / 2)
         .attr("fill", "black")
         .attr("font-size", 11)
         .attr("id","ylabel")
@@ -97,113 +100,100 @@ function gen_vis() {
 function generateRentalPrice() {
 
     //visualisation of rental index
-    yscale = d3.scaleLinear()
+    bchYscale
         .domain([0, 60])
-        .range([height, 0]);
-    yaxis = d3.axisLeft()
-        .scale(yscale);
-    svg.select(".yaxis")
-        .call(yaxis);
+        .range([bchHeight, 0]);
+    bchYaxis
+        .scale(bchYscale);
+    bchSvg.select(".bchYaxis")
+        .call(bchYaxis);
 
-    svg.selectAll("rect") //same code, but now we only change values
-        .data(dataset)
+    bchSvg.selectAll("rect") //same code, but now we only change values
+        .data(bchDataset)
         .transition() //add smooth transition
         .duration(1000)
         .attr("height", function (d) {
-            return height - yscale(d.RentIndex);
+            return bchHeight - bchYscale(d.RentIndex);
         })
-        .attr("y", function (d) {
-            return yscale(d.RentIndex)
-        }).select("title")
+        .attr("y", function (d) { return bchYscale(d.RentIndex)})
+        .attr("fill","#e6df60")
+        .select("title")
         .text(function(d) { return d.RentIndex;});
 
-    if(!selectedCountry){
-        svg.selectAll("rect")
-            .attr("fill","#76b3d8")
-    } else {
-        svg.selectAll("rect")
-            .attr("fill","#d47fbc");
-    }
 
-    svg.select("#ylabel")
+    bchSvg.select("#ylabel")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - (margin.left/2)-8)
-        .attr("x",0 - height / 2)
+        .attr("y", 0 - (bchMargin.left/2)-8)
+        .attr("x",0 - bchHeight / 2)
         .attr("fill", "black")
         .attr("font-size", 11)
         .text("Index");
 }
 
-        function generateBeerPrice() {
-            //visualisation of Beer price
-            yscale = d3.scaleLinear()
-                .domain([0, 4])
-                .range([ height, 0]);
-            yaxis = d3.axisLeft()
-                .scale(yscale);
-            svg.select(".yaxis")
-                .call(yaxis);
+function generateBeerPrice() {
+    //visualisation of Beer price
+    bchYscale
+        .domain([0, 4])
+        .range([bchHeight, 0]);
+    bchYaxis
+        .scale(bchYscale);
+    bchSvg.select(".bchYaxis")
+        .call(bchYaxis);
 
-            svg.selectAll("rect") //same code, but now we only change values
-                .data(dataset)
-                .transition() //add smooth transition
-                .duration(1000)
-                .attr("height", function(d) { return height - yscale(d.DomesticBeer); })
-                .attr("y", function(d) { return yscale(d.DomesticBeer); })
-                .select("title")
-                .text(function(d) { return d.DomesticBeer;});
+    bchSvg.selectAll("rect") //same code, but now we only change values
+        .data(bchDataset)
+        .transition() //add smooth transition
+        .duration(1000)
+        .attr("height", function (d) {
+            return bchHeight - bchYscale(d.DomesticBeer);
+        })
+        .attr("y", function (d) {
+            return bchYscale(d.DomesticBeer);
+        })
+        .attr("fill", "#cda555")
+        .select("title")
+        .text(function (d) {
+            return d.DomesticBeer;
+        });
 
-            svg.select("#ylabel")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - (margin.left/2)-8)
-                .attr("x",0 - height / 2)
-                .attr("fill", "black")
-                .attr("font-size", 11)
-                .text("EUR");
+    bchSvg.select("#ylabel")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (bchMargin.left / 2) - 8)
+        .attr("x", 0 - bchHeight / 2)
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .text("EUR");
+}
 
-            if(!selectedCountry){
-                svg.selectAll("rect")
-                    .attr("fill","#76b3d8")
-            } else {
-                svg.selectAll("rect")
-                    .attr("fill","#d47fbc");
-            }
-        }
+function generateCostOfLiving() {
+//visualisation back on cost of living
+    bchYscale
+        .domain([0, 130])
+        .range([ bchHeight, 0]);
+    bchYaxis
+        .scale(bchYscale);
+    bchSvg.select(".bchYaxis")
+        .call(bchYaxis);
+    bchSvg.selectAll("rect") //same code, but now we only change values
+        .data(bchDataset)
+        .transition() //add smooth transition
+        .duration(1000)
+        .attr("height", function(d) { return bchHeight - bchYscale(d.cost); })
+        .attr("y", function(d) { return bchYscale(d.cost); })
+        .attr("fill","#60e679")
+        .select("title")
+        .text(function(d) { return d.cost;});
 
-        function generateCostOfLiving() {
-    //visualisation back on cost of living
-            yscale = d3.scaleLinear()
-                .domain([0, 130])
-                .range([ height, 0]);
-            yaxis = d3.axisLeft()
-                .scale(yscale);
-            svg.select(".yaxis")
-                .call(yaxis);
-            svg.selectAll("rect") //same code, but now we only change values
-                .data(dataset)
-                .transition() //add smooth transition
-                .duration(1000)
-                .attr("height", function(d) { return height - yscale(d.cost); })
-                .attr("y", function(d) { return yscale(d.cost); })
-                .select("title")
-                .text(function(d) { return d.cost;});
 
-            if(!selectedCountry){
-                svg.selectAll("rect")
-                    .attr("fill","#76b3d8")
-            } else {
-                svg.selectAll("rect")
-                    .attr("fill","#d47fbc");
-            }
 
-            svg.select("#ylabel")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - (margin.left/2)-8)
-                .attr("x",0 - height / 2)
-                .attr("fill", "black")
-                .attr("font-size", 11)
-                .text("Index");
-        }
+    bchSvg.select("#ylabel")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (bchMargin.left/2)-8)
+        .attr("x",0 - bchHeight / 2)
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .text("Index");
+}
 
 function changeDropdownParameter() {
     var dropdown = document.getElementById("barchart_dropdown_parameter");
@@ -219,15 +209,15 @@ function changeDropdownParameter() {
 }
 
 function drawBarchart() {
-    console.log("Here");
-    if(selectedCountry){
-    svg.selectAll("rect")
-        .transition() //add smooth transition
-        .duration(1000)
-        .attr("fill","#d47fbc");}else{
-        svg.selectAll("rect")
-            .transition() //add smooth transition
-            .duration(1000)
-            .attr("fill","#76b3d8")
-    }
+    // console.log("Here");
+    // if(selectedCountry){
+    // svg.selectAll("rect")
+    //     .transition() //add smooth transition
+    //     .duration(1000)
+    //     .attr("fill","#d47fbc");}else{
+    //     svg.selectAll("rect")
+    //         .transition() //add smooth transition
+    //         .duration(1000)
+    //         .attr("fill","#76b3d8")
+    // }
 }
