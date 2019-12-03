@@ -90,14 +90,15 @@ function gen_sankeyvis() {
 
        ;
     link.on("mouseover", function (d){
-        sankeyTooltip.select(".tipTitle").html("link.source.name");
-        sankeyTooltip.transition().duration(200).style("display", "block");})
+        //sankeyTooltip.select(".tipTitle").html("link.source.name");
+        //sankeyTooltip.transition().duration(200).style("display", "block");
+        })
         .on("mousemove", function(d){
-            sankeyTooltip.style('top', d.y0 )          // NEW
-                .style('left', 100);             // NEW
+            //sankeyTooltip.style('top', d.y0 )          // NEW
+             //   .style('left', 100);             // NEW
         })
         .on("mouseout", function(){
-            sankeyTooltip.style("display", "none")
+            //sankeyTooltip.style("display", "none")
         });
 
 
