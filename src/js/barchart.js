@@ -95,6 +95,15 @@ function gen_vis() {
         .text("Index");
 
 
+    //selectedCountry line - not visible
+    bchSvg
+        .append('line')
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("y1", 0)
+        .attr("y2", 0)
+        .attr("stroke", "red")
+        .attr("id","countryLine");
 }
 
 function generateRentalPrice() {
@@ -209,7 +218,7 @@ function changeDropdownParameter() {
 }
 
 function drawBarchart() {
-    // console.log("Here");
+    selectedCountryValue();
     // if(selectedCountry){
     // svg.selectAll("rect")
     //     .transition() //add smooth transition
@@ -221,3 +230,65 @@ function drawBarchart() {
     //         .attr("fill","#76b3d8")
     // }
 }
+
+function sortBars() {
+    console.log("sorting");
+    bchDataset.sort(function(a, b) {
+        return b.cost - a.cost;
+    });
+    bchXscale.domain(bchDataset.map(function(d) {
+        return d.ISO;
+    }));
+    bchSvg.selectAll(".bar")
+        .transition()
+        .duration(750)
+        .attr("x", function(d, i) {
+            return bchXscale(d.ISO);
+        });
+
+    var transition = bchSvg.transition().duration(750);
+
+    transition.select(".bchXaxis")
+        .call(bchXaxis);
+}
+
+function selectedCountryValue() {
+    var dropdown = document.getElementById("barchart_dropdown_parameter");
+    var dropdownVal = dropdown.value.toLowerCase();
+
+    var lineValue;
+
+    if(!dropdownVal.localeCompare("ri")) {
+        bchDataset.filter(function(d) {
+            if(!d.ISO.toLowerCase().localeCompare(selectedCountry)) {
+                lineValue = d.RentIndex;
+            }
+        });
+    } else if (!dropdownVal.localeCompare("bp")) {
+        bchDataset.filter(function(d) {
+            if(!d.ISO.toLowerCase().localeCompare(selectedCountry)) {
+                lineValue = d.DomesticBeer;
+            }
+        });
+    } else {
+        bchDataset.filter(function(d) {
+            if(!d.ISO.toLowerCase().localeCompare(selectedCountry)) {
+                lineValue = d.cost;
+            }
+        });
+    }
+    console.log("bch:" + selectedCountry + ":" + lineValue);
+    console.log("bchHeight:" + bchHeight);
+    bchSvg.selectAll("#countryLine")
+        .transition()
+        .duration(1000)
+        .attr("x1", 0)
+        .attr("x2", bchWidth)
+        .attr("y1", function(d) { return bchYscale(lineValue); })
+        .attr("y2", function(d) { return bchYscale(lineValue) })
+        .attr("stroke", "red")
+}
+
+//line change for changing parameters - clean the functions? Maybe one function drawBarchart,
+// where there will be if country selected or not and then if col, bp or ri
+//+ line disapering if country unselected
