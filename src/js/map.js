@@ -1,11 +1,10 @@
+// source chloropleth: https://bl.ocks.org/denisemauldin/3436a3ae06f73a492228059a515821fe
 let mapSVG = d3.select("#map > svg"),
     mapSvgWidth = +mapSVG.style("width").replace("px", ""),
     mapSvgHeight = +mapSVG.style("height").replace("px", "");
 
-// Square around the whole SVG
-mapSVG.append("rect")
-    .attr("fill", "transparent")
-    .attr("stroke", "black");
+// Append a rectangle to the map
+mapSVG.append("rect");
 
 let countryGroup = mapSVG.append("g")
     .attr("class", "counties");

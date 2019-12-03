@@ -143,7 +143,7 @@ function gen_sankeyvis() {
         .attr("dy", "0.35em")
         .attr("text-anchor", "start")
         .text(function(d) { return d.name; })
-        .filter(function(d) { return d.x0 < width / 2; })
+        .filter(function(d) { return d.x0 < (setsWidth) / 2; })
         .attr("x", function(d) { if(d.name == "PhD"){return d.x0+17}
          return d.x1 - 18; })
         .attr("y", function(d){if (d.name == "PhD"){

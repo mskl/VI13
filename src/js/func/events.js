@@ -71,7 +71,14 @@ events.on("stateSelectedEvent", function(code){
     selectedCountry = code;
 
     // Hide or unhide the buttons
-    document.getElementById("student_direction").style.visibility = code === "" ? "hidden" : "visible";
+    let dirButtons = document.getElementById("student_direction");
+    if (code === "") {
+        dirButtons.classList.remove("visible");
+        dirButtons.classList.add("hidden");
+    } else {
+        dirButtons.classList.remove("hidden");
+        dirButtons.classList.add("visible");
+    }
 
     // Set the dropdown
     document.getElementById("dropdown_country").value = selectedCountry;
