@@ -87,7 +87,6 @@ let highlightedState = "";
 
 function highlightState(code) {
     highlightedState = code;
-    console.log("highlighState")
     drawChloropleth();
 }
 
@@ -271,7 +270,6 @@ function drawLines(code) {
          })
          .attr("stroke", d => "rgba(0, 0, 0, 1)") // Math.min(1, d.count/10)
          .attr("stroke-width", d => d.count * 0.07);
-
 
      lineSelection.exit().remove();
 }
