@@ -10,9 +10,6 @@ var bchXaxis = d3.axisBottom();
 var bchYscale = d3.scaleLinear();
 var bchYaxis = d3.axisLeft();
 
-var barchartRentColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateGreens);
-
-
 var bchSvg = d3.select("#barchart")
     .append("svg")
     .attr("width", bchWidth + bchMargin.left + bchMargin.right)
@@ -77,7 +74,13 @@ function gen_vis() {
         })
         .attr("fill", "#60e679")
         .attr("opacity", "0.7")
-        .attr("class", "bar");
+        .attr("stroke-width", "0")
+        .attr("class", "bar")
+        .on('mouseover', d => events.call('barOnMouseOver', d.ISO.toLowerCase(), d.ISO.toLowerCase()))
+        .on('mouseout', d => events.call('barOnMouseOut', d.ISO.toLowerCase(), d.ISO.toLowerCase()))
+        .on('click', d => selectedCountry === d.ISO.toLowerCase()
+            ? events.call('stateSelectedEvent', "", "")
+            : events.call('stateSelectedEvent', d.ISO.toLowerCase(), d.ISO.toLowerCase()));
 
     bchSvg.selectAll("rect").append("title") // adding a title for each bar
         .data(bchDataset)
@@ -123,6 +126,8 @@ function generateRentalPrice() {
     bchSvg.select(".bchYaxis")
         .call(bchYaxis);
 
+    sortDatasetAlphabeticaly();
+
     bchSvg.selectAll("rect") //same code, but now we only change values
         .data(bchDataset)
         .transition() //add smooth transition
@@ -131,7 +136,13 @@ function generateRentalPrice() {
             return bchHeight - bchYscale(d.RentIndex);
         })
         .attr("y", function (d) { return bchYscale(d.RentIndex)})
-        .attr("fill","#e6df60");
+        .attr("fill", function(d) {
+            if(d.ISO.toLowerCase() === selectedCountry.toLowerCase()){
+                return "red";
+            } else {
+                return "#e6df60";
+            }
+        });
 
     if(!selectedCountry) {
         bchSvg.selectAll("rect")
@@ -161,26 +172,34 @@ function generateBeerPrice() {
     bchSvg.select(".bchYaxis")
         .call(bchYaxis);
 
+    sortDatasetAlphabeticaly();
+
     bchSvg.selectAll("rect") //same code, but now we only change values
         .data(bchDataset)
         .transition() //add smooth transition
         .duration(1000)
-        .attr("height", function (d) {
-            return bchHeight - bchYscale(d.DomesticBeer);
-        })
         .attr("y", function (d) {
             return bchYscale(d.DomesticBeer);
         })
-        .attr("fill", "#cda555");
+        .attr("height", function (d) {
+            return bchHeight - bchYscale(d.DomesticBeer);
+        })
+        .attr("fill", function(d) {
+            if(d.ISO.toLowerCase() === selectedCountry.toLowerCase()){
+                return "red";
+            } else {
+                return "#cda555";
+            }
+        });
 
-    if(!selectedCountry) {
+    // if(selectedCountry) {
         bchSvg.selectAll("rect")
             .data(bchDataset)
             .select("title")
             .text(function (d) {
                 return d.DomesticBeer;
             });
-    }
+    // }
 
     bchSvg.select("#ylabel")
         .attr("transform", "rotate(-90)")
@@ -200,13 +219,22 @@ function generateCostOfLiving() {
         .scale(bchYscale);
     bchSvg.select(".bchYaxis")
         .call(bchYaxis);
+
+    sortDatasetAlphabeticaly();
+
     bchSvg.selectAll("rect") //same code, but now we only change values
         .data(bchDataset)
         .transition() //add smooth transition
         .duration(1000)
         .attr("height", function(d) { return bchHeight - bchYscale(d.cost); })
         .attr("y", function(d) { return bchYscale(d.cost); })
-        .attr("fill","#60e679");
+        .attr("fill", function(d) {
+            if(d.ISO.toLowerCase() === selectedCountry.toLowerCase()){
+                return "red";
+            } else {
+                return "#60e679";
+            }
+        });
 
     if(!selectedCountry) {
         bchSvg.selectAll("rect")
@@ -230,7 +258,6 @@ function changePriceParameter() {
     var dropdown = document.getElementById("barchart_dropdown_parameter");
     var dropdownVal = dropdown.value.toLowerCase();
 
-    console.log(bchDataset);
     if(dropdownVal === "ri") {
         generateRentalPrice();
     } else if (dropdownVal === "bp") {
@@ -244,8 +271,55 @@ function changePriceParameter() {
 function drawBarchart() {
 
     sortBars();
+    colourSelectedCountry();
     drawSelectedCountryLine();
 }
+
+function sortBars() {
+    sortDataset();
+
+    bchXscale.domain(bchDataset.map(function(d) {
+        return (d.ISO);
+    }));
+
+    bchSvg.selectAll("rect")
+        .transition()
+        .duration(750)
+        .attr("x", function(d, i) {
+            return bchXscale(d.ISO);
+        });
+
+    var studentRow;
+    if(selectedCountry) {
+        if(studentDirection === "incoming"){
+            studentRow = bchStudentData.map(function (d) {
+                return [d["country"], d[selectedCountry]]
+            });
+
+            bchSvg.selectAll("rect")
+                .select("title")
+                .text(function (d) {
+                    var countryA = studentRow.filter(a => a[0].toLowerCase() === d.ISO.toLowerCase())[0];
+                    return ("incoming students: " + countryA[1]);
+                });
+        } else {
+            studentRow = Object.entries(bchStudentData.filter(d => d.country.toLowerCase() === selectedCountry.toLowerCase())[0]);
+            studentRow.splice(0, 1);
+            bchSvg.selectAll("rect")
+                .select("title")
+                .text(function (d) {
+                    var countryA = studentRow.filter(a => a[0].toLowerCase() === d.ISO.toLowerCase())[0];
+                    return ("outgoing students: " + countryA[1]);
+                });
+        }
+    }
+
+    var transition = bchSvg.transition().duration(750);
+
+    transition.select(".bchXaxis")
+        .call(bchXaxis);
+}
+
 
 function sortDataset() {
     if(selectedCountry) {
@@ -257,37 +331,6 @@ function sortDataset() {
     } else {
         sortDatasetAlphabeticaly();
     }
-}
-function sortBars() {
-    sortDataset();
-
-    bchXscale.domain(bchDataset.map(function(d) {
-        return (d.ISO);
-    }));
-
-    bchSvg.selectAll(".bar")
-        .transition()
-        .duration(750)
-        .attr("x", function(d, i) {
-            return bchXscale(d.ISO);
-        });
-
-    if(selectedCountry) {
-        var studentRow = Object.entries(bchStudentData.filter(d => d.country.toLowerCase() === selectedCountry.toLowerCase())[0]);
-        studentRow.splice(0, 1);
-
-        bchSvg.selectAll(".bar")
-            .select("title")
-            .text(function (d) {
-                var countryA = studentRow.filter(a => a[0].toLowerCase() === d.ISO.toLowerCase())[0];
-                return ("outgoing students: " + countryA[1]);
-            });
-    }
-
-    var transition = bchSvg.transition().duration(750);
-
-    transition.select(".bchXaxis")
-        .call(bchXaxis);
 }
 
 function sortDatasetOutgoing() {
@@ -310,6 +353,7 @@ function sortDatasetOutgoing() {
     });
 }
 
+//sorting the dataset based on the number o incoming students for selected country
 function sortDatasetIncoming() {
     console.log("sorting Incoming");
 
@@ -320,16 +364,18 @@ function sortDatasetIncoming() {
     console.log(studentRow);
 
     bchDataset.sort(function(a, b) {
-        console.log("a:" + a.ISO);
-        var countryA = studentRow.filter(function (d){
-            console.log("d:" + d[0]);
-            return d[0].toLowerCase() === a.ISO.toLowerCase();
-        });
+        var countryA = studentRow.filter(d => d[0].toLowerCase() === a.ISO.toLowerCase());
         var countryB = studentRow.filter(d => d[0].toLowerCase() === b.ISO.toLowerCase());
-        console.log("CA: " + countryA);
-        console.log("CB: " + countryB);
 
-        return countryB[0][1] - countryA[0][1];
+        if (countryA[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
+            console.log("Country A: " + countryA);
+            return 1;
+        } else if (countryB[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
+            console.log("Country B: " + countryB);
+            return -1;
+        } else {
+            return countryB[0][1] - countryA[0][1];
+        }
     });
 }
 
@@ -338,12 +384,26 @@ function sortDatasetAlphabeticaly() {
     bchDataset.sort(function (a,b) {
         return d3.ascending(a.ISO, b.ISO);
     })
-    //
-    // bchDataset.sort(function(a, b) {
-    //     var countryA = studentRow.filter(d => d[0].toLowerCase() === a.ISO.toLowerCase());
-    //     var countryB = studentRow.filter(d => d[0].toLowerCase() === b.ISO.toLowerCase());
-    //     return countryB[0][1] - countryA[0][1];
-    // });
+}
+
+function colourSelectedCountry() {
+    var dropdown = document.getElementById("barchart_dropdown_parameter");
+    var dropdownVal = dropdown.value.toLowerCase();
+
+    bchSvg.selectAll("rect")
+        .attr("fill", function(d) {
+            if(d.ISO.toLowerCase() === selectedCountry.toLowerCase()){
+                return "red";
+            } else {
+                if (dropdownVal === "ri") {
+                    return "#e6df60";
+                } else if (dropdownVal === "bp") {
+                    return "#cda555";
+                } else {
+                    return "#60e679";
+                }
+            }
+        })
 }
 
 //drawing line for the selected country (and make it invisible again if the country is unselected)
@@ -389,3 +449,13 @@ function drawSelectedCountryLine() {
             .attr("stroke", "rgba(0,0,0,0)");
     }
 }
+
+function highlightBarchart(highlitedState) {
+    console.log("hBCH");
+    bchSvg.selectAll(".bar")
+        .attr("opacity", d => (d.ISO.toLowerCase() === highlightedState.toLowerCase()) ? 1 : 0.7)
+        .attr("stroke-width", d => (d.ISO.toLowerCase() === highlightedState.toLowerCase()) ? 1 : 0);
+}
+
+//nefunguje zvýraznění v sankey při mouse hover na barchartu
+//barevná škála pro znázormění počtu studentů

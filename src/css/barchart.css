@@ -24,6 +24,7 @@
     padding: 0;
 }
 
-.bar:hover {
-    opacity:1;
+.bar {
+    stroke: black;
+    stroke-opacity: 0.3;
 }
