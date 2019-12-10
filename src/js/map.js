@@ -241,17 +241,13 @@ function drawLegend() {
             selectedCountry === "" ? "Number of students incoming per one outgoing" : "Percent of students incoming or outgoing");
 }
 
-function drawLines(code, other="") {
+function drawLines(selectedCode, otherCode) {
      let lineSelection = linesGroup.selectAll("line")
          .data(detailedCoordinates.filter(d => {
-             if (other === "") {
+             if (otherCode !== "") {
                  return studentDirection === "incoming"
-                     ? d.sendingCode === code
-                     : d.receivingCode === code
-             } else {
-                 return studentDirection === "incoming"
-                    ? d.sendingCode === code && d.receivingCode === other
-                    : d.receivingCode === code && d.sendingCode === other
+                    ? d.sendingCode === selectedCode && d.receivingCode === otherCode
+                    : d.receivingCode === selectedCode && d.sendingCode === otherCode
              }
          }, d => d.sendLat + " " + d.sendLon));
 
@@ -262,9 +258,9 @@ function drawLines(code, other="") {
          .attrs(d => {
              let send = mapProjection([d.sendLon, d.sendLat]);
              let receive = mapProjection([d.receiveLon, d.receiveLat]);
-
              return {"x1": receive[0], "y1": receive[1], "x2": receive[0], "y2": receive[1]};
-         }).transition()
+         })
+         .transition()
          .duration(1000)
          .attrs(d => {
              let send = mapProjection([d.sendLon, d.sendLat]);

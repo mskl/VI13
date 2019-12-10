@@ -35,18 +35,12 @@ events.on("stateOnMouseOver", function(state){
 
     // Highlight the state on the map
     highlightState(state);
-    //Highlight sankeynode
+
+    // Draw the lines
+    drawLines(selectedCountry, state);
+
+    // Highlight sankeynode
     highlightSankeyNode(state)
-});
-
-events.on("sankeyNodeOnMouseOver", function(state){
-    assertStateCode(state);
-    highlightState(state);
-});
-
-events.on("sankeyNodeOnMouseOut", function(state){
-    assertStateCode(state);
-    highlightState("");
 });
 
 /**
@@ -55,8 +49,30 @@ events.on("sankeyNodeOnMouseOut", function(state){
 events.on("stateOnMouseOut", function(state){
     console.log("StateOnMouseOut called with \"" + state + "\"");
     assertStateCode(state);
-    unHighlightSankeyNode();
+
     // Cancel the highlight of the state in the map
+    highlightState("");
+
+    // Remove the lines
+    drawLines(selectedCountry, "");
+
+    // Unhighlight the SanKey nodes
+    unHighlightSankeyNode();
+});
+
+/**
+ * On mouseover over sankey diagram connection
+ */
+events.on("sankeyNodeOnMouseOver", function(state){
+    assertStateCode(state);
+    highlightState(state);
+});
+
+/**
+ * On mouseout from the sankey diagram connection
+ */
+events.on("sankeyNodeOnMouseOut", function(state){
+    assertStateCode(state);
     highlightState("");
 });
 
@@ -83,9 +99,16 @@ events.on("stateSelectedEvent", function(code){
     // Set the dropdown
     document.getElementById("dropdown_country").value = selectedCountry;
 
-    drawLines(selectedCountry);
+    // Draw the chloropleth
     drawChloropleth();
+
+    // Clear the drawn lines
+    drawLines(selectedCountry, "");
+
+    // Draw the sankey
     drawSankey(selectedCountry, studentDirection);
+
+    // Draw the barchart
     drawBarchart();
 });
 
