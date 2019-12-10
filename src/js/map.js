@@ -106,7 +106,19 @@ var mapTip = d3.tip().attr('class', 'd3-tip').html(
                     <td>${state}: ${value}</td>
                 </tr>
             </table>
-`});
+`}).offset(state => {
+    if (state === "France") {
+        return [0, 170];
+    } else if (state === "Spain") {
+        return [0, 50];
+    } else if (state === "Portugal") {
+        return [40, 90];
+    } else if (state === "Norway") {
+        return [100, 0];
+    } else {
+        return [0, 0];
+    }
+});
 
 /**
  * Get arrays of incoming and arrays of outgoing based on the country code
@@ -170,10 +182,10 @@ function drawChloropleth() {
             // Show the tip box
             if (selectedCountry !== ""){
                 if (d.country !== selectedCountry) {
-                    mapTip.show(d.country, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
+                    mapTip.show(d.name, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
                 }
             } else {
-                mapTip.show(d.country, d.recSendRatio.toFixed(2));
+                mapTip.show(d.name, d.recSendRatio.toFixed(2));
             }
         })
         .on('mouseout', d => {
@@ -192,10 +204,10 @@ function drawChloropleth() {
         // Show the tip box
         if (selectedCountry !== ""){
             if (d.country !== selectedCountry) {
-                mapTip.show(d.country, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
+                mapTip.show(d.name, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
             }
         } else {
-            mapTip.show(d.country, d.recSendRatio.toFixed(2));
+            mapTip.show(d.name, d.recSendRatio.toFixed(2));
         }
     }).call(mapTip);
 
