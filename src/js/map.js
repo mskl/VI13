@@ -241,12 +241,19 @@ function drawLegend() {
             selectedCountry === "" ? "Number of students incoming per one outgoing" : "Percent of students incoming or outgoing");
 }
 
-function drawLines(code) {
+function drawLines(code, other="") {
      let lineSelection = linesGroup.selectAll("line")
-         .data(detailedCoordinates.filter(d => studentDirection === "incoming"
-             ? d.sendingCode === code
-             : d.receivingCode === code),
-             d => d.sendLat + " " + d.sendLon);
+         .data(detailedCoordinates.filter(d => {
+             if (other === "") {
+                 return studentDirection === "incoming"
+                     ? d.sendingCode === code
+                     : d.receivingCode === code
+             } else {
+                 return studentDirection === "incoming"
+                    ? d.sendingCode === code && d.receivingCode === other
+                    : d.receivingCode === code && d.sendingCode === other
+             }
+         }, d => d.sendLat + " " + d.sendLon));
 
      lineSelection.enter()
          .merge(lineSelection)
