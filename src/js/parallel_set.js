@@ -41,7 +41,12 @@ var sankeyNodeTip = d3.tip().attr('class', 'd3-tip').html(
             content += `<table style="margin-top: 2.5px;"> ` + nodesWithSource.join('') + `</table>`;
         }
         return content;
-    });
+    }).direction(function (d) {
+    if (d.index > 34){
+        return "nw"
+    }
+    else return "ne";
+});
 
 function drawSankey(selectedCountry, studentDirection){
     if (selectedCountry == ""){
