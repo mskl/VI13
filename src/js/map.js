@@ -96,29 +96,33 @@ function highlightState(code) {
 }
 
 /**
- * Map tooltip
+ * Map tooltip function. The offset is fixed for some of the countries.
  */
 var mapTip = d3.tip().attr('class', 'd3-tip').html(
-    (state, value) => {
-        return `
-            <table style="margin-top: 2.5px;">
-                <tr>
-                    <td>${state}: ${value}</td>
-                </tr>
-            </table>
-`}).offset(state => {
-    if (state === "France") {
-        return [0, 170];
-    } else if (state === "Spain") {
-        return [0, 50];
-    } else if (state === "Portugal") {
-        return [40, 90];
-    } else if (state === "Norway") {
-        return [100, 0];
-    } else {
-        return [0, 0];
-    }
-});
+    (stateCode, entries) => {
+        let rowString = "";
+
+        // Accumulate rows
+        Object.entries(entries).forEach(
+            ([key, value]) => {
+                rowString += `<tr><td>${key}: ${value}</td></tr>`
+            }
+        );
+
+        return `<table style="margin-top: 2.5px;">${rowString}</table>`})
+    .offset((stateCode) => {
+        if (stateCode === "fr") {
+            return [0, 170];
+        } else if (stateCode === "es") {
+            return [0, 50];
+        } else if (stateCode === "pt") {
+            return [40, 90];
+        } else if (stateCode === "no") {
+            return [100, 0];
+        } else {
+            return [0, 0];
+        }
+    });
 
 /**
  * Get arrays of incoming and arrays of outgoing based on the country code
@@ -170,6 +174,33 @@ function drawChloropleth() {
     let selected = (studentDirection === "incoming") ? incoming : outgoing;
     let countrySelection = countryGroup.selectAll("path").data(countryData.values());
 
+    function callToolTip(d) {
+        let entries = null;
+        if (selectedCountry !== "" && d.country !== selectedCountry) {
+            if (studentDirection === "incoming") {
+                entries = {
+                    name: d.name,
+                    "Incoming": selected[d.country],
+                    "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(2) + "%"
+                };
+            } else {
+                entries = {
+                    name: d.name,
+                    "Outgoing": selected[d.country],
+                    "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(2) + "%"
+                };
+            }
+        } else {
+            entries = {
+                name: d.name,
+                "Incoming": d.receiving,
+                "Outgoing": d.sending
+            };
+        }
+
+        mapTip.show(d.country, entries);
+    }
+
     // First draw
     countrySelection.enter()
         .append("path")
@@ -178,15 +209,7 @@ function drawChloropleth() {
         .attr("fill", d => chloroplethMapColor(d.recSendRatio))
         .on('mouseover', d => {
             events.call('stateOnMouseOver', d.country, d.country);
-
-            // Show the tip box
-            if (selectedCountry !== ""){
-                if (d.country !== selectedCountry) {
-                    mapTip.show(d.name, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
-                }
-            } else {
-                mapTip.show(d.name, d.recSendRatio.toFixed(2));
-            }
+            callToolTip(d);
         })
         .on('mouseout', d => {
             events.call('stateOnMouseOut', d.country, d.country);
@@ -200,15 +223,7 @@ function drawChloropleth() {
     // Update the text
     countrySelection.on('mouseover', d => {
         events.call('stateOnMouseOver', d.country, d.country);
-
-        // Show the tip box
-        if (selectedCountry !== ""){
-            if (d.country !== selectedCountry) {
-                mapTip.show(d.name, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
-            }
-        } else {
-            mapTip.show(d.name, d.recSendRatio.toFixed(2));
-        }
+        callToolTip(d);
     }).call(mapTip);
 
     // Update the colors and stroke
@@ -262,7 +277,7 @@ function drawLegend() {
         .attr("height", (mapLegendHeight + padding_y) * 2)
         .attr("transform", `translate(${-padding_x}, ${-(mapLegendHeight + padding_y)})`)
         .attr("fill", "white")
-        .attr("stroke-width", 0.2)
+        .attr("stroke-width", 0.1)
         .attr("stroke", "black")
         .classed("legend");
 
@@ -332,7 +347,7 @@ function drawLines(selectedCode, otherCode) {
      lineSelection.enter()
          .merge(lineSelection)
          .append("line")
-         .attr("stroke", "rgba(0, 0, 0, 1)")
+         .attr("stroke", "rgba(0, 0, 0, 0.5)")
          .attr("pointer-events", "none")
          .attr("stroke-width", 0)
          .attrs(d => {
@@ -350,9 +365,9 @@ function drawLines(selectedCode, otherCode) {
              else
                  return {"x1": receive[0], "y1": receive[1], "x2": send[0], "y2": send[1]};
          })
-         .attr("stroke-width", d => d.count * 0.07);
+         .attr("stroke-width", d => d.count * 0.05);
 
-         /*
+     /*
          .append("path")
          .attr('d', function(d) {
                  if (studentDirection === "incoming")
