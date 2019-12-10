@@ -60,10 +60,10 @@ function drawSankey(selectedCountry, studentDirection){
         d3.json("data/parallel_sets/receiving_countryselection_degree.json").then(function (data) {
 
             degree_data = data[selectedCountry.toUpperCase()];
-            console.log(selectedCountry)
+            // console.log(selectedCountry)
         }).then(function (){
             gen_sankeyvis();
-            console.log("hello")
+            // console.log("hello")
         });
     }
     else if (selectedCountry && studentDirection=="outgoing"){
@@ -194,7 +194,7 @@ function highlightSankeyNode(country){
         highlightedNode.attr("stroke", "#000").attr("stroke-width", 1.5).attr("fill-opacity", 1);
         if (selectedCountry === ""){
             let index2 = degree_data.nodes.length - ((degree_data.nodes.length - 3)/2 - nodeIndex);
-            console.log(index2);
+            // console.log(index2);
             highlightedNode2 = d3.select(("rect[title=\'" + country.toUpperCase() + index2  + "\']")).attr("stroke", "#000").attr("stroke-width", 1.5).attr("fill-opacity", 1);;
         }
     }catch(error){
@@ -232,7 +232,7 @@ dispatch.on("mouseoverNode", function(node){
     }
 });
 dispatch.on("mouseoutNode", function(node){
-    console.log("hellomouseout");
+    // console.log("hellomouseout");
     selectedNode.attr("stroke-width", 0).attr("fill-opacity", 0.7);
 
     //change back link opacity to 0.2
