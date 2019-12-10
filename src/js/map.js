@@ -9,6 +9,8 @@ let mapLegendGroup = null;
 let countryGroup = mapSVG.append("g").attr("class", "counties");
 let linesGroup = mapSVG.append("g").attr("class", "lines");
 
+// Variable used in the map only
+let highlightedState = "";
 
 // let mapProjection = d3.geoEquirectangular().center([8, 25]).scale(550).rotate([-8, -25, 0]);
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
@@ -84,8 +86,6 @@ function populateCountryList() {
     }
 }
 
-let highlightedState = "";
-
 /**
  * Highlight a state
  * @param code: code of the state
@@ -94,6 +94,19 @@ function highlightState(code) {
     highlightedState = code;
     drawChloropleth();
 }
+
+/**
+ * Map tooltip
+ */
+var mapTip = d3.tip().attr('class', 'd3-tip').html(
+    (state, value) => {
+        return `
+            <table style="margin-top: 2.5px;">
+                <tr>
+                    <td>${state}: ${value}</td>
+                </tr>
+            </table>
+`});
 
 /**
  * Get arrays of incoming and arrays of outgoing based on the country code
@@ -123,7 +136,7 @@ function drawChloropleth() {
     } else {
         document.querySelector("#map > h4").innerHTML = studentDirection === "incoming"
             ? "students incoming to " + countryData.get(selectedCountry).name
-            : "students ougtoing from " + countryData.get(selectedCountry).name
+            : "students outgoing from " + countryData.get(selectedCountry).name
     }
 
     // Calculate the total amount of students
@@ -151,25 +164,40 @@ function drawChloropleth() {
         .attr("stroke-width", 0)
         .attr("d", d => mapPath(d.topo))
         .attr("fill", d => chloroplethMapColor(d.recSendRatio))
-        .on('mouseover', d => events.call('stateOnMouseOver', d.country, d.country))
-        .on('mouseout', d => events.call('stateOnMouseOut', d.country, d.country))
+        .on('mouseover', d => {
+            events.call('stateOnMouseOver', d.country, d.country);
+
+            // Show the tip box
+            if (selectedCountry !== ""){
+                if (d.country !== selectedCountry) {
+                    mapTip.show(d.country, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
+                }
+            } else {
+                mapTip.show(d.country, d.recSendRatio.toFixed(2));
+            }
+        })
+        .on('mouseout', d => {
+            events.call('stateOnMouseOut', d.country, d.country);
+            mapTip.hide();
+        })
         .on('click', d => selectedCountry === d.country
             ? events.call('stateSelectedEvent', "", "")
             : events.call('stateSelectedEvent', d.country, d.country))
-        .append("title").text(d => d.country + ": " + d.recSendRatio.toFixed(2));
+        .call(mapTip);
 
     // Update the text
-    countrySelection.select("title").text(d => {
+    countrySelection.on('mouseover', d => {
+        events.call('stateOnMouseOver', d.country, d.country);
+
+        // Show the tip box
         if (selectedCountry !== ""){
-            if (d.country === selectedCountry) {
-                return "";
-            } else {
-                return d.country + ": " + ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%";
+            if (d.country !== selectedCountry) {
+                mapTip.show(d.country, ((selected[d.country] / totalStudentCount)*100).toFixed(2) + "%");
             }
         } else {
-            return d.country + ": " + d.recSendRatio.toFixed(2);
+            mapTip.show(d.country, d.recSendRatio.toFixed(2));
         }
-    });
+    }).call(mapTip);
 
     // Update the colors and stroke
     countrySelection
@@ -189,13 +217,17 @@ function drawChloropleth() {
         });
 }
 
+/**
+ * Draw the legend based on the selected coutry variable.
+ * The legend is removed before creating a new one.
+ */
 function drawLegend() {
     // Editable options
     const mapLegendTicks = 10;
     const mapLegendWidth = 240;
 
-    const [mapLegendMin, mapLegendMax]
-        = selectedCountry === ""
+    const [mapLegendMin, mapLegendMax] =
+        selectedCountry === ""
         ? chloroplethMapColor.domain()
         : selectedMapColor.domain() ;
 
@@ -231,7 +263,6 @@ function drawLegend() {
         .attr("stroke", "black")
         .attr("stroke-width", 0.01)
         .attr("x", function (d, i) {
-            console.log("d" + d , " i" + i);
             return i * mapLegendTickWidth;
         })
         .attr("fill", function(d) {

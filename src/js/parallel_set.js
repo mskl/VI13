@@ -23,6 +23,7 @@ var sankeyLinkTip = d3.tip().attr('class', 'd3-tip').html(
                         `;
         return content;
     });
+
 var sankeyNodeTip = d3.tip().attr('class', 'd3-tip').html(
     function(d){
         let content = `<span style='margin-left: 1.5px;'><b>` + d.name + `</b></span><br>`;
