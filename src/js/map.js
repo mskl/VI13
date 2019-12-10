@@ -105,10 +105,9 @@ var mapTip = d3.tip().attr('class', 'd3-tip').html(
         // Accumulate rows
         Object.entries(entries).forEach(
             ([key, value]) => {
-                rowString += `<tr><td>${key}: ${value}</td></tr>`
+                rowString += `<tr><td>${key}</td><td>${value}</td></tr>`
             }
         );
-
         return `<table style="margin-top: 2.5px;">${rowString}</table>`})
     .offset((stateCode) => {
         if (stateCode === "fr") {
@@ -175,26 +174,30 @@ function drawChloropleth() {
     let countrySelection = countryGroup.selectAll("path").data(countryData.values());
 
     function callToolTip(d) {
+        function formatNumber(num) {
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ')
+        }
+
         let entries = null;
         if (selectedCountry !== "" && d.country !== selectedCountry) {
             if (studentDirection === "incoming") {
                 entries = {
-                    name: d.name,
-                    "Incoming": selected[d.country],
-                    "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(2) + "%"
+                    [d.name]: "",
+                    "Incoming": formatNumber(selected[d.country]),
+                    "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             } else {
                 entries = {
-                    name: d.name,
-                    "Outgoing": selected[d.country],
-                    "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(2) + "%"
+                    [d.name]: "",
+                    "Outgoing:": formatNumber(selected[d.country]),
+                    "Percentage:": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             }
         } else {
             entries = {
-                name: d.name,
-                "Incoming": d.receiving,
-                "Outgoing": d.sending
+                [d.name]: "",
+                "Incoming:": formatNumber(d.receiving),
+                "Outgoing:": formatNumber(d.sending)
             };
         }
 
@@ -226,11 +229,14 @@ function drawChloropleth() {
         callToolTip(d);
     }).call(mapTip);
 
-    // Update the colors and stroke
+    // Update the stroke
     countrySelection
-        .attr("stroke-width", d => (d.country === selectedCountry || d.country === highlightedState) ? 1 : 0)
+        .attr("stroke-width", d => (d.country === selectedCountry || d.country === highlightedState) ? 1 : 0);
+
+    // Update the colors
+    countrySelection
         .transition()
-        .duration(500)
+        .duration(400)
         .attr("fill", d => {
             if (selectedCountry === "") {
                 return chloroplethMapColor(d.recSendRatio);
@@ -245,7 +251,7 @@ function drawChloropleth() {
 }
 
 /**
- * Draw the legend based on the selected coutry variable.
+ * Draw the legend based on the selected country variable.
  * The legend is removed before creating a new one.
  */
 function drawLegend() {
@@ -262,9 +268,10 @@ function drawLegend() {
     const mapLegendTickWidth = mapLegendWidth / mapLegendTicks;
     const mapLegendHeight = mapLegendTickWidth / 2;
 
-    try {
+    // Remove the legend if it already exists
+    if (mapLegendGroup != null) {
         mapLegendGroup.remove();
-    } catch (e) {}
+    }
 
     mapLegendGroup = mapSVG.append("g")
         .attr("class", "legend")
@@ -367,71 +374,5 @@ function drawLines(selectedCode, otherCode) {
          })
          .attr("stroke-width", d => d.count * 0.05);
 
-     /*
-         .append("path")
-         .attr('d', function(d) {
-                 if (studentDirection === "incoming")
-                     return mapPath ({type:"LineString",
-                         coordinates:[[d.sendLon, d.sendLat], [d.receiveLon, d.receiveLat]]});
-                 else
-                     return mapPath ({type:"LineString",
-                         coordinates:[[d.receiveLon, d.receiveLat], [d.sendLon, d.sendLat]]});
-             })
-          */
      lineSelection.exit().remove();
 }
-
-/*
-function drawLinesSimple(code) {
-    let [incoming, outgoing] = [[], []];
-    let codeCoords = [];
-
-    if (code !== "") {
-        [incoming, outgoing] = getIncomingOutgoingFromCode(code);
-        codeCoords = mapProjection([countryData.get(code).country_pos.lat,
-            countryData.get(code).country_pos.long]);
-    }
-
-    // Define the selection
-    let lineSelection = linesGroup.selectAll("line")
-        .data(() => {
-            return studentDirection === "incoming" ? incoming : outgoing;
-        }, (d) => (d[0] + d[1] + codeCoords[0] + codeCoords[1]));
-
-    // Enter
-    lineSelection.enter()
-        .merge(lineSelection)
-        .append("line")
-        .attr("stroke", "rgba(0, 0, 0, 0.8)")
-        .attrs({"pointer-events": "none"})
-        .attrs((d) => {
-            try {
-                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
-                if (studentDirection === "incoming") {
-                    return {"x1": targetCoords[0], "y1": targetCoords[1], "x2": targetCoords[0], "y2": targetCoords[1]}
-                } else {
-                    return {"x1": codeCoords[0], "y1": codeCoords[1], "x2": codeCoords[0], "y2": codeCoords[1]}
-                }
-            } catch (e) {console.log("Error in " + d.country)}
-        })
-        .transition()
-        .duration(1000)
-        .attrs(d => {
-            try {
-                let targetCoords = mapProjection([countryData.get(d[0]).country_pos.lat, countryData.get(d[0]).country_pos.long]);
-
-                return studentDirection === "incoming"
-                    ? {"x2": codeCoords[0], "y2": codeCoords[1]}
-                    : {"x2": targetCoords[0], "y2": targetCoords[1]};
-            } catch (e) {console.log("Error in " + d.country)}
-        })
-        .attr("stroke-width", d => {return d[1] / 200;});
-
-    // Exit
-    lineSelection.exit()
-        .transition()
-        .duration(1000)
-        .attr("stroke-width", 0)
-        .remove();
-}
-*/
