@@ -15,10 +15,6 @@
     stroke-opacity: .2;
 }
 
-.link:hover {
-    stroke-opacity: .5;
-}
-
 .g_main {
     cursor:pointer;
     pointer-events: all;
@@ -28,3 +24,26 @@
     margin-bottom: 2px;
     margin-left: 15px;
 }
+
+.d3-tip{
+    line-height: 1;
+    font-weight: bold;
+    padding: 6px;
+    background: white;
+    color: black;
+    border-radius: 2px;
+    font-size: 8px;
+}
+.d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: white;
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+}
+
+
