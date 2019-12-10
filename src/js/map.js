@@ -117,6 +117,15 @@ function drawChloropleth() {
     // Update the legend
     drawLegend();
 
+    // Update the header
+    if (selectedCountry === "") {
+        document.querySelector("#map > h4").innerHTML = "student flow"
+    } else {
+        document.querySelector("#map > h4").innerHTML = studentDirection === "incoming"
+            ? "students incoming to " + countryData.get(selectedCountry).name
+            : "students ougtoing from " + countryData.get(selectedCountry).name
+    }
+
     // Calculate the total amount of students
     let totalStudentCount = 0;
     let [incoming, outgoing] = [[], []];
@@ -241,7 +250,6 @@ function drawLegend() {
         .attr("fill", "black")
         .attr("y", mapLegendHeight - 3)
         .attr("x", function (d, i) {
-            console.log("dt" + d , " i" + i);
             return i * mapLegendTickWidth + 3;
         }).text((d, i) => {
             // Only draw every third tick
@@ -285,9 +293,7 @@ function drawLines(selectedCode, otherCode) {
          .attr("pointer-events", "none")
          .attr("stroke-width", 0)
          .attrs(d => {
-             let send = mapProjection([d.sendLon, d.sendLat]);
              let receive = mapProjection([d.receiveLon, d.receiveLat]);
-
              return {"x1": receive[0], "y1": receive[1], "x2": receive[0], "y2": receive[1]};
          })
          .transition()
@@ -301,7 +307,6 @@ function drawLines(selectedCode, otherCode) {
              else
                  return {"x1": receive[0], "y1": receive[1], "x2": send[0], "y2": send[1]};
          })
-          // Math.min(1, d.count/10)
          .attr("stroke-width", d => d.count * 0.07);
 
          /*
@@ -315,7 +320,6 @@ function drawLines(selectedCode, otherCode) {
                          coordinates:[[d.receiveLon, d.receiveLat], [d.sendLon, d.sendLat]]});
              })
           */
-
      lineSelection.exit().remove();
 }
 
