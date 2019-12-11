@@ -116,7 +116,7 @@ function gen_sankeyvis() {
         .data(degree_data.links)
         .enter().append("path")
         .attr("d", d3.sankeyLinkHorizontal())
-        .attr("stroke-width", function(d) { return Math.max(1, d.width); })
+        .attr("stroke-width", function(d) { return Math.max(2, d.width); })
         .attr("id", function (d) {return "link" + d.index})
        ;
     link.on("mouseover", sankeyLinkTip.show)
