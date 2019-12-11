@@ -288,7 +288,7 @@ function drawLegend() {
         .attr("transform", `translate(${-padding_x}, ${-(mapLegendHeight + padding_y)})`)
         .attr("fill", "white")
         .attr("stroke-width", "1px")
-        .attr("stroke", "rgba(0, 0, 0, 0.2)")
+        .attr("stroke", "rgba(0, 0, 0, 0.05)")
         .attr("rx", "2px")
         .attr("ry", "2px")
         .classed("legend");
