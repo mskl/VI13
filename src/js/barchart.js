@@ -72,7 +72,7 @@ function gen_vis() {
         .attr("height", function (d) {
             return bchHeight - bchYscale(d.cost);
         })
-        .attr("fill", "#60e679")
+        .attr("fill", "#ffca6e")
         .attr("opacity", "0.7")
         .attr("stroke-width", "0")
         .attr("class", "bar")
@@ -232,7 +232,7 @@ function generateCostOfLiving() {
             if(d.ISO.toLowerCase() === selectedCountry.toLowerCase()){
                 return "red";
             } else {
-                return "#60e679";
+                return "#ffca6e";
             }
         });
 
@@ -400,7 +400,7 @@ function colourSelectedCountry() {
                 } else if (dropdownVal === "bp") {
                     return "#cda555";
                 } else {
-                    return "#60e679";
+                    return "#ff8000";
                 }
             }
         })
@@ -451,7 +451,6 @@ function drawSelectedCountryLine() {
 }
 
 function highlightBarchart(highlitedState) {
-    console.log("hBCH");
     bchSvg.selectAll(".bar")
         .attr("opacity", d => (d.ISO.toLowerCase() === highlightedState.toLowerCase()) ? 1 : 0.7)
         .attr("stroke-width", d => (d.ISO.toLowerCase() === highlightedState.toLowerCase()) ? 1 : 0);
@@ -459,3 +458,4 @@ function highlightBarchart(highlitedState) {
 
 //nefunguje zvýraznění v sankey při mouse hover na barchartu
 //barevná škála pro znázormění počtu studentů
+//z pevné šířky na procenta - zmízí osy

@@ -2,7 +2,7 @@
 var studentDirection = "incoming";
 var selectedCountry = "";
 
-var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent", "sankeyNodeOnMouseOver", "sankeyNodeOnMouseOut", "barOnMouseOver",   "barOnMouseOut");
+var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent", "sankeyNodeOnMouseOver", "sankeyNodeOnMouseOut", "barOnMouseOver",   "barOnMouseOut", "boxplotOnMouseOver", "boxplotOnMouseOut");
 
 /**
  * Assert that the country code is valid. Empty is saved as "".
@@ -39,34 +39,53 @@ events.on("stateOnMouseOver", function(state){
     highlightSankeyNode(state);
     //Highlight bar in barchart
     highlightBarchart(state);
+    highlightBoxplot(state);
 });
 
 events.on("sankeyNodeOnMouseOver", function(state){
     assertStateCode(state);
     highlightState(state);
     highlightBarchart(state);
-
+    highlightBoxplot(state);
 });
 
 events.on("sankeyNodeOnMouseOut", function(state){
     assertStateCode(state);
     highlightState("");
     highlightBarchart("");
-
+    highlightBoxplot("");
 });
 
 events.on("barOnMouseOver", function(state){
     assertStateCode(state);
     highlightState(state);
     highlightBarchart(state);
-
+    highlightSankeyNode(state);
+    highlightBoxplot(state);
 });
 
 events.on("barOnMouseOut", function(state){
     assertStateCode(state);
     highlightState("");
     highlightBarchart("");
+    unHighlightSankeyNode();
+    highlightBoxplot("");
+});
 
+events.on("boxplotOnMouseOver", function(state){
+    assertStateCode(state);
+    highlightState(state);
+    highlightBarchart(state);
+    highlightSankeyNode(state);
+    highlightBoxplot(state);
+});
+
+events.on("boxplotOnMouseOut", function(state){
+    assertStateCode(state);
+    highlightState("");
+    highlightBarchart("");
+    unHighlightSankeyNode();
+    highlightBoxplot("");
 });
 /**
  * Is called when hovered off a state.
@@ -78,6 +97,7 @@ events.on("stateOnMouseOut", function(state){
     // Cancel the highlight of the state in the map
     highlightState("");
     highlightBarchart("");
+    highlightBoxplot("");
 });
 
 /**
@@ -107,6 +127,7 @@ events.on("stateSelectedEvent", function(code){
     drawChloropleth();
     drawSankey(selectedCountry, studentDirection);
     drawBarchart();
+    drawBoxplot();
 });
 
 /**
