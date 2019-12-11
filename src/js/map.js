@@ -174,10 +174,6 @@ function drawChloropleth() {
     let countrySelection = countryGroup.selectAll("path").data(countryData.values());
 
     function callToolTip(d) {
-        function formatNumber(num) {
-            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ')
-        }
-
         let entries = null;
         if (selectedCountry !== "" && d.country !== selectedCountry) {
             if (studentDirection === "incoming") {
