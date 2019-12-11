@@ -1,5 +1,5 @@
 // Global variables used in all of the scripts
-var studentDirection = "incoming";
+var studentDirection = "outgoing";
 var selectedCountry = "";
 
 var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent", "sankeyNodeOnMouseOver", "sankeyNodeOnMouseOut", "barOnMouseOver",   "barOnMouseOut", "boxplotOnMouseOver", "boxplotOnMouseOut");
