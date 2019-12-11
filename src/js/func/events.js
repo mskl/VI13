@@ -2,7 +2,7 @@
 var studentDirection = "incoming";
 var selectedCountry = "";
 
-var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent", "sankeyNodeOnMouseOver", "sankeyNodeOnMouseOut");
+var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEvent", "studentDirectionEvent", "sankeyNodeOnMouseOver", "sankeyNodeOnMouseOut", "barOnMouseOver",   "barOnMouseOut", "boxplotOnMouseOver", "boxplotOnMouseOut");
 
 /**
  * Assert that the country code is valid. Empty is saved as "".
@@ -41,6 +41,12 @@ events.on("stateOnMouseOver", function(state){
 
     // Highlight sankeynode
     highlightSankeyNode(state)
+
+    //Highlight bar in barchart
+    highlightBarchart(state);
+
+    //Highlight box in boxplot
+    highlightBoxplot(state);
 });
 
 /**
@@ -58,6 +64,12 @@ events.on("stateOnMouseOut", function(state){
 
     // Unhighlight the SanKey nodes
     unHighlightSankeyNode();
+
+    // Unhighlight the barchart bar
+    highlightBarchart("");
+
+    // Unhighlight the box in boxplot
+    highlightBoxplot("");
 });
 
 /**
@@ -66,6 +78,8 @@ events.on("stateOnMouseOut", function(state){
 events.on("sankeyNodeOnMouseOver", function(state){
     assertStateCode(state);
     highlightState(state);
+    highlightBarchart(state);
+    highlightBoxplot(state);
 });
 
 /**
@@ -74,6 +88,52 @@ events.on("sankeyNodeOnMouseOver", function(state){
 events.on("sankeyNodeOnMouseOut", function(state){
     assertStateCode(state);
     highlightState("");
+    highlightBarchart("");
+    highlightBoxplot("");
+});
+
+/**
+ * On mousever over the barchart diagram connection
+ */
+events.on("barOnMouseOver", function(state){
+    assertStateCode(state);
+    highlightState(state);
+    highlightBarchart(state);
+    highlightSankeyNode(state);
+    highlightBoxplot(state);
+});
+
+/**
+ * On mouseout from the barchart diagram connection
+ */
+events.on("barOnMouseOut", function(state){
+    assertStateCode(state);
+    highlightState("");
+    highlightBarchart("");
+    unHighlightSankeyNode();
+    highlightBoxplot("");
+});
+
+/**
+ * On mouseover over the boxplot diagram connection
+ */
+events.on("boxplotOnMouseOver", function(state){
+    assertStateCode(state);
+    highlightState(state);
+    highlightBarchart(state);
+    highlightSankeyNode(state);
+    highlightBoxplot(state);
+});
+
+/**
+ * On mouseout from the boxplot diagram connection
+ */
+events.on("boxplotOnMouseOut", function(state){
+    assertStateCode(state);
+    highlightState("");
+    highlightBarchart("");
+    unHighlightSankeyNode();
+    highlightBoxplot("");
 });
 
 /**
@@ -110,6 +170,9 @@ events.on("stateSelectedEvent", function(code){
 
     // Draw the barchart
     drawBarchart();
+
+    //Draw the boxplot
+    drawBoxplot();
 });
 
 /**
@@ -127,5 +190,6 @@ events.on("studentDirectionEvent", function(direction) {
 
     drawLines(selectedCountry);
     drawChloropleth();
-    drawSankey(selectedCountry, studentDirection)
+    drawSankey(selectedCountry, studentDirection);
+    drawBarchart();
 });
