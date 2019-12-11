@@ -67,6 +67,9 @@
             nodel.html(content)
                 .style('opacity', 1).style('pointer-events', 'all')
 
+            // Added by Matyas
+            this.content = content
+
             while (i--) nodel.classed(directions[i], false)
             coords = directionCallbacks.get(dir).apply(this)
             nodel.classed(dir, true)
