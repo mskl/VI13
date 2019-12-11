@@ -254,7 +254,7 @@ function generateCostOfLiving() {
         .text("Index");
 }
 
-function changePriceParameter() {
+function changeDropdownParameter() {
     var dropdown = document.getElementById("barchart_dropdown_parameter");
     var dropdownVal = dropdown.value.toLowerCase();
 
@@ -400,7 +400,7 @@ function colourSelectedCountry() {
                 } else if (dropdownVal === "bp") {
                     return "#cda555";
                 } else {
-                    return "#ff8000";
+                    return "#ffca6e";
                 }
             }
         })
