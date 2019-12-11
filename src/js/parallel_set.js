@@ -13,13 +13,41 @@ let formatNumber = d3.format(",.0f"),
     format = function(d) { return formatNumber(d) + " students"; },
     parallelsets_color = d3.scaleOrdinal(d3.schemeCategory10);
 
-var sankeyTooltip = d3.select("#parallel_set")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("font-size", "16px").style("width", "20px");
-sankeyTooltip.append('div').attr("class", "tipTitle");
-sankeyTooltip.append('div').attr("class", "linkSource");
-sankeyTooltip.append('div').attr("class", "linkValue");
+var sankeyLinkTip = d3.tip().attr('class', 'd3-tip').html(
+    function(d){
+        var content = "";
+        content +=`
+                        <table style="margin-top: 2.5px;">
+                                <tr><td> ` + d.source.name + " → " + d.target.name + "\n" +`</td> <td style="text-align: right">` + format(d.value) + `</td></tr>
+                        </table>
+                        `;
+        return content;
+    });
+
+var sankeyNodeTip = d3.tip().attr('class', 'd3-tip').html(
+    function(d){
+        let content = `<span style='margin-left: 1.5px;'><b>` + d.name + `</b></span><br>`;
+        const nodesWithSource = d.sourceLinks.map(e => {
+            let string = `<tr><td style="text-align: left;">`+ e.target.name + ":"+ `</td><td style="text-align: right">`+ format(e.target.value)+ `</td></tr>`;
+            return string
+        });
+        const nodesWithTarget = d.targetLinks.map( e => {
+            let string = `<tr><td style="text-align: left;">`+ e.source.name + ":"+ `</td><td style="text-align: right">`+ format(e.source.value)+ `</td></tr>`;
+            return string
+        });
+        if (d.index > 34){
+            content += `<table style="margin-top: 2.5px;"> ` + nodesWithTarget.join('') + `</table>`;
+        }
+        else{
+            content += `<table style="margin-top: 2.5px;"> ` + nodesWithSource.join('') + `</table>`;
+        }
+        return content;
+    }).direction(function (d) {
+    if (d.index > 34){
+        return "nw"
+    }
+    else return "ne";
+});
 
 function drawSankey(selectedCountry, studentDirection){
     if (selectedCountry == ""){
@@ -32,10 +60,10 @@ function drawSankey(selectedCountry, studentDirection){
         d3.json("data/parallel_sets/receiving_countryselection_degree.json").then(function (data) {
 
             degree_data = data[selectedCountry.toUpperCase()];
-            console.log(selectedCountry)
+            // console.log(selectedCountry)
         }).then(function (){
             gen_sankeyvis();
-            console.log("hello")
+            // console.log("hello")
         });
     }
     else if (selectedCountry && studentDirection=="outgoing"){
@@ -59,6 +87,9 @@ function gen_sankeyvis() {
     if(selectedCountry == ""){
         sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", 23).attr("font-size", 11).text("Outgoing students");
         sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", setsWidth-110).attr("font-size", 11).text("Incoming student")
+    }
+    if (selectedCountry.length == 2){
+
     }
 
     const sankey = d3.sankey()
@@ -87,24 +118,14 @@ function gen_sankeyvis() {
         .attr("d", d3.sankeyLinkHorizontal())
         .attr("stroke-width", function(d) { return Math.max(1, d.width); })
         .attr("id", function (d) {return "link" + d.index})
-
        ;
-    link.on("mouseover", function (d){
-        //sankeyTooltip.select(".tipTitle").html("link.source.name");
-        //sankeyTooltip.transition().duration(200).style("display", "block");
-        })
+    link.on("mouseover", sankeyLinkTip.show)
         .on("mousemove", function(d){
             //sankeyTooltip.style('top', d.y0 )          // NEW
              //   .style('left', 100);             // NEW
         })
-        .on("mouseout", function(){
-            //sankeyTooltip.style("display", "none")
-        });
-
-
-    // link hover values
-    link.append("title")
-        .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + format(d.value); });
+        .on("mouseout", sankeyLinkTip.hide);
+    link.call(sankeyLinkTip);
 
     node = node
         .data(degree_data.nodes)
@@ -125,16 +146,25 @@ function gen_sankeyvis() {
             if (d.name.length == 2){
                 events.call("sankeyNodeOnMouseOver", d.name.toLowerCase(), d.name.toLowerCase());
             }
+            if (d.name.length == 2) {
+                sankeyNodeTip.show(d)
+            }
+
         })
         .on("mouseout", function(d){
             dispatch.call("mouseoutNode", d, d);
             if (d.name.length == 2) {
                 events.call("sankeyNodeOnMouseOut", d.name.toLowerCase(), d.name.toLowerCase())
             }
+            if (d.name.length == 2) {
+                sankeyNodeTip.hide();
+            }
+
         })
         .on("click", function (d) {
            events.call("stateSelectedEvent", d.name.toLowerCase(), d.name.toLowerCase())
-        });
+        })
+        .call(sankeyNodeTip);
 
     node.append("text")
         .attr("x", function(d) {return d.x0 + 18; })
@@ -153,29 +183,6 @@ function gen_sankeyvis() {
         }})
         .attr("text-anchor", "end");
 
-
-/*
-    sankeyTip = d3.tip().attr("class", "d3-tip").direction("e").offset([0,5]).html(
-        function(d){
-        var content = "<span style='margin-left: 2.5px;'><b>" + "title" + "</b></span><br>";
-        content +=`
-                        <table style="margin-top: 2.5px;">
-                                <tr><td>Max: </td><td style="text-align: right">` + "hello" + `</td></tr>
-                                <tr><td>Q3: </td><td style="text-align: right">` + "hola" + `</td></tr>
-                                <tr><td>Median: </td><td style="text-align: right">` + "bon dia" + `</td></tr>
-                                <tr><td>Q1: </td><td style="text-align: right">` + "boa tarde" + `</td></tr>
-                                <tr><td>Min: </td><td style="text-align: right">` + "bon noite" + `</td></tr>
-                        </table>
-                        `;
-        console.log(d);
-        return content;
-    });
-    sankey_svg.call(sankeyTip);
-
-
-
-
- */
 }
 
 
@@ -187,7 +194,7 @@ function highlightSankeyNode(country){
         highlightedNode.attr("stroke", "#000").attr("stroke-width", 1.5).attr("fill-opacity", 1);
         if (selectedCountry === ""){
             let index2 = degree_data.nodes.length - ((degree_data.nodes.length - 3)/2 - nodeIndex);
-            console.log(index2);
+            // console.log(index2);
             highlightedNode2 = d3.select(("rect[title=\'" + country.toUpperCase() + index2  + "\']")).attr("stroke", "#000").attr("stroke-width", 1.5).attr("fill-opacity", 1);;
         }
     }catch(error){
@@ -204,7 +211,7 @@ function unHighlightSankeyNode() {
         highlightedNode2.attr("stroke-width", 0).attr("fill-opacity", 0.7);
     }
 }
-var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode", "hoverShowTextBox", "hoverLink");
+var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode", "hoverShowTextBox");
 
 dispatch.on("mouseoverNode", function(node){
 
@@ -225,7 +232,7 @@ dispatch.on("mouseoverNode", function(node){
     }
 });
 dispatch.on("mouseoutNode", function(node){
-    console.log("hellomouseout");
+    // console.log("hellomouseout");
     selectedNode.attr("stroke-width", 0).attr("fill-opacity", 0.7);
 
     //change back link opacity to 0.2
@@ -253,13 +260,5 @@ dispatch.on("hoverShowTextBox", function (node) {
         .attr("fill", "red");
 });
 
-
-dispatch.on("hoverLink", function(link){
-
-    /*sankeyTooltip.html("<span style='color:grey'>Country </span>" + link.source.name) // + d.Prior_disorder + "<br>" + "HR: " +  d.HR)
-        .style("left", (d3.mouse(link)[0]+30) + "px")
-        .style("top", (d3.mouse(link)[1]+30) + "px");
-     */
-});
 
 

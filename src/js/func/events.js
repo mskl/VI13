@@ -35,13 +35,46 @@ events.on("stateOnMouseOver", function(state){
 
     // Highlight the state on the map
     highlightState(state);
-    //Highlight sankeynode
-    highlightSankeyNode(state);
+
+    // Draw the lines
+    drawLines(selectedCountry, state);
+
+    // Highlight sankeynode
+    highlightSankeyNode(state)
+
     //Highlight bar in barchart
     highlightBarchart(state);
+
+    //Highlight box in boxplot
     highlightBoxplot(state);
 });
 
+/**
+ * Is called when hovered off a state.
+ */
+events.on("stateOnMouseOut", function(state){
+    console.log("StateOnMouseOut called with \"" + state + "\"");
+    assertStateCode(state);
+
+    // Cancel the highlight of the state in the map
+    highlightState("");
+
+    // Remove the lines
+    drawLines(selectedCountry, "");
+
+    // Unhighlight the SanKey nodes
+    unHighlightSankeyNode();
+
+    // Unhighlight the barchart bar
+    highlightBarchart("");
+
+    // Unhighlight the box in boxplot
+    highlightBoxplot("");
+});
+
+/**
+ * On mouseover over sankey diagram connection
+ */
 events.on("sankeyNodeOnMouseOver", function(state){
     assertStateCode(state);
     highlightState(state);
@@ -49,6 +82,9 @@ events.on("sankeyNodeOnMouseOver", function(state){
     highlightBoxplot(state);
 });
 
+/**
+ * On mouseout from the sankey diagram connection
+ */
 events.on("sankeyNodeOnMouseOut", function(state){
     assertStateCode(state);
     highlightState("");
@@ -56,6 +92,9 @@ events.on("sankeyNodeOnMouseOut", function(state){
     highlightBoxplot("");
 });
 
+/**
+ * On mousever over the barchart diagram connection
+ */
 events.on("barOnMouseOver", function(state){
     assertStateCode(state);
     highlightState(state);
@@ -64,6 +103,9 @@ events.on("barOnMouseOver", function(state){
     highlightBoxplot(state);
 });
 
+/**
+ * On mouseout from the barchart diagram connection
+ */
 events.on("barOnMouseOut", function(state){
     assertStateCode(state);
     highlightState("");
@@ -72,6 +114,9 @@ events.on("barOnMouseOut", function(state){
     highlightBoxplot("");
 });
 
+/**
+ * On mouseover over the boxplot diagram connection
+ */
 events.on("boxplotOnMouseOver", function(state){
     assertStateCode(state);
     highlightState(state);
@@ -80,23 +125,14 @@ events.on("boxplotOnMouseOver", function(state){
     highlightBoxplot(state);
 });
 
+/**
+ * On mouseout from the boxplot diagram connection
+ */
 events.on("boxplotOnMouseOut", function(state){
     assertStateCode(state);
     highlightState("");
     highlightBarchart("");
     unHighlightSankeyNode();
-    highlightBoxplot("");
-});
-/**
- * Is called when hovered off a state.
- */
-events.on("stateOnMouseOut", function(state){
-    console.log("StateOnMouseOut called with \"" + state + "\"");
-    assertStateCode(state);
-    unHighlightSankeyNode();
-    // Cancel the highlight of the state in the map
-    highlightState("");
-    highlightBarchart("");
     highlightBoxplot("");
 });
 
@@ -123,10 +159,19 @@ events.on("stateSelectedEvent", function(code){
     // Set the dropdown
     document.getElementById("dropdown_country").value = selectedCountry;
 
-    drawLines(selectedCountry);
+    // Draw the chloropleth
     drawChloropleth();
+
+    // Clear the drawn lines
+    drawLines(selectedCountry, "");
+
+    // Draw the sankey
     drawSankey(selectedCountry, studentDirection);
+
+    // Draw the barchart
     drawBarchart();
+
+    //Draw the boxplot
     drawBoxplot();
 });
 

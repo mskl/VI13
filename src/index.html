@@ -13,11 +13,12 @@
   <link rel="stylesheet" href="css/map.css">
   <link rel="stylesheet" href="css/parallel_sets.css">
   <link rel="stylesheet" href="css/barchart.css">
+
   <!-- js libs -->
   <script src="libs/d3.v5.min.js"></script>
   <script src="libs/topojson.v2.min.js"></script>
-  <script src="libs/d3-selection-multi.v1.min.js"></script>
   <script src="libs/tooltip.js"></script>
+  <script src="libs/d3-selection-multi.v1.min.js"></script>
 
   <!-- have to change this to a local lib -->
   <script src="libs/d3-sankey/d3-sankey.min.js"></script>
@@ -33,16 +34,16 @@
   <div class="flex-container">
     <!-- header -->
     <div id="header">
-      <h1 >Erasmus student visualization</h1>
+      <h1 >ERASMUS+ student visualization</h1>
       <div id="options">
         <form id="student_direction" class="hidden">
-          <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()" checked/>
+          <input type="radio" id="direction-incoming-radio" name="direction" value="incoming" onchange="changeStudentDirection()"/>
           <label for="direction-incoming-radio">incoming</label>
-          <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()"/>
+          <input type="radio" id="direction-outgoing-radio" name="direction" value="outgoing" onchange="changeStudentDirection()" checked/>
           <label for="direction-outgoing-radio">outgoing</label>
         </form>
         <form id="selected_country">
-          <label>Selected country:
+          <label>selected country:
             <select id="dropdown_country" onchange="changeDropdownCountry()">
               <option value="">none</option>
             </select>
@@ -54,12 +55,12 @@
     <!-- first row -->
     <div id="first-row">
       <div class="chart" id="map">
-        <h4>Student flow</h4>
+        <h4>student flow</h4>
         <svg width="100%" height="95%"></svg>
         <script src="js/map.js"></script>
       </div>
       <div class="chart" id="parallel_set">
-        <h4 id="parallel_set_title">Degree flow</h4>
+        <h4 id="parallel_set_title">student degrees</h4>
         <svg width="100%" height="95%"></svg>
         <script src="js/parallel_set.js"></script>
       </div>
@@ -69,11 +70,11 @@
     <div id="second-row">
       <div class="chart" id="barchart">
         <div id="barchart_header">
-        <h4 id="barchart_title"> Price index</h4>
+        <h4 id="barchart_title">price index</h4>
           <div id="barchart_menu">
             <form id="barchart_selected_parameter">
-                <label>Selected parameter:
-                    <select id="barchart_dropdown_parameter" onchange="changePriceParameter()">
+                <label>selected parameter:
+                    <select id="barchart_dropdown_parameter" onchange="changeDropdownParameter()">
                         <option value="col">Cost of living</option>
                         <option value="ri">Rental index</option>
                         <option value="bp">Beer price</option>
@@ -99,4 +100,3 @@
   </div>
 </body>
 </html>
-
