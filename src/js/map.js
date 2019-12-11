@@ -147,11 +147,11 @@ function drawChloropleth() {
 
     // Update the header
     if (selectedCountry === "") {
-        document.querySelector("#map > h4").innerHTML = "student flow"
+        document.querySelector("#map > h4").innerHTML = "Student flow"
     } else {
         document.querySelector("#map > h4").innerHTML = studentDirection === "incoming"
-            ? "students incoming to " + countryData.get(selectedCountry).name
-            : "students outgoing from " + countryData.get(selectedCountry).name
+            ? "Students incoming to " + countryData.get(selectedCountry).name
+            : "Students outgoing from " + countryData.get(selectedCountry).name
     }
 
     // Calculate the total amount of students
