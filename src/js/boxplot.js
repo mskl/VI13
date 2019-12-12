@@ -117,19 +117,19 @@ function genBoxplotVis() {
 
     // Add individual points with jitter
     // var jitterWidth = 15;
-
-//     boxplotSvg
-//         .selectAll("indPoints")
-//         .data(boxplotDataset)
-//         .enter()
-//         .append("circle")
-//         .attr("cx", function(d){
-//             if (d.km < boxplotDatasetReceiving.map(function (g) {return g.key===d.CountryReceiving;}).min || d.km > boxplotDatasetReceiving.map(function (g) {return g.key===d.CountryReceiving;})    .max){console.log("tady");}
-//             return(boxplotXscale(d.CountryReceiving) - jitterWidth/2 + Math.random()*jitterWidth )})
-//         .attr("cy", function(d){return(boxplotYscale(d.km))})
-//         .attr("r", 2)
-//         .style("fill", "white")
-//         .attr("stroke", "black")
+    //
+    // boxplotSvg
+    //     .selectAll("indPoints")
+    //     .data(boxplotDataset)
+    //     .enter()
+    //     .append("circle")
+    //     .attr("cx", function(d){
+    //         if (d.km < boxplotDatasetReceiving.map(function (g) {return g.key===d.CountryReceiving;}).min || d.km > boxplotDatasetReceiving.map(function (g) {return g.key===d.CountryReceiving;})    .max){console.log("tady");}
+    //         return(boxplotXscale(d.CountryReceiving) - jitterWidth/2 + Math.random()*jitterWidth )})
+    //     .attr("cy", function(d){return(boxplotYscale(d.km))})
+    //     .attr("r", 2)
+    //     .style("fill", "white")
+    //     .attr("stroke", "black")
 }
 function nestDataset() {
      boxplotDatasetReceiving = d3.nest() // nest function allows to group the calculation per level of a factor
