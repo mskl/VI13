@@ -12,7 +12,6 @@ let linesGroup = mapSVG.append("g").attr("class", "lines");
 // Variable used in the map only
 let highlightedState = "";
 
-// let mapProjection = d3.geoEquirectangular().center([8, 25]).scale(550).rotate([-8, -25, 0]);
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
 
@@ -67,6 +66,7 @@ Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, rati
     .then(() => {
         // Populate the dropdown menu
         populateCountryList();
+
         // Draw the chloropleth
         drawChloropleth();
     });
@@ -181,20 +181,20 @@ function drawChloropleth() {
         if (selectedCountry !== "" && d.country !== selectedCountry) {
             if (studentDirection === "incoming") {
                 entries = {
-                    [d.name]: "",
+                    [`<b>` + d.name + `</b>`]: "",
                     "Incoming": formatNumber(selected[d.country]),
                     "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             } else {
                 entries = {
-                    [d.name]: "",
+                    [`<b>` + d.name + `</b>`]: "",
                     "Outgoing:": formatNumber(selected[d.country]),
                     "Percentage:": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             }
         } else {
             entries = {
-                [d.name]: "",
+                [`<b>` + d.name + `</b>`]: "",
                 "Incoming:": formatNumber(d.receiving),
                 "Outgoing:": formatNumber(d.sending)
             };
@@ -254,8 +254,7 @@ function drawChloropleth() {
 }
 
 /**
- * Draw the legend based on the selected country variable.
- * The legend is removed before creating a new one.
+ * Draw the legend based on the selected country variable. The legend is removed before creating a new one.
  */
 function drawLegend() {
     // Editable options
@@ -280,8 +279,7 @@ function drawLegend() {
         .attr("class", "legend")
         .attr("transform", `translate(${mapLegendPosX}, ${mapLegendPosY})`);
 
-    const padding_x = 7;
-    const padding_y = 5;
+    const [padding_x, padding_y] = [7, 5];
     mapLegendGroup.append("rect")
         .attr("width", mapLegendWidth + padding_x * 2)
         .attr("height", (mapLegendHeight + padding_y) * 2)
@@ -316,7 +314,7 @@ function drawLegend() {
         .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
         .enter()
         .append("text")
-        .attr("font-size", 7)
+        .attr("font-size", "9px")
         .attr("fill", "black")
         .attr("y", mapLegendHeight - 3)
         .attr("x", function (d, i) {
