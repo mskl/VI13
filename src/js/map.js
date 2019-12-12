@@ -12,7 +12,6 @@ let linesGroup = mapSVG.append("g").attr("class", "lines");
 // Variable used in the map only
 let highlightedState = "";
 
-// let mapProjection = d3.geoEquirectangular().center([8, 25]).scale(550).rotate([-8, -25, 0]);
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
 
@@ -41,9 +40,6 @@ let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
 
     codeToNumeric.set(d.country, d.numeric);
     numericToCode.set(d.numeric, d.country);
-}).then(() => {
-    // console.log("Loaded the ratio promise. The countryData contains:");
-    // console.log(countryData);
 });
 
 let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
@@ -51,7 +47,6 @@ let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
         countryData.get(d.country.toLowerCase())["country_pos"] = {"long": d.long, "lat": d.lat}
     } catch (e) {
         // Some of the countries are not defined in the countryData so this fails
-        // console.log(e);
     }
 });
 
@@ -61,8 +56,6 @@ let chloroplethDataPromise = d3.json("data/map/world-50m.v1.json").then(outline=
             let featCode = numericToCode.get(feat.id);
             countryData.get(featCode)["topo"] = feat;
         } catch (e) {
-            // console.log(feat);
-            // console.log(e);
             // Some of the countries are not defined in the countryData so this fails
         }
     });
@@ -73,7 +66,7 @@ Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, rati
     .then(() => {
         // Populate the dropdown menu
         populateCountryList();
-        
+
         // Draw the chloropleth
         drawChloropleth();
     });
@@ -188,20 +181,20 @@ function drawChloropleth() {
         if (selectedCountry !== "" && d.country !== selectedCountry) {
             if (studentDirection === "incoming") {
                 entries = {
-                    [d.name]: "",
+                    [`<b>` + d.name + `</b>`]: "",
                     "Incoming": formatNumber(selected[d.country]),
                     "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             } else {
                 entries = {
-                    [d.name]: "",
+                    [`<b>` + d.name + `</b>`]: "",
                     "Outgoing:": formatNumber(selected[d.country]),
                     "Percentage:": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             }
         } else {
             entries = {
-                [d.name]: "",
+                [`<b>` + d.name + `</b>`]: "",
                 "Incoming:": formatNumber(d.receiving),
                 "Outgoing:": formatNumber(d.sending)
             };
@@ -261,8 +254,7 @@ function drawChloropleth() {
 }
 
 /**
- * Draw the legend based on the selected country variable.
- * The legend is removed before creating a new one.
+ * Draw the legend based on the selected country variable. The legend is removed before creating a new one.
  */
 function drawLegend() {
     // Editable options
@@ -322,7 +314,7 @@ function drawLegend() {
         .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
         .enter()
         .append("text")
-        .attr("font-size", 7)
+        .attr("font-size", "9px")
         .attr("fill", "black")
         .attr("y", mapLegendHeight - 3)
         .attr("x", function (d, i) {
