@@ -134,8 +134,7 @@ function gen_vis() {
         .attr("stroke", "rgba(0,0,0,0)")
         .attr("id","countryLine");
 
-    bchSvg
-        .selectAll("indPoints")
+    bchSvg.selectAll("indPoints")
         .data(bchDataset)
         .enter()
         .append("circle")
