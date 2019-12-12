@@ -353,7 +353,6 @@ function sortBars() {
                     return ("outgoing students: " + countryA[1]);
                 });
         }
-        console.log("change x");
         bchSvg.select("#xlabel")
             .attr("x", bchWidth/2 - 60)
             .text("Country (sorted by popularity)");
@@ -415,10 +414,8 @@ function sortDatasetIncoming() {
         var countryB = studentRow.filter(d => d[0].toLowerCase() === b.ISO.toLowerCase());
 
         if (countryA[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
-            console.log("Country A: " + countryA);
             return 1;
         } else if (countryB[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
-            console.log("Country B: " + countryB);
             return -1;
         } else {
             return countryB[0][1] - countryA[0][1];
@@ -511,7 +508,6 @@ function highlightBarchart(highlitedState) {
 function positionBubbles(){
     if(selectedCountry)
     {
-        console.log("Position bubbles");
         var dropdown = document.getElementById("barchart_dropdown_parameter");
         var dropdownVal = dropdown.value.toLowerCase();
 
