@@ -18,7 +18,7 @@ var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
                         <table style="margin-top: 2.5px;">
                                 <tr><td style="text-align: left;"> ` + "Cost of living: " +`</td><td>`+ d.cost + "\n" +`</td> </tr>
                                 <tr><td style="text-align: left;"> ` + "Rental index: " +`</td><td>`+ d.RentIndex + "\n" +`</td> </tr>
-                                <tr><td style="text-align: left;"> ` + "Domestic beer price: " +`</td><td>`+ Math.round( d.DomesticBeer * 100 + Number.EPSILON ) / 100 + " \€\n" +`</td> </tr>
+                                <tr><td style="text-align: left;"> ` + "Beer price: " +`</td><td>`+ Math.round( d.DomesticBeer * 100 + Number.EPSILON ) / 100 + " \€\n" +`</td> </tr>
                         </table>
                         `;
         return content;
@@ -539,10 +539,15 @@ function positionBubbles(){
 function colorBubbles() {
     if(selectedCountry)
     {
-        var studentRow = bchStudentData.map(function (d) {
-            return [d["country"], d[selectedCountry]]
-        });
-
+        var studentRow;
+        if(studentDirection === "incoming") {
+            studentRow = bchStudentData.map(function (d) {
+                return [d["country"], d[selectedCountry]]
+            });
+        } else {
+            studentRow = Object.entries(bchStudentData.filter(d => d.country.toLowerCase() === selectedCountry.toLowerCase())[0]);
+            studentRow.splice(0, 1);
+        }
         var maximum = studentRow.filter(a => a[0].toLowerCase() === bchDataset[0].ISO.toLowerCase())[0];
         let selectedBubbleColor = d3.scaleSequential().domain([0, maximum[1]]).interpolator(d3.interpolateYlOrBr);
         console.log("maximum:" + maximum[1]);
