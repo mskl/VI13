@@ -1,0 +1,35 @@
+ISO,cost,RentIndex,DomesticBeer,name
+AT,70,26.7,1.2,Austria       
+BE,79,28,1.2,Belgium       
+BG,36.7,8.3,0.8,Bulgaria      
+CH,125.1,58.6,1.9,Switzerland   
+CY,60.7,14,1.1,Cyprus        
+CZ,40.8,13.8,0.6,Czechia       
+DE,69,27.5,1,Germany       
+DK,83,30.2,1.6,Denmark       
+EE,50.5,14,1.1,Estonia       
+ES,58.3,20.6,0.9,Spain         
+FI,75.3,27.5,2.8,Finland       
+FR,75,25.5,2,France        
+GB,71,31.5,1.9,United Kingdom
+GR,54.2,9.3,1.2,Greece        
+HR,50.2,10,1,Croatia       
+HU,42.5,12,0.8,Hungary       
+IE,79.2,34,2.8,Ireland       
+IS,104,47,3,Iceland       
+IT,77.2,21.8,1.4,Italy         
+LI,82.1,33.4,3.6,Liechtenstein 
+LT,47,12.5,1,Lithuania     
+LU,80,51,1.3,Luxembourg    
+LV,49,13,1.1,Latvia
+MK,35.0,8.0,0.8,North Macedonia
+MT,68,28,1.3,Malta         
+NL,73.7,33.3,1.2,Netherlands   
+NO,109.6,42,3.5,Norway        
+PL,38.3,13.3,0.7,Poland        
+PT,48.2,15.5,1,Portugal      
+RO,35.5,8.4,0.7,Romania       
+SE,76,29.5,1.9,Sweden        
+SI,52.5,14,1.2,Slovenia      
+SK,47.5,17.5,0.8,Slovakia      
+TR,44.6,9.8,2,Turkey        
