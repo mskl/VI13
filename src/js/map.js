@@ -41,6 +41,9 @@ let ratioPromise = d3.csv("data/map/chloroplet-ratio.csv", d => {
 
     codeToNumeric.set(d.country, d.numeric);
     numericToCode.set(d.numeric, d.country);
+}).then(() => {
+    // console.log("Loaded the ratio promise. The countryData contains:");
+    // console.log(countryData);
 });
 
 let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
@@ -48,6 +51,7 @@ let countryPosPromise = d3.csv("data/map/countrypos.csv", d => {
         countryData.get(d.country.toLowerCase())["country_pos"] = {"long": d.long, "lat": d.lat}
     } catch (e) {
         // Some of the countries are not defined in the countryData so this fails
+        // console.log(e);
     }
 });
 
@@ -57,6 +61,8 @@ let chloroplethDataPromise = d3.json("data/map/world-50m.v1.json").then(outline=
             let featCode = numericToCode.get(feat.id);
             countryData.get(featCode)["topo"] = feat;
         } catch (e) {
+            // console.log(feat);
+            // console.log(e);
             // Some of the countries are not defined in the countryData so this fails
         }
     });
@@ -67,6 +73,7 @@ Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, rati
     .then(() => {
         // Populate the dropdown menu
         populateCountryList();
+        
         // Draw the chloropleth
         drawChloropleth();
     });
@@ -280,8 +287,7 @@ function drawLegend() {
         .attr("class", "legend")
         .attr("transform", `translate(${mapLegendPosX}, ${mapLegendPosY})`);
 
-    const padding_x = 7;
-    const padding_y = 5;
+    const [padding_x, padding_y] = [7, 5];
     mapLegendGroup.append("rect")
         .attr("width", mapLegendWidth + padding_x * 2)
         .attr("height", (mapLegendHeight + padding_y) * 2)
