@@ -10,6 +10,21 @@ var bchXaxis = d3.axisBottom();
 var bchYscale = d3.scaleLinear();
 var bchYaxis = d3.axisLeft();
 
+var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
+    function(d){
+        var content = "";
+        content += `<span style='margin-left: 1.5px;'><b>` + d.ISO + `</b></span><br>`;
+        content +=`
+                        <table style="margin-top: 2.5px;">
+                                <tr><td style="text-align: left;"> ` + "Cost of living: " +`</td><td>`+ d.cost + "\n" +`</td> </tr>
+                                <tr><td style="text-align: left;"> ` + "Rental index: " +`</td><td>`+ d.RentIndex + "\n" +`</td> </tr>
+                                <tr><td style="text-align: left;"> ` + "Beer price: " +`</td><td>`+ Math.round( d.DomesticBeer * 100 + Number.EPSILON ) / 100 + " \€\n" +`</td> </tr>
+                        </table>
+                        `;
+        return content;
+    });
+
+
 var bchSvg = d3.select("#barchart")
     .append("svg")
     .attr("width", bchWidth + bchMargin.left + bchMargin.right)
@@ -76,15 +91,20 @@ function gen_vis() {
         .attr("opacity", "0.7")
         .attr("stroke-width", "0")
         .attr("class", "bar")
-        .on('mouseover', d => events.call('barOnMouseOver', d.ISO.toLowerCase(), d.ISO.toLowerCase()))
-        .on('mouseout', d => events.call('barOnMouseOut', d.ISO.toLowerCase(), d.ISO.toLowerCase()))
+        .on('mouseover', function(d){
+            bchBarTip.show(d);
+            events.call('barOnMouseOver', d.ISO.toLowerCase(), d.ISO.toLowerCase())
+        })
+        .on('mouseout', function(d){
+            bchBarTip.hide();
+            events.call('barOnMouseOut', d.ISO.toLowerCase(), d.ISO.toLowerCase())
+        })
         .on('click', d => selectedCountry === d.ISO.toLowerCase()
             ? events.call('stateSelectedEvent', "", "")
             : events.call('stateSelectedEvent', d.ISO.toLowerCase(), d.ISO.toLowerCase()));
 
-    bchSvg.selectAll("rect").append("title") // adding a title for each bar
-        .data(bchDataset)
-        .text(function(d) { return d.cost;});
+    bchSvg.call(bchBarTip);
+
 
     bchSvg.append("text")
         .attr("fill", "black")
@@ -113,6 +133,19 @@ function gen_vis() {
         .attr("y2", bchHeight)
         .attr("stroke", "rgba(0,0,0,0)")
         .attr("id","countryLine");
+
+    bchSvg
+        .selectAll("indPoints")
+        .data(bchDataset)
+        .enter()
+        .append("circle")
+        .attr("cx", function(d){
+            return (bchXscale(d.ISO)+bchWidth/68-2);})
+        .attr("cy", bchHeight)
+        .attr("stroke", "rgba(0,0,0,0)")
+        .attr("r",bchWidth/68-1)
+        .attr("fill", "rgba(0,0,0,0)")
+        .attr("class","studentsBubble");
 }
 
 function generateRentalPrice() {
@@ -131,7 +164,7 @@ function generateRentalPrice() {
     bchSvg.selectAll("rect") //same code, but now we only change values
         .data(bchDataset)
         .transition() //add smooth transition
-        .duration(1000)
+        .duration(750)
         .attr("height", function (d) {
             return bchHeight - bchYscale(d.RentIndex);
         })
@@ -177,7 +210,7 @@ function generateBeerPrice() {
     bchSvg.selectAll("rect") //same code, but now we only change values
         .data(bchDataset)
         .transition() //add smooth transition
-        .duration(1000)
+        .duration(750)
         .attr("y", function (d) {
             return bchYscale(d.DomesticBeer);
         })
@@ -225,7 +258,7 @@ function generateCostOfLiving() {
     bchSvg.selectAll("rect") //same code, but now we only change values
         .data(bchDataset)
         .transition() //add smooth transition
-        .duration(1000)
+        .duration(750)
         .attr("height", function(d) { return bchHeight - bchYscale(d.cost); })
         .attr("y", function(d) { return bchYscale(d.cost); })
         .attr("fill", function(d) {
@@ -266,13 +299,15 @@ function changeDropdownParameter() {
         generateCostOfLiving();
     }
     drawSelectedCountryLine();
+    positionBubbles();
 }
 
 function drawBarchart() {
-
     sortBars();
     colourSelectedCountry();
+    positionBubbles();
     drawSelectedCountryLine();
+    colorBubbles();
 }
 
 function sortBars() {
@@ -343,10 +378,8 @@ function sortDatasetOutgoing() {
         var countryA = studentRow.filter(d => d[0].toLowerCase() === a.ISO.toLowerCase());
         var countryB = studentRow.filter(d => d[0].toLowerCase() === b.ISO.toLowerCase());
         if(countryA[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
-            console.log("Country A: " + countryA);
             return 1;
         } else if (countryB[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
-            console.log("Country B: " + countryB);
             return -1;
         } else
         return countryB[0][1] - countryA[0][1];
@@ -423,12 +456,10 @@ function drawSelectedCountryLine() {
 
             lineValue = oneRow[0].cost;
         }
-        console.log("bch:" + selectedCountry + ":" + lineValue);
-        console.log("bchHeight:" + bchHeight);
 
         bchSvg.selectAll("#countryLine")
             .transition()
-            .duration(1000)
+            .duration(750)
             .attr("x1", 0)
             .attr("x2", bchWidth)
             .attr("y1", function (d) {
@@ -441,7 +472,7 @@ function drawSelectedCountryLine() {
     } else {
         bchSvg.selectAll("#countryLine")
             .transition()
-            .duration(1000)
+            .duration(750)
             .attr("x1", 0)
             .attr("x2", bchWidth)
             .attr("y1", bchHeight)
@@ -456,6 +487,169 @@ function highlightBarchart(highlitedState) {
         .attr("stroke-width", d => (d.ISO.toLowerCase() === highlightedState.toLowerCase()) ? 1 : 0);
 }
 
-//nefunguje zvýraznění v sankey při mouse hover na barchartu
+function positionBubbles(){
+    if(selectedCountry)
+    {
+        console.log("Position bubbles");
+        var dropdown = document.getElementById("barchart_dropdown_parameter");
+        var dropdownVal = dropdown.value.toLowerCase();
+
+        if (!dropdownVal.localeCompare("ri")) {
+            bchSvg.selectAll(".studentsBubble")
+                .transition()
+                .duration(750)
+                .attr("cx", function (d) {
+                    return (bchXscale(d.ISO) + bchWidth / 68 - 2);
+                })
+                .attr("cy", function (d) {
+                    return (bchYscale(d.RentIndex) - 12)
+                })
+        } else if (!dropdownVal.localeCompare("bp")) {
+            bchSvg.selectAll(".studentsBubble")
+                .transition()
+                .duration(750)
+                .attr("cx", function (d) {
+                    return (bchXscale(d.ISO) + bchWidth / 68 - 2);
+                })
+                .attr("cy", function (d) {
+                    return (bchYscale(d.DomesticBeer) - 12)
+                })
+        } else {
+            bchSvg.selectAll(".studentsBubble")
+                .transition()
+                .duration(750)
+                .attr("cx", function (d) {
+                    return (bchXscale(d.ISO) + bchWidth / 68 - 2);
+                })
+                .attr("cy", function (d) {
+                    return (bchYscale(d.cost) - 12)
+                })
+        }
+    } else {
+        bchSvg.selectAll(".studentsBubble")
+            .transition()
+            .duration(750)
+            .attr("cx", function (d) {
+                return (bchXscale(d.ISO) + bchWidth / 68 - 2);
+            })
+            .attr("cy", bchHeight)
+    }
+}
+
+function colorBubbles() {
+    if(selectedCountry)
+    {
+        var studentRow;
+        if(studentDirection === "incoming") {
+            studentRow = bchStudentData.map(function (d) {
+                return [d["country"], d[selectedCountry]]
+            });
+        } else {
+            studentRow = Object.entries(bchStudentData.filter(d => d.country.toLowerCase() === selectedCountry.toLowerCase())[0]);
+            studentRow.splice(0, 1);
+        }
+        var maximum = studentRow.filter(a => a[0].toLowerCase() === bchDataset[0].ISO.toLowerCase())[0];
+        let selectedBubbleColor = d3.scaleSequential().domain([0, maximum[1]]).interpolator(d3.interpolateYlOrBr);
+        console.log("maximum:" + maximum[1]);
+
+        bchSvg.selectAll(".studentsBubble")
+            // .transition()
+            // .duration(750)
+            .attr("stroke", "black")
+            .attr("fill", function (d) {
+                var tmp = studentRow.filter(function (g) {
+                    return g[0].toLowerCase() === d.ISO.toLowerCase();
+                });
+                return selectedBubbleColor(tmp[0][1]);
+            })
+
+    } else {
+        bchSvg.selectAll(".studentsBubble")
+            // .transition()
+            // .duration(750)
+            .attr("stroke", "rgba(0,0,0,0)")
+            .attr("r", bchWidth / 68)
+            .attr("fill", "rgba(0,0,0,0)");
+    }
+}
+
+/**
+ * Draw the legend based on the selected country variable.
+ * The legend is removed before creating a new one.
+ */
+// function drawLegendBch(legendDomain) {
+//     // Remove the legend if it already exists
+//     if (bchLegendGroup != null) {
+//         bchLegendGroup.remove();
+//     }
+//
+//     if (selectedCountry) {
+//         // Editable options
+//         const bchLegendTicks = 10;
+//         const bchLegendWidth = 240;
+//
+//         const [bchLegendMin, bchLegendMax] = legendDomain;
+//
+//         const [bchLegendPosX, bchLegendPosY] = [bchWidth - bchLegendWidth - 20, 20];
+//         const bchLegendTickWidth = bchLegendWidth / bchLegendTicks;
+//         const bchLegendHeight = bchLegendTickWidth / 2;
+//
+//         let selectedBubbleColor = d3.scaleSequential().domain(bchLegendMin, bchLegendMax).interpolator(d3.interpolateYlOrBr);
+//         bchLegendGroup = bchSVG.append("g")
+//             .attr("class", "legend")
+//             .attr("transform", `translate(${bchLegendPosX}, ${bchLegendPosY})`);
+//
+//         const bch_padding_x = 7;
+//         const bch_padding_y = 5;
+//         bchLegendGroup.append("rect")
+//             .attr("width", bchLegendWidth + bch_padding_x * 2)
+//             .attr("height", (bchLegendHeight + bch_padding_y) * 2)
+//             .attr("transform", `translate(${-bch_padding_x}, ${-(bchLegendHeight + bch_padding_y)})`)
+//             .attr("fill", "white")
+//             .attr("stroke-width", 0.1)
+//             .attr("stroke", "black")
+//             .classed("legend");
+//
+//         bchLegendGroup.selectAll("rect.numbers")
+//             .data(d3.range(bchLegendMin, bchLegendMax, (bchLegendMax - bchLegendMin) / bchLegendTicks))
+//             .enter()
+//             .append("rect")
+//             .attr("width", bchLegendTickWidth)
+//             .attr("height", bchLegendHeight)
+//             .attr("stroke", "black")
+//             .attr("stroke-width", 0.01)
+//             .attr("x", function (d, i) {
+//                 return i * bchLegendTickWidth;
+//             })
+//             .attr("fill", d=>selectedBubbleColor(d))
+//             .classed("numbers");
+//
+//         bchLegendGroup.selectAll("text")
+//             .data(d3.range(bchLegendMin, bchLegendMax, (bchLegendMax - bchLegendMin) / bchLegendTicks))
+//             .enter()
+//             .append("text")
+//             .attr("font-size", 7)
+//             .attr("fill", "black")
+//             .attr("y", bchLegendHeight - 3)
+//             .attr("x", function (d, i) {
+//                 return i * bchLegendTickWidth + 3;
+//             }).text((d, i) => {
+//             // Only draw every third tick
+//             if (i % 3 === 0) {
+//                 return selectedCountry === ""
+//                     ? d.toFixed(1)
+//                     : (d * 100).toFixed(1) + "%";
+//             }
+//         });
+//
+//         bchLegendGroup
+//             .append("text")
+//             .attr("fill", "black")
+//             .attr("font-size", 11)
+//             .attr("y", -3)
+//             .attr("x", 4)
+//             .text("number of students" + studentDirection);
+//     }
+// }
 //barevná škála pro znázormění počtu studentů
 //z pevné šířky na procenta - zmízí osy
