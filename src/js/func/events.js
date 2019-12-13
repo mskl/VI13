@@ -11,7 +11,7 @@ var events = d3.dispatch("stateOnMouseOver", "stateOnMouseOut", "stateSelectedEv
 function assertStateCode(code) {
     if (!["", "at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr",
         "gb", "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv", "mt",
-        "nl", "no", "pl", "pt", "ro", "se", "si", "sk", "tr"].includes(code)) {
+        "nl", "no", "pl", "pt", "ro", "se", "si", "sk", "tr", "mk"].includes(code)) {
         throw("Invalid country code \"" + code + "\".");
     }
 }

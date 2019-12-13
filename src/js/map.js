@@ -12,7 +12,6 @@ let linesGroup = mapSVG.append("g").attr("class", "lines");
 // Variable used in the map only
 let highlightedState = "";
 
-// let mapProjection = d3.geoEquirectangular().center([8, 25]).scale(550).rotate([-8, -25, 0]);
 let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
 
@@ -67,6 +66,7 @@ Promise.all([countryPosPromise, corStudentCountPromise, coordinatesPromise, rati
     .then(() => {
         // Populate the dropdown menu
         populateCountryList();
+
         // Draw the chloropleth
         drawChloropleth();
     });
@@ -98,6 +98,9 @@ function highlightState(code) {
 /**
  * Map tooltip function. The offset is fixed for some of the countries.
  */
+
+// document.querySelector("#map > svg")
+// document.getElementById('map')
 var mapTip = d3.tip().attr('class', 'd3-tip').html(
     (stateCode, entries) => {
         let rowString = "";
@@ -110,19 +113,19 @@ var mapTip = d3.tip().attr('class', 'd3-tip').html(
         );
         return `<table style="margin-top: 2.5px;">${rowString}</table>`})
     .offset((stateCode) => {
-        if (stateCode === "fr") {
-            return [0, 170];
-        } else if (stateCode === "es") {
-            return [0, 50];
-        } else if (stateCode === "pt") {
-            return [40, 90];
-        } else if (stateCode === "no") {
-            return [100, 0];
-        } else {
-            return [0, 0];
-        }
+        // if (stateCode === "fr") {
+        //     return [0, 170];
+        // } else if (stateCode === "es") {
+        //     return [0, 50];
+        // } else if (stateCode === "pt") {
+        //     return [40, 90];
+        // } else if (stateCode === "no") {
+        //     return [100, 0];
+        // } else {
+        //     return [0, 0];
+        // }
+        return [0, 0];
     });
-
 /**
  * Get arrays of incoming and arrays of outgoing based on the country code
  * @param code: code of the country
@@ -147,11 +150,11 @@ function drawChloropleth() {
 
     // Update the header
     if (selectedCountry === "") {
-        document.querySelector("#map > h4").innerHTML = "student flow"
+        document.querySelector("#map > h4").innerHTML = "Student flow"
     } else {
         document.querySelector("#map > h4").innerHTML = studentDirection === "incoming"
-            ? "students incoming to " + countryData.get(selectedCountry).name
-            : "students outgoing from " + countryData.get(selectedCountry).name
+            ? "Students incoming to " + countryData.get(selectedCountry).name
+            : "Students outgoing from " + countryData.get(selectedCountry).name
     }
 
     // Calculate the total amount of students
@@ -174,34 +177,34 @@ function drawChloropleth() {
     let countrySelection = countryGroup.selectAll("path").data(countryData.values());
 
     function callToolTip(d) {
-        function formatNumber(num) {
-            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ')
-        }
-
         let entries = null;
         if (selectedCountry !== "" && d.country !== selectedCountry) {
             if (studentDirection === "incoming") {
                 entries = {
-                    [d.name]: "",
+                    [`<b>` + d.name + `</b>`]: "",
                     "Incoming": formatNumber(selected[d.country]),
                     "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             } else {
                 entries = {
-                    [d.name]: "",
+                    [`<b>` + d.name + `</b>`]: "",
                     "Outgoing:": formatNumber(selected[d.country]),
                     "Percentage:": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             }
         } else {
             entries = {
-                [d.name]: "",
+                [`<b>` + d.name + `</b>`]: "",
                 "Incoming:": formatNumber(d.receiving),
                 "Outgoing:": formatNumber(d.sending)
             };
         }
 
+        // Override the calculated position
         mapTip.show(d.country, entries);
+        let box = document.querySelector("#map > svg > g.legend").getBoundingClientRect();
+        mapTip.style("left", box.left + "px");
+        mapTip.style("top", box.bottom + 10 + "px");
     }
 
     // First draw
@@ -251,8 +254,7 @@ function drawChloropleth() {
 }
 
 /**
- * Draw the legend based on the selected country variable.
- * The legend is removed before creating a new one.
+ * Draw the legend based on the selected country variable. The legend is removed before creating a new one.
  */
 function drawLegend() {
     // Editable options
@@ -277,15 +279,16 @@ function drawLegend() {
         .attr("class", "legend")
         .attr("transform", `translate(${mapLegendPosX}, ${mapLegendPosY})`);
 
-    const padding_x = 7;
-    const padding_y = 5;
+    const [padding_x, padding_y] = [7, 5];
     mapLegendGroup.append("rect")
         .attr("width", mapLegendWidth + padding_x * 2)
         .attr("height", (mapLegendHeight + padding_y) * 2)
         .attr("transform", `translate(${-padding_x}, ${-(mapLegendHeight + padding_y)})`)
         .attr("fill", "white")
-        .attr("stroke-width", 0.1)
-        .attr("stroke", "black")
+        .attr("stroke-width", "1px")
+        .attr("stroke", "rgba(0, 0, 0, 0.05)")
+        .attr("rx", "2px")
+        .attr("ry", "2px")
         .classed("legend");
 
     mapLegendGroup.selectAll("rect.numbers")
@@ -311,7 +314,7 @@ function drawLegend() {
         .data(d3.range(mapLegendMin, mapLegendMax, (mapLegendMax - mapLegendMin) / mapLegendTicks))
         .enter()
         .append("text")
-        .attr("font-size", 7)
+        .attr("font-size", "9px")
         .attr("fill", "black")
         .attr("y", mapLegendHeight - 3)
         .attr("x", function (d, i) {
