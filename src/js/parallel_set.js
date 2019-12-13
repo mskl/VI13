@@ -15,10 +15,11 @@ let formatNumber = d3.format(",.0f"),
 
 var sankeyLinkTip = d3.tip().attr('class', 'd3-tip').html(
     function(d){
+        console.log(((d.source.name.length > 2 ) ? "Hei" : "Hello"));
         var content = "";
         content +=`
                         <table style="margin-top: 2.5px;">
-                                <tr><td> ` + d.source.name + " → " + d.target.name + "\n" +`</td> <td style="text-align: right">` + format(d.value) + `</td></tr>
+                                <tr><td> ` + ((d.source.name.length > 2 ) ? d.source.name : countryData.get(d.source.name.toLowerCase()).name) + " → " + ((d.target.name.length > 2 ) ? d.target.name : countryData.get(d.target.name.toLowerCase()).name) + "\n" +`</td> <td style="text-align: right">` + format(d.value) + `</td></tr>
                         </table>
                         `;
         return content;
@@ -26,7 +27,7 @@ var sankeyLinkTip = d3.tip().attr('class', 'd3-tip').html(
 
 var sankeyNodeTip = d3.tip().attr('class', 'd3-tip').html(
     function(d){
-        let content = `<span style='margin-left: 1.5px;'><b>` + d.name + `</b></span><br>`;
+        let content = `<span style='margin-left: 1.5px;'><b>` + countryData.get(d.name.toLowerCase()).name + `</b></span><br>`;
         const nodesWithSource = d.sourceLinks.map(e => {
             let string = `<tr><td style="text-align: left;">`+ e.target.name + ":"+ `</td><td style="text-align: right">`+ format(e.target.value)+ `</td></tr>`;
             return string
@@ -116,7 +117,7 @@ function gen_sankeyvis() {
         .data(degree_data.links)
         .enter().append("path")
         .attr("d", d3.sankeyLinkHorizontal())
-        .attr("stroke-width", function(d) { return Math.max(2, d.width); })
+        .attr("stroke-width", function(d) { return Math.max(1, d.width); })
         .attr("id", function (d) {return "link" + d.index})
        ;
     link.on("mouseover", sankeyLinkTip.show)
@@ -135,7 +136,7 @@ function gen_sankeyvis() {
     node.append("rect")
         .attr("x", function(d) { return d.x0; })
         .attr("y", function(d) { return d.y0; })
-        .attr("height", function(d) { return Math.max(2, d.y1 - d.y0); })
+        .attr("height", function(d) { return Math.max(1.5, d.y1 - d.y0); })
         .attr("width", function(d) { return d.x1 - d.x0; })
         .attr("fill", function(d) { return parallelsets_color(d.name.replace(/ .*/, "")); })
         .attr("fill-opacity", 0.7)
