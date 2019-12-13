@@ -32,6 +32,9 @@ var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
             var numberStudent;
             if (selectedCountry) {
                 numberStudent = studentRow.filter(a => a[0].toLowerCase() === d.ISO.toLowerCase())[0];
+                if (bchtotalStudentCount === 0) {
+                    bchtotalStudentCount = 1;
+                }
                 if (studentDirection == "incoming") {
                     content += `
                         <table style="margin-top: 2.5px;">
