@@ -1,9 +1,11 @@
 //visualisation is based on the code on website: https://www.d3-graph-gallery.com/graph/barplot_basic.html
 
 var bchDataset;
-var bchMargin = {top: 20, right: 20, bottom: 40, left: 40};
-bchWidth = 780 - bchMargin.left - bchMargin.right;
-bchHeight = 230 - bchMargin.top - bchMargin.bottom;
+var bchMargin = {top: 20, right: 20, bottom: 60, left: 40};
+
+let bchSvg = d3.select("#barchart > svg"),
+    bchWidth = +bchSvg.style("width").replace("px", ""),
+    bchHeight = +bchSvg.style("height").replace("px", "");
 
 let selectedBubbleColor = d3.scaleSequential().domain([0, 0.40]).interpolator(d3.interpolatePuRd);
 
@@ -65,19 +67,13 @@ var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
     }
     else return "ne"});
 
-
-var bchSvg = d3.select("#barchart")
-    .append("svg")
-    .attr("width", bchWidth + bchMargin.left + bchMargin.right)
-    .attr("height", bchHeight + bchMargin.top + bchMargin.bottom)
-    .append("g")
-    .attr("transform",
-        "translate(" + bchMargin.left + "," + bchMargin.top + ")");
-
+// Translate the SVG
+bchSvg = bchSvg.append("g")
+    .attr("transform", "translate(" + bchMargin.left + "," + bchMargin.top + ")");
 
 d3.csv("./data/costsofliving.csv").then(function (data) {
-bchDataset = data;
-gen_vis();
+    bchDataset = data;
+    gen_vis();
 });
 
 d3.csv("./data/map/corstudentcount.csv").then(function (data) {
@@ -88,7 +84,7 @@ d3.csv("./data/map/corstudentcount.csv").then(function (data) {
 function gen_vis() {
 // X axis
     bchXscale
-        .range([0, bchWidth])
+        .range([0, bchWidth - bchMargin.left - bchMargin.right])
         .domain(bchDataset.map(function (d) {
             return d.ISO;
         }))
@@ -96,7 +92,7 @@ function gen_vis() {
     bchXaxis
         .scale(bchXscale);
     bchSvg.append("g")
-        .attr("transform", "translate(0," + bchHeight + ")")
+        .attr("transform", "translate(0," + (bchHeight - bchMargin.top - bchMargin.bottom) + ")")
         .attr("class", "bchXaxis")
         .call(bchXaxis)
         .selectAll("text")
@@ -106,7 +102,7 @@ function gen_vis() {
 // Add Y axis
     bchYscale
         .domain([0, 130])
-        .range([bchHeight, 0]);
+        .range([bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.append("g")
@@ -126,7 +122,7 @@ function gen_vis() {
         })
         .attr("width", bchXscale.bandwidth())
         .attr("height", function (d) {
-            return bchHeight - bchYscale(d.cost);
+            return (bchHeight - bchMargin.top - bchMargin.bottom) - bchYscale(d.cost);
         })
         .attr("fill", "#ffca6e")
         .attr("opacity", "0.7")
@@ -146,25 +142,23 @@ function gen_vis() {
 
     bchSvg.call(bchBarTip);
 
-
     bchSvg.append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
-        .attr("y", bchHeight+bchMargin.bottom-10)
+        .attr("y", bchHeight-bchMargin.bottom+10)
         .attr("x", bchWidth/2)
         .attr("id","xlabel")
         .text("Country");
 
-
     bchSvg.append("text")
         .attr("transform", "rotate(-90)")
+        .attr("stroke", "black")
         .attr("y", 0 - (bchMargin.left/2)-8)
         .attr("x",0 - bchHeight / 2)
         .attr("fill", "black")
         .attr("font-size", 11)
         .attr("id","ylabel")
         .text("Index");
-
 
     //selectedCountry line - not visible
     bchSvg
@@ -175,7 +169,6 @@ function gen_vis() {
         .attr("y2", bchHeight)
         .attr("stroke", "rgba(0,0,0,0)")
         .attr("id","countryLine");
-
 
     bchSvg.selectAll("indPoints")
         .data(bchDataset)
@@ -195,7 +188,7 @@ function generateRentalPrice() {
     //visualisation of rental index
     bchYscale
         .domain([0, 60])
-        .range([bchHeight, 0]);
+        .range([bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.select(".bchYaxis")
@@ -208,7 +201,7 @@ function generateRentalPrice() {
         .transition() //add smooth transition
         .duration(750)
         .attr("height", function (d) {
-            return bchHeight - bchYscale(d.RentIndex);
+            return bchHeight - bchMargin.top - bchMargin.bottom - bchYscale(d.RentIndex);
         })
         .attr("y", function (d) { return bchYscale(d.RentIndex)})
         .attr("fill", "#e6df60");
@@ -231,7 +224,7 @@ function generateBeerPrice() {
     //visualisation of Beer price
     bchYscale
         .domain([0, 4])
-        .range([bchHeight, 0]);
+        .range([bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.select(".bchYaxis")
@@ -247,7 +240,7 @@ function generateBeerPrice() {
             return bchYscale(d.DomesticBeer);
         })
         .attr("height", function (d) {
-            return bchHeight - bchYscale(d.DomesticBeer);
+            return bchHeight - bchMargin.top - bchMargin.bottom - bchYscale(d.DomesticBeer);
         })
         .attr("fill", "#cda555");
 
@@ -269,7 +262,7 @@ function generateCostOfLiving() {
 //visualisation back on cost of living
     bchYscale
         .domain([0, 130])
-        .range([ bchHeight, 0]);
+        .range([ bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.select(".bchYaxis")
@@ -281,7 +274,7 @@ function generateCostOfLiving() {
         .data(bchDataset)
         .transition() //add smooth transition
         .duration(750)
-        .attr("height", function(d) { return bchHeight - bchYscale(d.cost); })
+        .attr("height", function(d) { return bchHeight - bchMargin.top - bchMargin.bottom - bchYscale(d.cost); })
         .attr("y", function(d) { return bchYscale(d.cost); })
         .attr("fill", "#ffca6e");
 
@@ -361,7 +354,7 @@ function sortBars() {
                 });
         }
         bchSvg.select("#xlabel")
-            .attr("x", bchWidth/2 - 60)
+            .attr("x", bchWidth/2)
             .text("Country (sorted by popularity)");
     } else {
         bchSvg.select("#xlabel")
@@ -497,8 +490,8 @@ function drawSelectedCountryLine() {
             .duration(750)
             .attr("x1", 0)
             .attr("x2", bchWidth)
-            .attr("y1", bchHeight)
-            .attr("y2", bchHeight)
+            .attr("y1", bchHeight - bchMargin.top - bchMargin.bottom)
+            .attr("y2", bchHeight - bchMargin.top - bchMargin.bottom)
             .attr("stroke", "rgba(0,0,0,0)");
     }
 }
@@ -552,7 +545,7 @@ function positionBubbles(){
             .attr("cx", function (d) {
                 return (bchXscale(d.ISO) + bchWidth / 68 - 2);
             })
-            .attr("cy", bchHeight)
+            .attr("cy", bchHeight - bchMargin.top - bchMargin.bottom)
     }
 }
 
