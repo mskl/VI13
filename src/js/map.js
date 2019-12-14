@@ -259,7 +259,7 @@ function drawChloropleth() {
 function drawLegend() {
     // Editable options
     const mapLegendTicks = 10;
-    const mapLegendWidth = 240;
+    const mapLegendWidth = 300;
 
     const [mapLegendMin, mapLegendMax] =
         selectedCountry === ""
@@ -279,7 +279,7 @@ function drawLegend() {
         .attr("class", "legend")
         .attr("transform", `translate(${mapLegendPosX}, ${mapLegendPosY})`);
 
-    const [padding_x, padding_y] = [7, 5];
+    const [padding_x, padding_y] = [4, 4];
     mapLegendGroup.append("rect")
         .attr("width", mapLegendWidth + padding_x * 2)
         .attr("height", (mapLegendHeight + padding_y) * 2)
