@@ -32,13 +32,16 @@ var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
             var numberStudent;
             if (selectedCountry) {
                 numberStudent = studentRow.filter(a => a[0].toLowerCase() === d.ISO.toLowerCase())[0];
-                if (studentDirection == "incoming") {
+                if (bchtotalStudentCount === 0) {
+                    bchtotalStudentCount = 1;
+                }
+                if (studentDirection == "outgoing") {
                     content += `
                         <table style="margin-top: 2.5px;">
                                 <tr><td style="text-align: left;"> ` + "Cost of living: " +`</td><td>`+ d.cost + "\n" +`</td> </tr>
                                 <tr><td style="text-align: left;"> ` + "Rental index: " +`</td><td>`+ d.RentIndex + "\n" +`</td> </tr>
                                 <tr><td style="text-align: left;"> ` + "Beer price: " +`</td><td>`+ Math.round( d.DomesticBeer * 100 + Number.EPSILON ) / 100 + " \€\n" +`</td> </tr>
-                                <tr><td style="text-align: left;"> ` + "Students going to " + selectedCountryName + ":" + `</td><td>` + numberStudent[1] + `</td> </tr>
+                                <tr><td style="text-align: left;"> ` + "Students coming from " + selectedCountryName + ":" + `</td><td>` + numberStudent[1] + `</td> </tr>
                                 <tr><td style="text-align: left;"> ` + "    → Percentage:" + `</td><td>` + (numberStudent[1]/bchtotalStudentCount * 100).toFixed(1) + "\%" +`</td> </tr>
                         </table>
                         `;
@@ -48,7 +51,7 @@ var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
                                 <tr><td style="text-align: left;"> ` + "Cost of living: " +`</td><td>`+ d.cost + "\n" +`</td> </tr>
                                 <tr><td style="text-align: left;"> ` + "Rental index: " +`</td><td>`+ d.RentIndex + "\n" +`</td> </tr>
                                 <tr><td style="text-align: left;"> ` + "Beer price: " +`</td><td>`+ Math.round( d.DomesticBeer * 100 + Number.EPSILON ) / 100 + " \€\n" +`</td> </tr>
-                                <tr><td style="text-align: left;"> ` + "Students coming from " + selectedCountryName + ":" + `</td><td>` + numberStudent[1] + `</td> </tr>
+                                <tr><td style="text-align: left;"> ` + "Students going to " + selectedCountryName + ":" + `</td><td>` + numberStudent[1] + `</td> </tr>
                                 <tr><td style="text-align: left;"> ` + "    → Percentage:" + `</td><td>` + (numberStudent[1]/bchtotalStudentCount * 100).toFixed(1) + "\%" +`</td> </tr>
                         </table>
                         `;
@@ -332,7 +335,7 @@ function sortBars() {
         });
 
     if(selectedCountry) {
-        if(studentDirection === "incoming"){
+        if(studentDirection === "outgoing"){
             studentRow = bchStudentData.map(function (d) {
                 return [d["country"], d[selectedCountry]]
             });
@@ -353,7 +356,6 @@ function sortBars() {
                     return ("outgoing students: " + countryA[1]);
                 });
         }
-        console.log("change x");
         bchSvg.select("#xlabel")
             .attr("x", bchWidth/2 - 60)
             .text("Country (sorted by popularity)");
@@ -382,7 +384,7 @@ function sortDataset() {
     }
 }
 
-function sortDatasetOutgoing() {
+function sortDatasetIncoming() {
     studentRow = Object.entries(bchStudentData.filter(d => d.country.toLowerCase() === selectedCountry.toLowerCase())[0]);
     studentRow.splice(0, 1);
 
@@ -401,24 +403,18 @@ function sortDatasetOutgoing() {
 }
 
 //sorting the dataset based on the number o incoming students for selected country
-function sortDatasetIncoming() {
-    console.log("sorting Incoming");
-
+function sortDatasetOutgoing() {
      studentRow = bchStudentData.map(function (d) {
         return [d["country"], d[selectedCountry]]
     });
-
-    console.log(studentRow);
 
     bchDataset.sort(function(a, b) {
         var countryA = studentRow.filter(d => d[0].toLowerCase() === a.ISO.toLowerCase());
         var countryB = studentRow.filter(d => d[0].toLowerCase() === b.ISO.toLowerCase());
 
         if (countryA[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
-            console.log("Country A: " + countryA);
             return 1;
         } else if (countryB[0][0].toLowerCase() === selectedCountry.toLowerCase()) {
-            console.log("Country B: " + countryB);
             return -1;
         } else {
             return countryB[0][1] - countryA[0][1];
@@ -511,7 +507,6 @@ function highlightBarchart(highlitedState) {
 function positionBubbles(){
     if(selectedCountry)
     {
-        console.log("Position bubbles");
         var dropdown = document.getElementById("barchart_dropdown_parameter");
         var dropdownVal = dropdown.value.toLowerCase();
 
@@ -561,7 +556,7 @@ function colorBubbles() {
     if(selectedCountry)
     {
         studentRow;
-        if(studentDirection === "incoming") {
+        if(studentDirection === "outgoing") {
             studentRow = bchStudentData.map(function (d) {
                 return [d["country"], d[selectedCountry]]
             });

@@ -192,4 +192,5 @@ events.on("studentDirectionEvent", function(direction) {
     drawChloropleth();
     drawSankey(selectedCountry, studentDirection);
     drawBarchart();
+    drawDirectionBoxplot();
 });
