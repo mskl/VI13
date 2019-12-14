@@ -59,7 +59,11 @@ var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
             }
         }
         return content;
-    });
+    }).direction(function (d) {
+    if (d.index > 34){
+        return "nw"
+    }
+    else return "ne"});
 
 
 var bchSvg = d3.select("#barchart")

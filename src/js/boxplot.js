@@ -242,7 +242,11 @@ function drawDiagramBoxplot(dataset) {
         .attr("stroke-width","0.5")
         .attr("fill", function(d) {
             if (d.key.toLowerCase().includes(selectedCountry.toLowerCase()) && selectedCountry != ""){
-                return "red";
+                if(d.key.toLowerCase().includes("(f)")) {
+                    return "#fc6868";
+                } else {
+                    return "#6892fc";
+                }
             } else {
                 return "#85ff4d";
             }
