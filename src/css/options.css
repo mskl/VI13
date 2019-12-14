@@ -25,9 +25,9 @@
     padding: 4px 8px;
     transition: all 0.1s ease-in-out;
     margin: 2px;
-    /*border: 1px solid rgb(147, 147, 147 );*/
     border-radius: 5px;
     font-size: 15px;
+    border: 1px solid rgba(147, 147, 147, 255);
 }
 
 #student_direction label:hover {
@@ -39,7 +39,7 @@
 #student_direction input:checked + label {
     background-color: rgb(97, 165, 238 );
     box-shadow: none;
-    border: 0;
+    border: 1px solid rgba(147, 147, 147, 0);
 }
 
 .visible {
