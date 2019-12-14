@@ -340,7 +340,7 @@ function drawDiagramBoxplot(dataset) {
         .attr("y2", function(d){return(boxplotYscale(d.value.max))})
         .attr("stroke", "black")
         .style("width", 80)
-        .attr("class", "medianLine");
+        .attr("class", "maxLine");
 
     var transition = boxplotSvg.transition().duration(750);
 
@@ -458,7 +458,7 @@ console.log("drawing boxplot direction");
         .transition()
         .duration(750)
         .attr("y1", function(d){return(boxplotYscale(d.value.min))})
-        .attr("y2", function(d){return(boxplotYscale(d.value.max))})
+        .attr("y2", function(d){return(boxplotYscale(d.value.max))});
 
     // change rectangle for the main boxes
     boxplotSvg.selectAll(".box")
@@ -466,7 +466,7 @@ console.log("drawing boxplot direction");
         .transition()
         .duration(750)
         .attr("y", function(d){return(boxplotYscale(d.value.q3))})
-        .attr("height", function(d){return(boxplotYscale(d.value.q1)-boxplotYscale(d.value.q3))})
+        .attr("height", function(d){return(boxplotYscale(d.value.q1)-boxplotYscale(d.value.q3))});
 
     // Change the median
     boxplotSvg.selectAll(".medianLine")
@@ -474,7 +474,23 @@ console.log("drawing boxplot direction");
         .transition()
         .duration(750)
         .attr("y1", function(d){return(boxplotYscale(d.value.median))})
-        .attr("y2", function(d){return(boxplotYscale(d.value.median))})
+        .attr("y2", function(d){return(boxplotYscale(d.value.median))});
+
+    // Change the median
+    boxplotSvg.selectAll(".minLine")
+        .data(tmpDataset)
+        .transition()
+        .duration(750)
+        .attr("y1", function(d){return(boxplotYscale(d.value.min))})
+        .attr("y2", function(d){return(boxplotYscale(d.value.min))});
+
+    // Change the median
+    boxplotSvg.selectAll(".maxLine")
+        .data(tmpDataset)
+        .transition()
+        .duration(750)
+        .attr("y1", function(d){return(boxplotYscale(d.value.max))})
+        .attr("y2", function(d){return(boxplotYscale(d.value.max))});
 }
 
 function sortBoxplotDatasetAlphabeticaly(dataset) {
