@@ -76,7 +76,7 @@ function genBoxplotVis() {
         .text("Country");
 // Show the Y scale
     boxplotYscale
-        .domain([0, 5000])
+        .domain([0, 5800])
         .range([boxplotHeight, 0]);
     boxplotYaxis
         .scale(boxplotYscale);
@@ -224,30 +224,7 @@ function drawDiagramBoxplot(dataset) {
         .attr("stroke", "black")
         .attr("stroke-width","1")
         .attr("class", "mainLine")
-        .style("width",40)
-        .on('mouseover', function(d) {
-            var key = "";
-            if (d.key.toLowerCase().includes("m") || d.key.toLowerCase().includes("f")) {
-                console.log("key:" + d.key[0]+d.key[1]);
-                key = d.key[0]+d.key[1];
-            } else {
-                key = d.key;
-            }
-            events.call('boxplotOnMouseOut', key.toLowerCase(), key.toLowerCase())
-        })
-        .on('mouseout', function(d) {
-            var key = "";
-            if (d.key.toLowerCase().includes("m") || d.key.toLowerCase().includes("f")) {
-                console.log("key:" + d.key[0]+d.key[1]);
-                key = d.key[0]+d.key[1];
-            } else {
-                key = d.key;
-            }
-            events.call('boxplotOnMouseOut', key.toLowerCase(), key.toLowerCase())
-        })
-        .on('click', d => selectedCountry === d.key.toLowerCase()
-            ? events.call('stateSelectedEvent', "", "")
-            : events.call('stateSelectedEvent', d.key.toLowerCase(), d.key.toLowerCase()));
+        .style("width",40);
 
     // rectangle for the main boxes
     boxWidth =  15;
