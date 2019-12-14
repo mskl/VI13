@@ -206,6 +206,8 @@ function drawDiagramBoxplot(dataset) {
 
     boxplotSvg .selectAll(".box").remove();
     boxplotSvg .selectAll(".mainLine").remove();
+    boxplotSvg .selectAll(".minLine").remove();
+    boxplotSvg .selectAll(".maxLine").remove();
     boxplotSvg .selectAll(".medianLine").remove();
     boxplotSvg .selectAll(".boxplotxlabel").remove();
     boxplotSvg .selectAll(".boxplotylabel").remove();
