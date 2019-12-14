@@ -4,8 +4,8 @@ var boxplotDatasetSending;
 var boxplotDatasetUsing;
 var boxplotGenderDataset;
 // set the dimensions and margins of the graph
-var boxplotMargin = {top: 20, right: 20, bottom: 40, left: 40},
-    boxplotWidth = 750 - boxplotMargin.left - boxplotMargin.right,
+var boxplotMargin = {top: 20, right: 20, bottom: 40, left: 50},
+    boxplotWidth = 730 - boxplotMargin.left - boxplotMargin.right,
     boxplotHeight = 230 - boxplotMargin.top - boxplotMargin.bottom;
 
 var boxplotXscale = d3.scaleBand();
@@ -67,6 +67,13 @@ function genBoxplotVis() {
         .attr("transform", "translate(-10,0)rotate(-45)")
         .style("text-anchor", "end");
 
+    boxplotSvg.append("text")
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("y", boxplotHeight + boxplotMargin.bottom - 5)
+        .attr("x", boxplotWidth / 2)
+        .attr("class", "boxplotxlabel")
+        .text("Country");
 // Show the Y scale
     boxplotYscale
         .domain([0, 5000])
@@ -77,6 +84,14 @@ function genBoxplotVis() {
         .attr("class", "boxplotYaxis")
         .call(boxplotYaxis);
 
+    boxplotSvg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (boxplotMargin.left/2)-10)
+        .attr("x",0 - boxplotHeight / 2)
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("class","boxplotylabel")
+        .text("Km");
     drawBoxplot();
 }
 function nestDataset() {
@@ -192,7 +207,8 @@ function drawDiagramBoxplot(dataset) {
     boxplotSvg .selectAll(".box").remove();
     boxplotSvg .selectAll(".mainLine").remove();
     boxplotSvg .selectAll(".medianLine").remove();
-
+    boxplotSvg .selectAll(".boxplotxlabel").remove();
+    boxplotSvg .selectAll(".boxplotylabel").remove();
 
     // Show the main vertical lines
     boxplotSvg.selectAll("vertLines")
@@ -303,6 +319,34 @@ function drawDiagramBoxplot(dataset) {
         .selectAll("text")
         .attr("transform", "translate(-10,0)rotate(-45)")
         .style("text-anchor", "end");
+
+    if(selectedCountry) {
+        var name = boxplotDataset.filter(d => d.CountryHosting.toLowerCase() === selectedCountry.toLowerCase())[0].NameHosting;
+        boxplotSvg.append("text")
+            .attr("fill", "black")
+            .attr("font-size", 11)
+            .attr("y", boxplotHeight + boxplotMargin.bottom - 5)
+            .attr("x", boxplotWidth / 2-20)
+            .attr("class", "boxplotxlabel")
+            .text("Country (with gender for " + name + ")");
+    } else {
+        boxplotSvg.append("text")
+            .attr("fill", "black")
+            .attr("font-size", 11)
+            .attr("y", boxplotHeight + boxplotMargin.bottom - 5)
+            .attr("x", boxplotWidth / 2)
+            .attr("class", "boxplotxlabel")
+            .text("Country");
+    }
+
+    boxplotSvg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (boxplotMargin.left/2)-10)
+        .attr("x",0 - boxplotHeight / 2)
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("class","boxplotylabel")
+        .text("Km");
 }
 
 function filterDatasetGender() {
