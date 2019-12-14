@@ -1,11 +1,11 @@
 //visualisation is based on the code on website: https://www.d3-graph-gallery.com/graph/barplot_basic.html
 
 var bchDataset;
-var bchMargin = {top: 20, right: 20, bottom: 40, left: 40};
+var bchMargin = {top: 20, right: 20, bottom: 60, left: 40};
 
 let bchSvg = d3.select("#barchart > svg"),
-    bchWidth = +bchSvg.style("width").replace("px", "") - bchMargin.left - bchMargin.right,
-    bchHeight = +bchSvg.style("height").replace("px", "") - bchMargin.top - bchMargin.bottom;
+    bchWidth = +bchSvg.style("width").replace("px", ""),
+    bchHeight = +bchSvg.style("height").replace("px", "");
 
 let selectedBubbleColor = d3.scaleSequential().domain([0, 0.40]).interpolator(d3.interpolatePuRd);
 
@@ -80,7 +80,7 @@ d3.csv("./data/map/corstudentcount.csv").then(function (data) {
 function gen_vis() {
 // X axis
     bchXscale
-        .range([0, bchWidth])
+        .range([0, bchWidth - bchMargin.left - bchMargin.right])
         .domain(bchDataset.map(function (d) {
             return d.ISO;
         }))
@@ -88,7 +88,7 @@ function gen_vis() {
     bchXaxis
         .scale(bchXscale);
     bchSvg.append("g")
-        .attr("transform", "translate(0," + bchHeight + ")")
+        .attr("transform", "translate(0," + (bchHeight - bchMargin.top - bchMargin.bottom) + ")")
         .attr("class", "bchXaxis")
         .call(bchXaxis)
         .selectAll("text")
@@ -98,7 +98,7 @@ function gen_vis() {
 // Add Y axis
     bchYscale
         .domain([0, 130])
-        .range([bchHeight, 0]);
+        .range([bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.append("g")
@@ -118,7 +118,7 @@ function gen_vis() {
         })
         .attr("width", bchXscale.bandwidth())
         .attr("height", function (d) {
-            return bchHeight - bchYscale(d.cost);
+            return (bchHeight - bchMargin.top - bchMargin.bottom) - bchYscale(d.cost);
         })
         .attr("fill", "#ffca6e")
         .attr("opacity", "0.7")
@@ -141,7 +141,7 @@ function gen_vis() {
     bchSvg.append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
-        .attr("y", bchHeight+bchMargin.bottom-10)
+        .attr("y", bchHeight-bchMargin.bottom+10)
         .attr("x", bchWidth/2)
         .attr("id","xlabel")
         .text("Country");
@@ -350,7 +350,7 @@ function sortBars() {
                 });
         }
         bchSvg.select("#xlabel")
-            .attr("x", bchWidth/2 - 60)
+            .attr("x", bchWidth/2)
             .text("Country (sorted by popularity)");
     } else {
         bchSvg.select("#xlabel")
