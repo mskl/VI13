@@ -2,8 +2,10 @@
 
 var bchDataset;
 var bchMargin = {top: 20, right: 20, bottom: 40, left: 40};
-bchWidth = 780 - bchMargin.left - bchMargin.right;
-bchHeight = 230 - bchMargin.top - bchMargin.bottom;
+
+let bchSvg = d3.select("#barchart > svg"),
+    bchWidth = +bchSvg.style("width").replace("px", "") - bchMargin.left - bchMargin.right,
+    bchHeight = +bchSvg.style("height").replace("px", "") - bchMargin.top - bchMargin.bottom;
 
 let selectedBubbleColor = d3.scaleSequential().domain([0, 0.40]).interpolator(d3.interpolatePuRd);
 
@@ -61,19 +63,13 @@ var bchBarTip = d3.tip().attr('class', 'd3-tip').html(
         return content;
     });
 
-
-var bchSvg = d3.select("#barchart")
-    .append("svg")
-    .attr("width", bchWidth + bchMargin.left + bchMargin.right)
-    .attr("height", bchHeight + bchMargin.top + bchMargin.bottom)
-    .append("g")
-    .attr("transform",
-        "translate(" + bchMargin.left + "," + bchMargin.top + ")");
-
+// Translate the SVG
+bchSvg = bchSvg.append("g")
+    .attr("transform", "translate(" + bchMargin.left + "," + bchMargin.top + ")");
 
 d3.csv("./data/costsofliving.csv").then(function (data) {
-bchDataset = data;
-gen_vis();
+    bchDataset = data;
+    gen_vis();
 });
 
 d3.csv("./data/map/corstudentcount.csv").then(function (data) {
@@ -142,7 +138,6 @@ function gen_vis() {
 
     bchSvg.call(bchBarTip);
 
-
     bchSvg.append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
@@ -151,16 +146,15 @@ function gen_vis() {
         .attr("id","xlabel")
         .text("Country");
 
-
     bchSvg.append("text")
         .attr("transform", "rotate(-90)")
+        .attr("stroke", "black")
         .attr("y", 0 - (bchMargin.left/2)-8)
         .attr("x",0 - bchHeight / 2)
         .attr("fill", "black")
         .attr("font-size", 11)
         .attr("id","ylabel")
         .text("Index");
-
 
     //selectedCountry line - not visible
     bchSvg
@@ -171,7 +165,6 @@ function gen_vis() {
         .attr("y2", bchHeight)
         .attr("stroke", "rgba(0,0,0,0)")
         .attr("id","countryLine");
-
 
     bchSvg.selectAll("indPoints")
         .data(bchDataset)
