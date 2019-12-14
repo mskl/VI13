@@ -184,7 +184,7 @@ function generateRentalPrice() {
     //visualisation of rental index
     bchYscale
         .domain([0, 60])
-        .range([bchHeight, 0]);
+        .range([bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.select(".bchYaxis")
@@ -197,7 +197,7 @@ function generateRentalPrice() {
         .transition() //add smooth transition
         .duration(750)
         .attr("height", function (d) {
-            return bchHeight - bchYscale(d.RentIndex);
+            return bchHeight - bchMargin.top - bchMargin.bottom - bchYscale(d.RentIndex);
         })
         .attr("y", function (d) { return bchYscale(d.RentIndex)})
         .attr("fill", "#e6df60");
@@ -220,7 +220,7 @@ function generateBeerPrice() {
     //visualisation of Beer price
     bchYscale
         .domain([0, 4])
-        .range([bchHeight, 0]);
+        .range([bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.select(".bchYaxis")
@@ -236,7 +236,7 @@ function generateBeerPrice() {
             return bchYscale(d.DomesticBeer);
         })
         .attr("height", function (d) {
-            return bchHeight - bchYscale(d.DomesticBeer);
+            return bchHeight - bchMargin.top - bchMargin.bottom - bchYscale(d.DomesticBeer);
         })
         .attr("fill", "#cda555");
 
@@ -258,7 +258,7 @@ function generateCostOfLiving() {
 //visualisation back on cost of living
     bchYscale
         .domain([0, 130])
-        .range([ bchHeight, 0]);
+        .range([ bchHeight - bchMargin.top - bchMargin.bottom, 0]);
     bchYaxis
         .scale(bchYscale);
     bchSvg.select(".bchYaxis")
@@ -270,7 +270,7 @@ function generateCostOfLiving() {
         .data(bchDataset)
         .transition() //add smooth transition
         .duration(750)
-        .attr("height", function(d) { return bchHeight - bchYscale(d.cost); })
+        .attr("height", function(d) { return bchHeight - bchMargin.top - bchMargin.bottom - bchYscale(d.cost); })
         .attr("y", function(d) { return bchYscale(d.cost); })
         .attr("fill", "#ffca6e");
 
@@ -486,8 +486,8 @@ function drawSelectedCountryLine() {
             .duration(750)
             .attr("x1", 0)
             .attr("x2", bchWidth)
-            .attr("y1", bchHeight)
-            .attr("y2", bchHeight)
+            .attr("y1", bchHeight - bchMargin.top - bchMargin.bottom)
+            .attr("y2", bchHeight - bchMargin.top - bchMargin.bottom)
             .attr("stroke", "rgba(0,0,0,0)");
     }
 }
@@ -541,7 +541,7 @@ function positionBubbles(){
             .attr("cx", function (d) {
                 return (bchXscale(d.ISO) + bchWidth / 68 - 2);
             })
-            .attr("cy", bchHeight)
+            .attr("cy", bchHeight - bchMargin.top - bchMargin.bottom)
     }
 }
 
