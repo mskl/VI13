@@ -312,6 +312,34 @@ function drawDiagramBoxplot(dataset) {
         .style("width", 80)
         .attr("class", "medianLine");
 
+    // Change the median
+    boxplotSvg
+        .selectAll("minLines")
+        .data(dataset)
+        .enter()
+        .append("line")
+        .attr("x1", function(d){return(boxplotXscale(d.key)-boxWidth/2) })
+        .attr("x2", function(d){return(boxplotXscale(d.key)+boxWidth/2) })
+        .attr("y1", function(d){return(boxplotYscale(d.value.min))})
+        .attr("y2", function(d){return(boxplotYscale(d.value.min))})
+        .attr("stroke", "black")
+        .style("width", 80)
+        .attr("class", "minLine");
+
+    // Change the median
+    boxplotSvg
+        .selectAll("maxLines")
+        .data(dataset)
+        .enter()
+        .append("line")
+        .attr("x1", function(d){return(boxplotXscale(d.key)-boxWidth/2) })
+        .attr("x2", function(d){return(boxplotXscale(d.key)+boxWidth/2) })
+        .attr("y1", function(d){return(boxplotYscale(d.value.max))})
+        .attr("y2", function(d){return(boxplotYscale(d.value.max))})
+        .attr("stroke", "black")
+        .style("width", 80)
+        .attr("class", "medianLine");
+
     var transition = boxplotSvg.transition().duration(750);
 
     transition.select(".boxplotXaxis")
