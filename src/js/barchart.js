@@ -1,7 +1,6 @@
 //visualisation is based on the code on website: https://www.d3-graph-gallery.com/graph/barplot_basic.html
-
 var bchDataset;
-var bchMargin = {top: 20, right: 20, bottom: 60, left: 40};
+var bchMargin = {top: 20, right: 10, bottom: 60, left: 40};
 
 let bchSvg = d3.select("#barchart > svg"),
     bchWidth = +bchSvg.style("width").replace("px", ""),
@@ -145,7 +144,7 @@ function gen_vis() {
     bchSvg.append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
-        .attr("y", bchHeight-bchMargin.bottom+10)
+        .attr("y", bchHeight-bchMargin.top)
         .attr("x", bchWidth/2)
         .attr("id","xlabel")
         .text("Country");
