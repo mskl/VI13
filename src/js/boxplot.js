@@ -381,55 +381,79 @@ function filterDatasetGender() {
         tmpDataset = boxplotDataset.filter(d => d.CountrySending.toLowerCase() === selectedCountry.toLowerCase());
     }
 
-    tmpDataset = d3.nest() // nest function allows to group the calculation per level of a factor
-        .key(function (d) {
-            // if (studentDirection === "incoming"){
-            //     return (d.CountryHosting + "(" + d.ParticipantGender + ")");
-            // } else {
-            //     return (d.CountrySending + "(" + d.ParticipantGender + ")");
-            // }
-            return d.ParticipantGender;
-        })
-        .rollup(function (d) {
-            var tmp_min = 100000;
-            q1 = d3.quantile(d.map(function (g) {
-                if(parseInt(g.km,10) < tmp_min) {tmp_min = parseInt(g.km,10);}
-                // if(parseInt(g.km, 10) < boxplotMinimum){boxplotMinimum = parseInt(g.km, 10)}
-                // if(parseInt(g.km, 10) > boxplotMaximum){boxplotMaximum = parseInt(g.km, 10)}
+    if(tmpDataset=="") {
+        tmpDataset.push( {key: "MK (F)", value:{q1: 0, median: 0, q3: 0, interQuantileRange:0,
+            min:0, max: 0, countryName: "North Macedonia"}}, {key: "MK (M)", value:{q1: 0, median: 0, q3: 0, interQuantileRange:0,
+                min:0, max: 0, countryName: "North Macedonia"}})
+    } else {
+        tmpDataset = d3.nest() // nest function allows to group the calculation per level of a factor
+            .key(function (d) {
+                // if (studentDirection === "incoming"){
+                //     return (d.CountryHosting + "(" + d.ParticipantGender + ")");
+                // } else {
+                //     return (d.CountrySending + "(" + d.ParticipantGender + ")");
+                // }
+                return d.ParticipantGender;
+            })
+            .rollup(function (d) {
+                var tmp_min = 100000;
+                q1 = d3.quantile(d.map(function (g) {
+                    if (parseInt(g.km, 10) < tmp_min) {
+                        tmp_min = parseInt(g.km, 10);
+                    }
+                    // if(parseInt(g.km, 10) < boxplotMinimum){boxplotMinimum = parseInt(g.km, 10)}
+                    // if(parseInt(g.km, 10) > boxplotMaximum){boxplotMaximum = parseInt(g.km, 10)}
 
-                return parseInt(g.km, 10);
-            }).sort(d3.ascending), .25);
-            median = d3.quantile(d.map(function (g) {
-                return parseInt(g.km, 10);
-            }).sort(d3.ascending), .5);
-            q3 = d3.quantile(d.map(function (g) {
-                return parseInt(g.km, 10);
-            }).sort(d3.ascending), .75);
-            interQuantileRange = q3 - q1;
-            min = tmp_min;
-            max = q3 + 1.5 * interQuantileRange;
-            if(d[0].ParticipantGender == "F") {
-                if(studentDirection == "incoming") {
-                    countryName = d[0].NameHosting + " (Female)";
+                    return parseInt(g.km, 10);
+                }).sort(d3.ascending), .25);
+                median = d3.quantile(d.map(function (g) {
+                    return parseInt(g.km, 10);
+                }).sort(d3.ascending), .5);
+                q3 = d3.quantile(d.map(function (g) {
+                    return parseInt(g.km, 10);
+                }).sort(d3.ascending), .75);
+                interQuantileRange = q3 - q1;
+                min = tmp_min;
+                max = q3 + 1.5 * interQuantileRange;
+                if (d[0].ParticipantGender == "F") {
+                    if (studentDirection == "incoming") {
+                        countryName = d[0].NameHosting + " (Female)";
+                    } else {
+                        countryName = d[0].NameSending + " (Female)";
+                    }
                 } else {
-                    countryName = d[0].NameSending + " (Female)";
+                    if (studentDirection == "incoming") {
+                        countryName = d[0].NameHosting + " (Male)";
+                    } else {
+                        countryName = d[0].NameSending + " (Male)";
+                    }
                 }
-            } else {
-                if(studentDirection == "incoming") {
-                    countryName = d[0].NameHosting + " (Male)";
-                } else {
-                    countryName = d[0].NameSending + " (Male)";
+                return ({
+                    q1: q1,
+                    median: median,
+                    q3: q3,
+                    interQuantileRange: interQuantileRange,
+                    min: min,
+                    max: max,
+                    countryName: countryName
+                })
+            })
+            .entries(tmpDataset)
+            .map(function (group) {
+                return {
+                    key: (selectedCountry.toUpperCase() + "(" + group.key + ")"),
+                    value: {
+                        q1: group.value.q1,
+                        median: group.value.median,
+                        q3: group.value.q3,
+                        interQuantileRange: group.value.interQuantileRange,
+                        min: group.value.min,
+                        max: group.value.max,
+                        countryName: group.value.countryName
+                    }
                 }
-            }
-            return ({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max, countryName:countryName})
-        })
-        .entries(tmpDataset)
-        .map(function(group) {
-            return {
-                key: (selectedCountry.toUpperCase() + "(" + group.key + ")"),
-                value:{q1: group.value.q1, median: group.value.median, q3: group.value.q3, interQuantileRange: group.value.interQuantileRange,
-                    min: group.value.min, max: group.value.max, countryName: group.value.countryName}}
             });
+    }
     boxplotGenderDataset = boxplotDatasetUsing.filter(d => d.key.toLowerCase() != selectedCountry.toLowerCase());
     boxplotGenderDataset.push(tmpDataset[0]);
     boxplotGenderDataset.push(tmpDataset[1]);
