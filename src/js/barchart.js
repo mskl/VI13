@@ -144,7 +144,7 @@ function gen_vis() {
     bchSvg.append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
-        .attr("y", bchHeight-bchMargin.top)
+        .attr("y", bchHeight-bchMargin.top-30)
         .attr("x", bchWidth/2)
         .attr("id","xlabel")
         .text("Country");
