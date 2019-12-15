@@ -214,19 +214,23 @@ function drawDiagramBoxplot(dataset) {
         return (d.key);
     }));
 
-    boxplotSvg .selectAll(".box").remove();
-    boxplotSvg .selectAll(".mainLine").remove();
-    boxplotSvg .selectAll(".minLine").remove();
-    boxplotSvg .selectAll(".maxLine").remove();
-    boxplotSvg .selectAll(".medianLine").remove();
-    boxplotSvg .selectAll(".boxplotxlabel").remove();
-    boxplotSvg .selectAll(".boxplotylabel").remove();
+    // Change this to change the blending speed
+    const animationDuration = 400;
+
+    boxplotSvg .selectAll(".box").transition().duration(animationDuration).attr("opacity", 0.0).remove();
+    boxplotSvg .selectAll(".mainLine").transition().duration(animationDuration).attr("opacity", 0.0).remove();
+    boxplotSvg .selectAll(".minLine").transition().duration(animationDuration).attr("opacity", 0.0).remove();
+    boxplotSvg .selectAll(".maxLine").transition().duration(animationDuration).attr("opacity", 0.0).remove();
+    boxplotSvg .selectAll(".medianLine").transition().duration(animationDuration).attr("opacity", 0.0).remove();
+    boxplotSvg .selectAll(".boxplotxlabel").transition().duration(animationDuration).attr("opacity", 0.0).remove();
+    boxplotSvg .selectAll(".boxplotylabel").transition().duration(animationDuration).attr("opacity", 0.0).remove();
 
     // Show the main vertical lines
     boxplotSvg.selectAll("vertLines")
         .data(dataset)
         .enter()
         .append("line")
+        .attr("opacity", 0)
         .attr("x1", function(d){return(boxplotXscale(d.key))})
         .attr("x2", function(d){return(boxplotXscale(d.key))})
         .attr("y1", function(d){return(boxplotYscale(d.value.min))})
@@ -234,6 +238,9 @@ function drawDiagramBoxplot(dataset) {
         .attr("stroke", "black")
         .attr("stroke-width","1")
         .attr("class", "mainLine")
+        .transition()
+        .duration(animationDuration)
+        .attr('opacity',1)
         .style("width",40);
 
     // rectangle for the main boxes
@@ -307,12 +314,16 @@ function drawDiagramBoxplot(dataset) {
         .data(dataset)
         .enter()
         .append("line")
+        .attr("opacity", 0)
         .attr("x1", function(d){return(boxplotXscale(d.key)-boxWidth/2) })
         .attr("x2", function(d){return(boxplotXscale(d.key)+boxWidth/2) })
         .attr("y1", function(d){return(boxplotYscale(d.value.min))})
         .attr("y2", function(d){return(boxplotYscale(d.value.min))})
         .attr("stroke", "black")
         .style("width", 80)
+        .transition()
+        .duration(animationDuration)
+        .attr('opacity',1)
         .attr("class", "minLine");
 
     // Change the median
@@ -321,12 +332,16 @@ function drawDiagramBoxplot(dataset) {
         .data(dataset)
         .enter()
         .append("line")
+        .attr("opacity", 0)
         .attr("x1", function(d){return(boxplotXscale(d.key)-boxWidth/2) })
         .attr("x2", function(d){return(boxplotXscale(d.key)+boxWidth/2) })
         .attr("y1", function(d){return(boxplotYscale(d.value.max))})
         .attr("y2", function(d){return(boxplotYscale(d.value.max))})
         .attr("stroke", "black")
         .style("width", 80)
+        .transition()
+        .duration(animationDuration)
+        .attr('opacity',1)
         .attr("class", "maxLine");
 
     var transition = boxplotSvg.transition().duration(750);
