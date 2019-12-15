@@ -84,7 +84,7 @@ function genBoxplotVis() {
 
 // Show the Y scale
     boxplotYscale
-        .domain([0, 5800])
+        .domain([0, 6350])
         .range([boxplotHeight - boxplotMargin.top - boxplotMargin.bottom, 0]);
     boxplotYaxis
         .scale(boxplotYscale);

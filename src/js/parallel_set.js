@@ -2,9 +2,7 @@ var selectedNode;
 var highlightedNode;
 var highlightedNode2;
 var linksToSelectedNode;
-var selectedLink;
 var degree_data;
-var sankeyTip;
 var sankey_svg = d3.select("#parallel_set > svg"),
     setsWidth = +sankey_svg.style("width").replace("px", ""),
     setsHeight = +sankey_svg.style("height").replace("px", "");
@@ -15,40 +13,54 @@ let formatNumber = d3.format(",.0f"),
 
 var sankeyLinkTip = d3.tip().attr('class', 'd3-tip').html(
     function(d){
-        console.log(((d.source.name.length > 2 ) ? "Hei" : "Hello"));
         var content = "";
         content +=`
-                        <table style="margin-top: 2.5px;">
-                                <tr><td> ` + ((d.source.name.length > 2 ) ? d.source.name : countryData.get(d.source.name.toLowerCase()).name) + " → " + ((d.target.name.length > 2 ) ? d.target.name : countryData.get(d.target.name.toLowerCase()).name) + "\n" +`</td> <td style="text-align: right">` + format(d.value) + `</td></tr>
-                        </table>
-                        `;
+                    <table style="margin-top: 2.5px;">
+                            <tr><td> ` + ((d.source.name.length > 2 ) ? d.source.name : countryData.get(d.source.name.toLowerCase()).name) + " → " + ((d.target.name.length > 2 ) ? d.target.name : countryData.get(d.target.name.toLowerCase()).name) + "\n" +`</td> <td style="text-align: right">` + format(d.value) + `</td></tr>
+                    </table>
+                    `;
         return content;
     });
 
 var sankeyNodeTip = d3.tip().attr('class', 'd3-tip').html(
     function(d){
-        let content = `<span style='margin-left: 1.5px;'><b>` + countryData.get(d.name.toLowerCase()).name + `</b></span><br>`;
-        const nodesWithSource = d.sourceLinks.map(e => {
-            let string = `<tr><td style="text-align: left;">`+ e.target.name + ":"+ `</td><td style="text-align: right">`+ format(e.target.value)+ `</td></tr>`;
-            return string
-        });
-        const nodesWithTarget = d.targetLinks.map( e => {
-            let string = `<tr><td style="text-align: left;">`+ e.source.name + ":"+ `</td><td style="text-align: right">`+ format(e.source.value)+ `</td></tr>`;
-            return string
-        });
-        if (d.index > 34){
-            content += `<table style="margin-top: 2.5px;"> ` + nodesWithTarget.join('') + `</table>`;
-        }
+        if (d.name.length == 2){
+                let content = `<span style='margin-left: 1.5px;'><b>` + countryData.get(d.name.toLowerCase()).name + `</b></span><br>`;
+                if (d.index > 34){
+                    const nodesWithTarget = d.targetLinks.map( e => {
+                        let string = `<tr><td style="text-align: left;">`+ e.source.name + ":"+ `</td><td style="text-align: right">`+ format(e.value)+ `</td></tr>`;
+                        return string
+                    });
+                    content += `<table style="margin-top: 2.5px;"> ` + nodesWithTarget.join('') + `</table>`;
+                }
+                else{
+                    const nodesWithSource = d.sourceLinks.map(e => {
+                        let string = `<tr><td style="text-align: left;">`+ e.target.name + ":"+ `</td><td style="text-align: right">`+ format(e.value)+ `</td></tr>`;
+                        return string
+                    });
+                    content += `<table style="margin-top: 2.5px;"> ` + nodesWithSource.join('') + `</table>`;
+                }
+                return content;
+            }
         else{
-            content += `<table style="margin-top: 2.5px;"> ` + nodesWithSource.join('') + `</table>`;
+            let degreecontent = `
+                    <table style="margin-top: 2.5px;">
+                            <tr><td style="text-align: left;">`+ d.name + ":"+ `</td><td style="text-align: right">`+ format(d.value)+ `</td></tr>
+                    </table>
+                    `;
+            return degreecontent;
         }
-        return content;
-    }).direction(function (d) {
-    if (d.index > 34){
+    })
+    .direction(function (d) {
+    if (d.x0 > 300){
+        console.log("here is the d:  ");
+        console.log(d);
         return "nw"
     }
     else return "ne";
-});
+    }
+
+);
 
 function drawSankey(selectedCountry, studentDirection){
     if (selectedCountry == ""){
@@ -61,10 +73,14 @@ function drawSankey(selectedCountry, studentDirection){
         d3.json("data/parallel_sets/receiving_countryselection_degree.json").then(function (data) {
 
             degree_data = data[selectedCountry.toUpperCase()];
-            // console.log(selectedCountry)
         }).then(function (){
-            gen_sankeyvis();
-            // console.log("hello")
+            if (selectedCountry.toUpperCase()!="MK"){
+                gen_sankeyvis();
+            }
+            else{
+                no_data_for_MK();
+            }
+
         });
     }
     else if (selectedCountry && studentDirection=="outgoing"){
@@ -80,6 +96,11 @@ d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
     gen_sankeyvis(degree_data);
 });
 
+function no_data_for_MK(){
+    sankey_svg.selectAll("*").remove();
+    sankey_svg.append("text").attr("y", 50).attr("x", 50).attr("font-size", 15).text("No incoming students to Makedonia, select another country.");
+
+}
 
 
 function gen_sankeyvis() {
@@ -89,9 +110,7 @@ function gen_sankeyvis() {
         sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", 23).attr("font-size", 11).text("Outgoing students");
         sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", setsWidth-110).attr("font-size", 11).text("Incoming student")
     }
-    if (selectedCountry.length == 2){
 
-    }
 
     const sankey = d3.sankey()
         .nodeWidth(15)
@@ -121,17 +140,12 @@ function gen_sankeyvis() {
         .attr("id", function (d) {return "link" + d.index})
        ;
     link.on("mouseover", sankeyLinkTip.show)
-        .on("mousemove", function(d){
-            //sankeyTooltip.style('top', d.y0 )          // NEW
-             //   .style('left', 100);             // NEW
-        })
         .on("mouseout", sankeyLinkTip.hide);
     link.call(sankeyLinkTip);
 
     node = node
         .data(degree_data.nodes)
         .enter().append("g");
-
 
     node.append("rect")
         .attr("x", function(d) { return d.x0; })
@@ -143,24 +157,18 @@ function gen_sankeyvis() {
         .attr("title", function (d) {return d.name + d.index})
         .on("mouseover", function(d){
             dispatch.call("mouseoverNode", d, d);
-            dispatch.call("hoverShowTextBox", d, d);
             if (d.name.length == 2){
                 events.call("sankeyNodeOnMouseOver", d.name.toLowerCase(), d.name.toLowerCase());
-            }
-            if (d.name.length == 2) {
-                sankeyNodeTip.show(d)
-            }
 
+            }
+            sankeyNodeTip.show(d)
         })
         .on("mouseout", function(d){
             dispatch.call("mouseoutNode", d, d);
             if (d.name.length == 2) {
                 events.call("sankeyNodeOnMouseOut", d.name.toLowerCase(), d.name.toLowerCase())
             }
-            if (d.name.length == 2) {
-                sankeyNodeTip.hide();
-            }
-
+            sankeyNodeTip.hide();
         })
         .on("click", function (d) {
            events.call("stateSelectedEvent", d.name.toLowerCase(), d.name.toLowerCase())
@@ -195,7 +203,6 @@ function highlightSankeyNode(country){
         highlightedNode.attr("stroke", "#000").attr("stroke-width", 1.5).attr("fill-opacity", 1);
         if (selectedCountry === ""){
             let index2 = degree_data.nodes.length - ((degree_data.nodes.length - 3)/2 - nodeIndex);
-            // console.log(index2);
             highlightedNode2 = d3.select(("rect[title=\'" + country.toUpperCase() + index2  + "\']")).attr("stroke", "#000").attr("stroke-width", 1.5).attr("fill-opacity", 1);;
         }
     }catch(error){
@@ -212,9 +219,11 @@ function unHighlightSankeyNode() {
         highlightedNode2.attr("stroke-width", 0).attr("fill-opacity", 0.7);
     }
 }
-var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode", "hoverShowTextBox");
+var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode");
 
 dispatch.on("mouseoverNode", function(node){
+    console.log();
+    console.log(node);
 
     if (selectedNode != null){
         for (i = 0; i < linksToSelectedNode.length; i++) {
@@ -233,7 +242,6 @@ dispatch.on("mouseoverNode", function(node){
     }
 });
 dispatch.on("mouseoutNode", function(node){
-    // console.log("hellomouseout");
     selectedNode.attr("stroke-width", 0).attr("fill-opacity", 0.7);
 
     //change back link opacity to 0.2
@@ -243,23 +251,6 @@ dispatch.on("mouseoutNode", function(node){
     }
 });
 
-/**/
-dispatch.on("hoverShowTextBox", function (node) {
-    var text = sankey_svg.selectAll(".nodeInfo").data(node).enter().append("text").attr("class", "nodeInfo");
-    text.attr("x", 280)
-        .attr("y", 350)
-        .text(function (d) {
-            linksToNode = node.links();
-            console.log(linksToNode);
-            if (!(d.index in [ 34, 35, 36])) {
-                return d.name + "\n"+ "Bachelorstudents:" + node.links()
-            }else{
-                return "hello pado"
-            }})
-        .attr("font_family", "sans-serif")
-        .attr("font-size", "20px")
-        .attr("fill", "red");
-});
 
 
 

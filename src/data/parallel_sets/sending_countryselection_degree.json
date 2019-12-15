@@ -2216,6 +2216,57 @@
       { "source": 31, "target": 33, "value": 2 }
     ]
   },
+  "MK": {
+    "nodes": [
+      { "node": 0, "name": "AT" },
+      { "node": 1, "name": "BE" },
+      { "node": 2, "name": "BG" },
+      { "node": 3, "name": "CZ" },
+      { "node": 4, "name": "DE" },
+      { "node": 5, "name": "EE" },
+      { "node": 6, "name": "ES" },
+      { "node": 7, "name": "FR" },
+      { "node": 8, "name": "HR" },
+      { "node": 9, "name": "IT" },
+      { "node": 10, "name": "LT" },
+      { "node": 11, "name": "LV" },
+      { "node": 12, "name": "NL" },
+      { "node": 13, "name": "PL" },
+      { "node": 14, "name": "PT" },
+      { "node": 15, "name": "RO" },
+      { "node": 16, "name": "SE" },
+      { "node": 17, "name": "SI" },
+      { "node": 18, "name": "SK" },
+      { "node": 19, "name": "Bachelor" },
+      { "node": 20, "name": "Master" },
+      { "node": 21, "name": "PhD" }
+    ],
+    "links": [
+      { "source": 0, "target": 19, "value": 5 },
+      { "source": 1, "target": 19, "value": 2 },
+      { "source": 2, "target": 19, "value": 5 },
+      { "source": 3, "target": 19, "value": 2 },
+      { "source": 3, "target": 21, "value": 1 },
+      { "source": 4, "target": 19, "value": 3 },
+      { "source": 5, "target": 20, "value": 1 },
+      { "source": 6, "target": 19, "value": 1 },
+      { "source": 6, "target": 20, "value": 1 },
+      { "source": 7, "target": 19, "value": 4 },
+      { "source": 8, "target": 19, "value": 8 },
+      { "source": 9, "target": 19, "value": 9 },
+      { "source": 9, "target": 20, "value": 4 },
+      { "source": 10, "target": 19, "value": 1 },
+      { "source": 11, "target": 19, "value": 2 },
+      { "source": 12, "target": 20, "value": 1 },
+      { "source": 13, "target": 19, "value": 7 },
+      { "source": 14, "target": 19, "value": 3 },
+      { "source": 15, "target": 19, "value": 5 },
+      { "source": 16, "target": 19, "value": 2 },
+      { "source": 16, "target": 20, "value": 1 },
+      { "source": 17, "target": 19, "value": 16 },
+      { "source": 18, "target": 19, "value": 2 }
+    ]
+  },
   "MT": {
     "nodes": [
       { "node": 0, "name": "BE" },
