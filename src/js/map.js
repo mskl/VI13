@@ -98,9 +98,6 @@ function highlightState(code) {
 /**
  * Map tooltip function. The offset is fixed for some of the countries.
  */
-
-// document.querySelector("#map > svg")
-// document.getElementById('map')
 var mapTip = d3.tip().attr('class', 'd3-tip').html(
     (stateCode, entries) => {
         let rowString = "";
@@ -111,21 +108,7 @@ var mapTip = d3.tip().attr('class', 'd3-tip').html(
                 rowString += `<tr><td>${key}</td><td>${value}</td></tr>`
             }
         );
-        return `<table style="margin-top: 2.5px;">${rowString}</table>`})
-    .offset((stateCode) => {
-        // if (stateCode === "fr") {
-        //     return [0, 170];
-        // } else if (stateCode === "es") {
-        //     return [0, 50];
-        // } else if (stateCode === "pt") {
-        //     return [40, 90];
-        // } else if (stateCode === "no") {
-        //     return [100, 0];
-        // } else {
-        //     return [0, 0];
-        // }
-        return [0, 0];
-    });
+        return `<table style="margin-top: 2.5px;">${rowString}</table>`});
 /**
  * Get arrays of incoming and arrays of outgoing based on the country code
  * @param code: code of the country
@@ -134,9 +117,9 @@ var mapTip = d3.tip().attr('class', 'd3-tip').html(
 function getIncomingOutgoingFromCode(code) {
     let [incoming, outgoing] = [{}, {}];
     if (code !== "") {
-        incoming = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
-        outgoing = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
-        outgoing.splice(0, 1);
+        outgoing = countryStudentFlows.map(function(d) {return [d["country"], d[code]]});
+        incoming = Object.entries(countryStudentFlows.filter(function (d) {return d.country === code})[0]);
+        incoming.splice(0, 1);
     }
     return [incoming, outgoing];
 }
