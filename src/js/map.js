@@ -12,7 +12,12 @@ let linesGroup = mapSVG.append("g").attr("class", "lines");
 // Variable used in the map only
 let highlightedState = "";
 
-let mapProjection = d3.geoTransverseMercator().center([18, 49]).scale(600).rotate([-10, 0, 0]);
+// 18 49 when width=720 height=430
+// 38 38 when width=424 height=257
+let mapProjection = d3.geoTransverseMercator()
+    .center([(-5/74)*mapSvgWidth+2466/37, (11/173)*mapSvgHeight+3747/173])
+    .scale(600*Math.min(mapSvgHeight/430, mapSvgWidth/720))
+    .rotate([-10, 0, 0]);
 let mapPath = d3.geoPath().projection(mapProjection);
 
 let chloroplethMapColor = d3.scaleSequential().domain([0, 4]).interpolator(d3.interpolateBlues);
