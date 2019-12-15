@@ -4,7 +4,7 @@ var boxplotDatasetSending;
 var boxplotDatasetUsing;
 var boxplotGenderDataset;
 // set the dimensions and margins of the graph
-var boxplotMargin = {top: 20, right: 20, bottom: 60, left: 40};
+var boxplotMargin = {top: 20, right: 20, bottom: 60, left: 50};
 
 let boxplotSvg = d3.select("#boxplot > svg"),
     boxplotWidth = +boxplotSvg.style("width").replace("px", ""),
@@ -17,11 +17,29 @@ var boxplotYaxis = d3.axisLeft();
 
 var boxWidth =  15;
 
+var boxplotTip = d3.tip().attr('class', 'd3-tip').html(
+    function(d){
+        var content = "";
+        if (studentDirection == "incoming") {
+            content += `<span style='margin-left: 1.5px;'><b>` + "Traveled distance "+`</b></span><br>`;
+            content += `<span style='margin-left: 1.5px;'>` + "Incoming students to " + d.value.countryName+ ")"  + `</span><br>`;
+        } else {
+            content += `<span style='margin-left: 1.5px;'><b>` + "Traveled distance "+`</b></span><br>`;
+            content += `<span style='margin-left: 1.5px;'>` + "(Outgoing students from " + d.value.countryName+ ")"  + `</span><br>`;        }
+        content += `
+                    <table style="margin-top: 2.5px;">
+                            <tr><td style="text-align: left;"> ` + "Minimum: " + `</td><td>` + d.value.min + " km" + "\n" + `</td> </tr>
+                            <tr><td style="text-align: left;"> ` + "Median: " + `</td><td>` + d.value.median + " km" + "\n" + `</td> </tr>
+                            <tr><td style="text-align: left;"> ` + "Maximum: " + `</td><td>` + d.value.max + " km" + "\n" + `</td> </tr>
+                    </table>
+                    `;
+        return content;
+    }).direction("nw")
+
 // append the svg object to the body of the page
-boxplotSvg
+boxplotSvg = boxplotSvg
     .append("g")
-    .attr("transform",
-        "translate(" + boxplotMargin.left + "," + boxplotMargin.top + ")");
+    .attr("transform", "translate(" + boxplotMargin.left + "," + boxplotMargin.top + ")");
 
 
 // Read the data and compute summary statistics for each specie
@@ -78,7 +96,7 @@ function genBoxplotVis() {
 
     boxplotSvg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - (boxplotMargin.left/2))
+        .attr("y", 0 - (boxplotMargin.left/2)-15)
         .attr("x",0 - (boxplotHeight - boxplotMargin.top - boxplotMargin.bottom) / 2)
         .attr("fill", "black")
         .attr("font-size", 11)
@@ -110,13 +128,14 @@ function nestDataset() {
             interQuantileRange = q3 - q1;
             min = tmp_min;
             max = q3 + 1.5 * interQuantileRange;
+            countryName = d[0].NameHosting;
 
 
-            return ({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
+            return ({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max, countryName:countryName})
         })
          .entries(tmpdataset);
 
-    boxplotDatasetReceiving.push({key:"MK",value:{q1:0,median: 0, q3: 0, interQuantileRange: 0, min: 0, max: 0}});
+    boxplotDatasetReceiving.push({key:"MK",value:{q1:0,median: 0, q3: 0, interQuantileRange: 0, min: 0, max: 0, countryName:"North Macedonia"}});
 console.log(boxplotDatasetReceiving);
     boxplotDatasetSending = d3.nest() // nest function allows to group the calculation per level of a factor
         .key(function (d) {
@@ -140,9 +159,10 @@ console.log(boxplotDatasetReceiving);
             interQuantileRange = q3 - q1;
             min = tmp_min;
             max = q3 + 1.5 * interQuantileRange;
+            countryName = d[0].NameSending;
 
 
-            return ({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
+            return ({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max, countryName:countryName})
         })
         .entries(tmpdataset);
 }
@@ -245,10 +265,9 @@ function drawDiagramBoxplot(dataset) {
         })
         .attr('opacity',0.7)
         .on('mouseover', function (d){
-            // boxplotTip.show(d);
+            boxplotTip.show(d);
             var key = "";
             if (d.key.toLowerCase().includes("m") || d.key.toLowerCase().includes("f")) {
-                console.log("key:" + d.key[0]+d.key[1]);
                 key = d.key[0]+d.key[1];
             } else {
                 key = d.key;
@@ -256,10 +275,9 @@ function drawDiagramBoxplot(dataset) {
             events.call('boxplotOnMouseOver', key.toLowerCase(), key.toLowerCase())
         })
         .on('mouseout', function(d) {
-            // boxplotTip.hide(d);
+            boxplotTip.hide(d);
              var key = "";
             if (d.key.toLowerCase().includes("m") || d.key.toLowerCase().includes("f")) {
-                console.log("key:" + d.key[0]+d.key[1]);
                 key = d.key[0]+d.key[1];
             } else {
                 key = d.key;
@@ -269,11 +287,7 @@ function drawDiagramBoxplot(dataset) {
         .on('click', d => d.key.toLowerCase().includes(selectedCountry.toLowerCase()) && selectedCountry != ""
             ? events.call('stateSelectedEvent', "", "")
             : events.call('stateSelectedEvent', d.key.toLowerCase(), d.key.toLowerCase()));
-
-    boxplotSvg.selectAll(".box")
-        .append("title") // adding a title for each bar
-        .data(dataset)
-        .text(function (d){return d.key});
+    boxplotSvg.call(boxplotTip);
 
     // Change the median
     boxplotSvg
@@ -351,7 +365,7 @@ function drawDiagramBoxplot(dataset) {
 
     boxplotSvg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - (boxplotMargin.left/2)-10)
+        .attr("y", 0 - (boxplotMargin.left/2)-15)
         .attr("x",0 - (boxplotHeight - boxplotMargin.top - boxplotMargin.bottom )/ 2)
         .attr("fill", "black")
         .attr("font-size", 11)
@@ -396,16 +410,27 @@ function filterDatasetGender() {
             interQuantileRange = q3 - q1;
             min = tmp_min;
             max = q3 + 1.5 * interQuantileRange;
-
-
-            return ({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
+            if(d[0].ParticipantGender == "F") {
+                if(studentDirection == "incoming") {
+                    countryName = d[0].NameHosting + " (Female)";
+                } else {
+                    countryName = d[0].NameSending + " (Female)";
+                }
+            } else {
+                if(studentDirection == "incoming") {
+                    countryName = d[0].NameHosting + " (Male)";
+                } else {
+                    countryName = d[0].NameSending + " (Male)";
+                }
+            }
+            return ({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max, countryName:countryName})
         })
         .entries(tmpDataset)
         .map(function(group) {
             return {
                 key: (selectedCountry.toUpperCase() + "(" + group.key + ")"),
                 value:{q1: group.value.q1, median: group.value.median, q3: group.value.q3, interQuantileRange: group.value.interQuantileRange,
-                    min: group.value.min, max: group.value.max}}
+                    min: group.value.min, max: group.value.max, countryName: group.value.countryName}}
             });
     boxplotGenderDataset = boxplotDatasetUsing.filter(d => d.key.toLowerCase() != selectedCountry.toLowerCase());
     boxplotGenderDataset.push(tmpDataset[0]);
@@ -435,7 +460,7 @@ console.log("drawing boxplot direction");
         .data(tmpDataset)
         .transition()
         .duration(750)
-        .attr("y1", function(d){console.log(d);return(boxplotYscale(d.value.min))})
+        .attr("y1", function(d){return(boxplotYscale(d.value.min))})
         .attr("y2", function(d){return(boxplotYscale(d.value.max))});
 
     // change rectangle for the main boxes
