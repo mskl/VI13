@@ -4,7 +4,7 @@ var boxplotDatasetSending;
 var boxplotDatasetUsing;
 var boxplotGenderDataset;
 // set the dimensions and margins of the graph
-var boxplotMargin = {top: 20, right: 20, bottom: 60, left: 40};
+var boxplotMargin = {top: 20, right: 20, bottom: 60, left: 50};
 
 let boxplotSvg = d3.select("#boxplot > svg"),
     boxplotWidth = +boxplotSvg.style("width").replace("px", ""),
@@ -18,14 +18,11 @@ var boxplotYaxis = d3.axisLeft();
 var boxWidth =  15;
 
 // append the svg object to the body of the page
-boxplotSvg
+boxplotSvg = boxplotSvg
     .append("g")
-    .attr("transform",
-        "translate(" + boxplotMargin.left + "," + boxplotMargin.top + ")");
-
+    .attr("transform", "translate(" + boxplotMargin.left + "," + boxplotMargin.top + ")");
 
 // Read the data and compute summary statistics for each specie
-
 d3.csv("./data/distances.csv").then(function (data) {
     boxplotDataset = data;
     genBoxplotVis();
@@ -343,7 +340,7 @@ function drawDiagramBoxplot(dataset) {
         boxplotSvg.append("text")
             .attr("fill", "black")
             .attr("font-size", 11)
-            .attr("y", boxplotHeight - boxplotMargin.top-20)
+            .attr("y", boxplotHeight-boxplotMargin.bottom+10)
             .attr("x", boxplotWidth / 2)
             .attr("class", "boxplotxlabel")
             .text("Country");
@@ -351,7 +348,7 @@ function drawDiagramBoxplot(dataset) {
 
     boxplotSvg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - (boxplotMargin.left/2)-10)
+        .attr("y", 0 - (boxplotMargin.left/2)-15)
         .attr("x",0 - (boxplotHeight - boxplotMargin.top - boxplotMargin.bottom )/ 2)
         .attr("fill", "black")
         .attr("font-size", 11)
