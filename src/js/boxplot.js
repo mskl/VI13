@@ -4,9 +4,11 @@ var boxplotDatasetSending;
 var boxplotDatasetUsing;
 var boxplotGenderDataset;
 // set the dimensions and margins of the graph
-var boxplotMargin = {top: 20, right: 20, bottom: 40, left: 50},
-    boxplotWidth = 730 - boxplotMargin.left - boxplotMargin.right,
-    boxplotHeight = 230 - boxplotMargin.top - boxplotMargin.bottom;
+var boxplotMargin = {top: 20, right: 20, bottom: 60, left: 40};
+
+let boxplotSvg = d3.select("#boxplot > svg"),
+    boxplotWidth = +boxplotSvg.style("width").replace("px", ""),
+    boxplotHeight = +boxplotSvg.style("height").replace("px", "");
 
 var boxplotXscale = d3.scaleBand();
 var boxplotYscale = d3.scaleLinear();
@@ -14,20 +16,9 @@ var boxplotXaxis = d3.axisBottom();
 var boxplotYaxis = d3.axisLeft();
 
 var boxWidth =  15;
-//
-// var boxplotBarTip = d3.tip().attr('class', 'd3-tip').html(
-//     function(d ){
-//         var content = "";
-//         content += `<span style='margin-left: 1.5px;'><b>` + "AHOJ" + `</b></span><br>`;
-//         return content;
-//     });
-
 
 // append the svg object to the body of the page
-var boxplotSvg = d3.select("#boxplot")
-    .append("svg")
-    .attr("width", boxplotWidth + boxplotMargin.left + boxplotMargin.right)
-    .attr("height", boxplotHeight + boxplotMargin.top + boxplotMargin.bottom)
+boxplotSvg
     .append("g")
     .attr("transform",
         "translate(" + boxplotMargin.left + "," + boxplotMargin.top + ")");
@@ -51,7 +42,7 @@ function genBoxplotVis() {
 
     // Show the X scale
     boxplotXscale
-        .range([ 0, boxplotWidth ])
+        .range([ 0, boxplotWidth - boxplotMargin.left - boxplotMargin.right ])
         .domain(boxplotDatasetUsing.map(function (d) {
             return d.key;
         }))
@@ -60,7 +51,7 @@ function genBoxplotVis() {
     boxplotXaxis
         .scale(boxplotXscale);
     boxplotSvg.append("g")
-        .attr("transform", "translate(0," + boxplotHeight + ")")
+        .attr("transform", "translate(0," + (boxplotHeight - boxplotMargin.top - boxplotMargin.bottom) + ")")
         .attr("class", "boxplotXaxis")
         .call(boxplotXaxis)
         .selectAll("text")
@@ -70,14 +61,15 @@ function genBoxplotVis() {
     boxplotSvg.append("text")
         .attr("fill", "black")
         .attr("font-size", 11)
-        .attr("y", boxplotHeight + boxplotMargin.bottom - 5)
+        .attr("y", boxplotHeight - boxplotMargin.top)
         .attr("x", boxplotWidth / 2)
         .attr("class", "boxplotxlabel")
         .text("Country");
+
 // Show the Y scale
     boxplotYscale
         .domain([0, 5800])
-        .range([boxplotHeight, 0]);
+        .range([boxplotHeight - boxplotMargin.top - boxplotMargin.bottom, 0]);
     boxplotYaxis
         .scale(boxplotYscale);
     boxplotSvg.append("g")
@@ -86,8 +78,8 @@ function genBoxplotVis() {
 
     boxplotSvg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - (boxplotMargin.left/2)-10)
-        .attr("x",0 - boxplotHeight / 2)
+        .attr("y", 0 - (boxplotMargin.left/2))
+        .attr("x",0 - (boxplotHeight - boxplotMargin.top - boxplotMargin.bottom) / 2)
         .attr("fill", "black")
         .attr("font-size", 11)
         .attr("class","boxplotylabel")
@@ -124,8 +116,8 @@ function nestDataset() {
         })
          .entries(tmpdataset);
 
-    boxplotDatasetReceiving.push({key:"MK",value:{q1:0,median: 0, q3: 0, interQuantileRange: 0, min: 0, max: 0}})
-
+    boxplotDatasetReceiving.push({key:"MK",value:{q1:0,median: 0, q3: 0, interQuantileRange: 0, min: 0, max: 0}});
+console.log(boxplotDatasetReceiving);
     boxplotDatasetSending = d3.nest() // nest function allows to group the calculation per level of a factor
         .key(function (d) {
             return d.CountrySending;
@@ -253,6 +245,7 @@ function drawDiagramBoxplot(dataset) {
         })
         .attr('opacity',0.7)
         .on('mouseover', function (d){
+            // boxplotTip.show(d);
             var key = "";
             if (d.key.toLowerCase().includes("m") || d.key.toLowerCase().includes("f")) {
                 console.log("key:" + d.key[0]+d.key[1]);
@@ -263,7 +256,8 @@ function drawDiagramBoxplot(dataset) {
             events.call('boxplotOnMouseOver', key.toLowerCase(), key.toLowerCase())
         })
         .on('mouseout', function(d) {
-            var key = "";
+            // boxplotTip.hide(d);
+             var key = "";
             if (d.key.toLowerCase().includes("m") || d.key.toLowerCase().includes("f")) {
                 console.log("key:" + d.key[0]+d.key[1]);
                 key = d.key[0]+d.key[1];
@@ -332,19 +326,24 @@ function drawDiagramBoxplot(dataset) {
         .style("text-anchor", "end");
 
     if(selectedCountry) {
-        var name = boxplotDataset.filter(d => d.CountryHosting.toLowerCase() === selectedCountry.toLowerCase())[0].NameHosting;
+        var name;
+        if(selectedCountry === 'mk') {
+            name = "North Macedonia";
+        } else {
+            name = boxplotDataset.filter(d => d.CountryHosting.toLowerCase() === selectedCountry.toLowerCase())[0].NameHosting;
+        }
         boxplotSvg.append("text")
             .attr("fill", "black")
             .attr("font-size", 11)
-            .attr("y", boxplotHeight + boxplotMargin.bottom - 5)
-            .attr("x", boxplotWidth / 2-20)
+            .attr("y", boxplotHeight - boxplotMargin.top - 20)
+            .attr("x", boxplotWidth / 2-25)
             .attr("class", "boxplotxlabel")
             .text("Country (with gender for " + name + ")");
     } else {
         boxplotSvg.append("text")
             .attr("fill", "black")
             .attr("font-size", 11)
-            .attr("y", boxplotHeight + boxplotMargin.bottom - 5)
+            .attr("y", boxplotHeight - boxplotMargin.top-20)
             .attr("x", boxplotWidth / 2)
             .attr("class", "boxplotxlabel")
             .text("Country");
@@ -353,7 +352,7 @@ function drawDiagramBoxplot(dataset) {
     boxplotSvg.append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - (boxplotMargin.left/2)-10)
-        .attr("x",0 - boxplotHeight / 2)
+        .attr("x",0 - (boxplotHeight - boxplotMargin.top - boxplotMargin.bottom )/ 2)
         .attr("fill", "black")
         .attr("font-size", 11)
         .attr("class","boxplotylabel")
@@ -431,14 +430,12 @@ console.log("drawing boxplot direction");
     }
     sortBoxplotDatasetAlphabeticaly(tmpDataset);
 
-    console.log(tmpDataset);
-
     // Change the main vertical lines
     boxplotSvg.selectAll(".mainLine")
         .data(tmpDataset)
         .transition()
         .duration(750)
-        .attr("y1", function(d){return(boxplotYscale(d.value.min))})
+        .attr("y1", function(d){console.log(d);return(boxplotYscale(d.value.min))})
         .attr("y2", function(d){return(boxplotYscale(d.value.max))});
 
     // change rectangle for the main boxes
