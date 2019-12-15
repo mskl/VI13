@@ -151,9 +151,8 @@ function gen_vis() {
 
     bchSvg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("stroke", "black")
         .attr("y", 0 - (bchMargin.left/2)-8)
-        .attr("x",0 - bchHeight / 2)
+        .attr("x",0 - (bchHeight - bchMargin.top - bchMargin.bottom) / 2)
         .attr("fill", "black")
         .attr("font-size", 11)
         .attr("id","ylabel")
