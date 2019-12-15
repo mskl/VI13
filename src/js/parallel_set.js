@@ -24,28 +24,43 @@ var sankeyLinkTip = d3.tip().attr('class', 'd3-tip').html(
 
 var sankeyNodeTip = d3.tip().attr('class', 'd3-tip').html(
     function(d){
-        let content = `<span style='margin-left: 1.5px;'><b>` + countryData.get(d.name.toLowerCase()).name + `</b></span><br>`;
-        if (d.index > 34){
-            const nodesWithTarget = d.targetLinks.map( e => {
-                let string = `<tr><td style="text-align: left;">`+ e.source.name + ":"+ `</td><td style="text-align: right">`+ format(e.value)+ `</td></tr>`;
-                return string
-            });
-            content += `<table style="margin-top: 2.5px;"> ` + nodesWithTarget.join('') + `</table>`;
-        }
+        if (d.name.length == 2){
+                let content = `<span style='margin-left: 1.5px;'><b>` + countryData.get(d.name.toLowerCase()).name + `</b></span><br>`;
+                if (d.index > 34){
+                    const nodesWithTarget = d.targetLinks.map( e => {
+                        let string = `<tr><td style="text-align: left;">`+ e.source.name + ":"+ `</td><td style="text-align: right">`+ format(e.value)+ `</td></tr>`;
+                        return string
+                    });
+                    content += `<table style="margin-top: 2.5px;"> ` + nodesWithTarget.join('') + `</table>`;
+                }
+                else{
+                    const nodesWithSource = d.sourceLinks.map(e => {
+                        let string = `<tr><td style="text-align: left;">`+ e.target.name + ":"+ `</td><td style="text-align: right">`+ format(e.value)+ `</td></tr>`;
+                        return string
+                    });
+                    content += `<table style="margin-top: 2.5px;"> ` + nodesWithSource.join('') + `</table>`;
+                }
+                return content;
+            }
         else{
-            const nodesWithSource = d.sourceLinks.map(e => {
-                let string = `<tr><td style="text-align: left;">`+ e.target.name + ":"+ `</td><td style="text-align: right">`+ format(e.value)+ `</td></tr>`;
-                return string
-            });
-            content += `<table style="margin-top: 2.5px;"> ` + nodesWithSource.join('') + `</table>`;
+            let degreecontent = `
+                    <table style="margin-top: 2.5px;">
+                            <tr><td style="text-align: left;">`+ d.name + ":"+ `</td><td style="text-align: right">`+ format(d.value)+ `</td></tr>
+                    </table>
+                    `;
+            return degreecontent;
         }
-        return content;
-    }).direction(function (d) {
-    if (d.index > 34){
+    })
+    .direction(function (d) {
+    if (d.x0 > 300){
+        console.log("here is the d:  ");
+        console.log(d);
         return "nw"
     }
     else return "ne";
-});
+    }
+
+);
 
 function drawSankey(selectedCountry, studentDirection){
     if (selectedCountry == ""){
@@ -59,7 +74,13 @@ function drawSankey(selectedCountry, studentDirection){
 
             degree_data = data[selectedCountry.toUpperCase()];
         }).then(function (){
-            gen_sankeyvis();
+            if (selectedCountry.toUpperCase()!="MK"){
+                gen_sankeyvis();
+            }
+            else{
+                no_data_for_MK();
+            }
+
         });
     }
     else if (selectedCountry && studentDirection=="outgoing"){
@@ -75,6 +96,11 @@ d3.json("data/parallel_sets/degree_flow.json").then(function (data) {
     gen_sankeyvis(degree_data);
 });
 
+function no_data_for_MK(){
+    sankey_svg.selectAll("*").remove();
+    sankey_svg.append("text").attr("y", 50).attr("x", 50).attr("font-size", 15).text("No incoming students to Makedonia, select another country.");
+
+}
 
 
 function gen_sankeyvis() {
@@ -84,6 +110,7 @@ function gen_sankeyvis() {
         sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", 23).attr("font-size", 11).text("Outgoing students");
         sankey_svg.append("text").attr("y", setsHeight + 5).attr("x", setsWidth-110).attr("font-size", 11).text("Incoming student")
     }
+
 
     const sankey = d3.sankey()
         .nodeWidth(15)
@@ -132,19 +159,16 @@ function gen_sankeyvis() {
             dispatch.call("mouseoverNode", d, d);
             if (d.name.length == 2){
                 events.call("sankeyNodeOnMouseOver", d.name.toLowerCase(), d.name.toLowerCase());
+
             }
-            if (d.name.length == 2) {
-                sankeyNodeTip.show(d)
-            }
+            sankeyNodeTip.show(d)
         })
         .on("mouseout", function(d){
             dispatch.call("mouseoutNode", d, d);
             if (d.name.length == 2) {
                 events.call("sankeyNodeOnMouseOut", d.name.toLowerCase(), d.name.toLowerCase())
             }
-            if (d.name.length == 2) {
-                sankeyNodeTip.hide();
-            }
+            sankeyNodeTip.hide();
         })
         .on("click", function (d) {
            events.call("stateSelectedEvent", d.name.toLowerCase(), d.name.toLowerCase())
@@ -198,6 +222,8 @@ function unHighlightSankeyNode() {
 var dispatch = d3.dispatch("mouseoverNode", "mouseoutNode");
 
 dispatch.on("mouseoverNode", function(node){
+    console.log();
+    console.log(node);
 
     if (selectedNode != null){
         for (i = 0; i < linksToSelectedNode.length; i++) {
