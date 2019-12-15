@@ -1,5 +1,4 @@
 //visualisation is based on the code on website: https://www.d3-graph-gallery.com/graph/barplot_basic.html
-
 var bchDataset;
 var bchMargin = {top: 20, right: 10, bottom: 60, left: 40};
 

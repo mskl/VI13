@@ -41,9 +41,7 @@ boxplotSvg = boxplotSvg
     .append("g")
     .attr("transform", "translate(" + boxplotMargin.left + "," + boxplotMargin.top + ")");
 
-
 // Read the data and compute summary statistics for each specie
-
 d3.csv("./data/distances.csv").then(function (data) {
     boxplotDataset = data;
     genBoxplotVis();
@@ -357,7 +355,7 @@ function drawDiagramBoxplot(dataset) {
         boxplotSvg.append("text")
             .attr("fill", "black")
             .attr("font-size", 11)
-            .attr("y", boxplotHeight - boxplotMargin.top-20)
+            .attr("y", boxplotHeight-boxplotMargin.bottom+10)
             .attr("x", boxplotWidth / 2)
             .attr("class", "boxplotxlabel")
             .text("Country");
