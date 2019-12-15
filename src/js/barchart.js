@@ -177,7 +177,7 @@ function gen_vis() {
             return (bchXscale(d.ISO)+bchWidth/68-2);})
         .attr("cy", bchHeight)
         .attr("stroke", "rgba(0,0,0,0)")
-        .attr("r",bchWidth/68-1)
+        .attr("r",(bchWidth-bchMargin.left-bchMargin.right-6.8)/68)
         .attr("fill", "rgba(0,0,0,0)")
         .attr("class","studentsBubble");
 }
