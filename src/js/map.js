@@ -247,7 +247,7 @@ function drawChloropleth() {
 function drawLegend() {
     // Editable options
     const mapLegendTicks = 10;
-    const mapLegendWidth = 300;
+    const mapLegendWidth = 240;
 
     const [mapLegendMin, mapLegendMax] =
         selectedCountry === ""
@@ -312,7 +312,7 @@ function drawLegend() {
             if (i % 3 === 0) {
                 return selectedCountry === ""
                     ? d.toFixed(1)
-                    : (d*100).toFixed(1) + "%";
+                    : (d*100).toFixed(0) + "%";
             }
         });
 
