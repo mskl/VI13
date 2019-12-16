@@ -338,8 +338,8 @@ function drawLines(selectedCode, otherCode) {
          .data(detailedCoordinates.filter(d => {
              if (otherCode !== "") {
                  return studentDirection === "incoming"
-                    ? d.receivingCode === selectedCode && d.sendingCode === otherCode
-                    : d.sendingCode === selectedCode && d.receivingCode === otherCode
+                    ? d.sendingCode === selectedCode && d.receivingCode === otherCode
+                    : d.receivingCode === selectedCode && d.sendingCode === otherCode
              }
          }, d => d.sendLat + " " + d.sendLon));
 
