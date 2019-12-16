@@ -183,6 +183,7 @@ function drawChloropleth() {
         } else {
             entries = {
                 [`<b>` + d.name + `</b>`]: "",
+                "Ratio:": d.recSendRatio.toFixed(4),
                 "Incoming:": formatNumber(d.receiving),
                 "Outgoing:": formatNumber(d.sending)
             };
