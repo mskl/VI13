@@ -1,5 +1,5 @@
 Information Visualization Project (Group 21)
-Developed for Chrome at 2880 x 1800, 2560 x 1600
+Developed for Chrome at 2880 x 1800, 2560 x 1600 and 1920 x 1080
 
 To tun the application, type the following into the terminal
 python -m SimpleHTTPServer 8888
