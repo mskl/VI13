@@ -170,14 +170,14 @@ function drawChloropleth() {
             if (studentDirection === "incoming") {
                 entries = {
                     [`<b>` + d.name + `</b>`]: "",
-                    "Incoming": formatNumber(selected[d.country]),
-                    "Percentage": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
+                    ["Incoming to " + selectedCountry.toUpperCase() + " from " + d.country.toUpperCase() + ":"]: formatNumber(selected[d.country]),
+                    "Percentage of students:": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             } else {
                 entries = {
                     [`<b>` + d.name + `</b>`]: "",
-                    "Outgoing:": formatNumber(selected[d.country]),
-                    "Percentage:": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
+                    ["Outgoing from " + selectedCountry.toUpperCase() + " to " + d.country.toUpperCase() + ":"]: formatNumber(selected[d.country]),
+                    "Percentage of students:": ((selected[d.country] / totalStudentCount) * 100).toFixed(1) + "%"
                 };
             }
         } else {
