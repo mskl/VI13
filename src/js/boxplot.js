@@ -22,7 +22,7 @@ var boxplotTip = d3.tip().attr('class', 'd3-tip').html(
         var content = "";
         if (studentDirection == "incoming") {
             content += `<span style='margin-left: 1.5px;'><b>` + "Traveled distance "+`</b></span><br>`;
-            content += `<span style='margin-left: 1.5px;'>` + "Incoming students to " + d.value.countryName+ ")"  + `</span><br>`;
+            content += `<span style='margin-left: 1.5px;'>` + "(Incoming students to " + d.value.countryName+ ")"  + `</span><br>`;
         } else {
             content += `<span style='margin-left: 1.5px;'><b>` + "Traveled distance "+`</b></span><br>`;
             content += `<span style='margin-left: 1.5px;'>` + "(Outgoing students from " + d.value.countryName+ ")"  + `</span><br>`;        }
