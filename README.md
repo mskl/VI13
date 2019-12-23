@@ -1,12 +1,27 @@
-# VI13 - Information Visualization
+# VI13 - ERASMUS+ student flow visualization
 > Data visualization class at Instituto Superior de Técnico Lisbon.
 
-The Medium post: [Making a map with EU data on R: Erasmus exchanges by country
-](https://medium.com/@jules.beley/making-a-map-with-eu-data-on-r-erasmus-exchanges-by-country-3f5734dcd4ff)
+Information visualization project class project developed by Matyáš Skalický, Ingeborg Sollid and Lenka Obermajerová.
 
-## Report number 4
+## Running the project
+The project is fully standalone offline with all of the libraries. The backend server is required for browser to access the files. Developed for Chrome at 2880 x 1800, 2560 x 1600 and 1920 x 1080.
 
-https://docs.google.com/document/d/1KwNJW2WFXx8ka-0OYigSztbOPiqdJFVqldV3WdS5Lzk/edit?usp=sharing
+To tun the application, cd into the `src/` folder and run the backend server:
 
-## References - other works
-https://github.com/carboned4/V_I_2015_1
+``` bash
+python -m SimpleHTTPServer 8888
+```
+
+The visualization is now accessible at 
+http://localhost:8888/.
+
+## Project report
+Final report can be viewed [here](TODO).
+
+## Checkpoint reports
+- [Checkpoint 1 report](./checkpoints/01_corrected/LAB2.docx)
+- [Checkpoint 1 presentation](./checkpoints/01_corrected/LAB2.pptx)
+- [Checkpoint 2 report](./checkpoints/02_corrected/Lab04.docx)
+- [Checkpoint 3 presentation](./checkpoints/03/21.pptx)
+- [Checkpoint 3 report](./checkpoints/03_corrected/report_31.docx)
+- [Checkpoint 4 report](./checkpoints/04_correctef/report_chp4_corrected.docx)
