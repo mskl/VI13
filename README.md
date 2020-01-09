@@ -1,12 +1,19 @@
 # VI13 - ERASMUS+ student flow visualization
 > Data visualization class at Instituto Superior de Técnico Lisbon.
 
-Information visualization project class project developed by Matyáš Skalický, Ingeborg Sollid and Lenka Obermajerová.
+> https://mskl.github.io/VI13/ 
 
-## Running the project
-The project is fully standalone offline with all of the libraries. The backend server is required for browser to access the files. Developed for Chrome at 2880 x 1800, 2560 x 1600 and 1920 x 1080.
+Information visualization project class project developed by [Matyáš Skalický](https://github.com/mskl), [Ingeborg Sollid](https://github.com/isollid) and [Lenka Obermajerová](https://github.com/Lenka97).
 
-To tun the application, cd into the `src/` folder and run the backend server:
+Final report can be viewed [here](misc/checkpoints/report/VI13Report.pdf). The misc repository also contains the checkpoint presentations and reports.
+
+## Try it out online!
+The project is accessible at [https://mskl.github.io/VI13/](https://mskl.github.io/VI13/). Note that the goal of the project was not high compatibility neither online usage, so expect the loading to be slow. The final visualization is also not responsive, so it's not useful on mobile devices.
+
+## Running the project offline
+The project is fully standalone offline with all of the libraries. The backend server is required for browser to access the files. The app was developed for Chrome at 2880 x 1800, 2560 x 1600 and 1920 x 1080.
+
+To run the application clone the repository, cd into the directory and run the backend server:
 
 ``` bash
 python -m SimpleHTTPServer 8888
@@ -14,14 +21,3 @@ python -m SimpleHTTPServer 8888
 
 The visualization is now accessible at 
 http://localhost:8888/.
-
-## Project report
-Final report can be viewed [here](TODO).
-
-## Checkpoint reports
-- [Checkpoint 1 report](./checkpoints/01_corrected/LAB2.docx)
-- [Checkpoint 1 presentation](./checkpoints/01_corrected/LAB2.pptx)
-- [Checkpoint 2 report](./checkpoints/02_corrected/Lab04.docx)
-- [Checkpoint 3 presentation](./checkpoints/03/21.pptx)
-- [Checkpoint 3 report](./checkpoints/03_corrected/report_31.docx)
-- [Checkpoint 4 report](./checkpoints/04_correctef/report_chp4_corrected.docx)
