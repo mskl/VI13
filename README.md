@@ -3,7 +3,7 @@
 
 > https://mskl.github.io/ist-mi-vi13-erasmus-visualization/
 
-Information visualization project class project developed by [Matyáš Skalický](https://github.com/mskl), [Ingeborg Sollid](https://github.com/isollid) and [Lenka Obermajerová](https://github.com/Lenka97).
+Information visualization project class project developed by [Matyáš Skalický](https://github.com/mskl), [Ingeborg Sollid](https://github.com/isollid) and [Lenka Obermajerová](https://github.com/LenkaObermajerova).
 
 Final report can be viewed [here](misc/checkpoints/report/VI13Report.pdf). The misc repository also contains the checkpoint presentations and reports.
 
